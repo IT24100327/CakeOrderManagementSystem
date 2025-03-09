@@ -1,1 +1,3 @@
-Heshan K,heshan,newpassword123,ADMIN
+Heshan Thenura,heshan,heshanthenura2@gmail.com,A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=,ADMIN
+Heshan Thenura,heshantk,heshanthenura2@gmail.com,A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=,USER
+Heshan Thenura,heshan123,heshanthenura2@gmail.com,A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=,USER

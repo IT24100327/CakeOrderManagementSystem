@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/index.css"/>
 </head>
 <body>
+<% String username = (String) session.getAttribute("username"); %>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
         <a class="navbar-brand" href="<%= request.getContextPath() %>">Navbar</a>
@@ -40,25 +41,39 @@
                     <a class="nav-link active" aria-current="page" href="<%= request.getContextPath() %>">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="<%= request.getContextPath() %>/about">About</a>
+                    <a class="nav-link active" aria-current="page"
+                       href="<%= request.getContextPath() %>/about">About</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="<%= request.getContextPath() %>/contact"
                     >Contact</a
                     >
                 </li>
+
+                <% if (username != null) { %>
+
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="#"></a>
+                    <a class="nav-link active" aria-current="page" href="<%= request.getContextPath() %>/profile">Profile</a>
                 </li>
+                <% } %>
+
             </ul>
+
             <div class="d-flex ms-auto">
+            <% if (username != null) { %>
+                <button class="btn">
+                    <a href="<%= request.getContextPath() %>/logout">Logout</a>
+                </button>
+            <% } else {%>
                 <button class="btn">
                     <a href="<%= request.getContextPath() %>/signin">Sign In</a>
                 </button>
                 <button class="btn">
                     <a href="<%= request.getContextPath() %>/signup">Sign Up</a>
                 </button>
+            <% }%>
             </div>
+
         </div>
     </div>
 </nav>

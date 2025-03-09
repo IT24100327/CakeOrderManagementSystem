@@ -1,5 +1,6 @@
 import entities.User;
 import utils.CredsFileHandle;
+import utils.PasswordUtils;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -15,6 +16,7 @@ import java.io.IOException;
 public class SignInServlet extends HttpServlet {
 
     CredsFileHandle credsFileHandle = new CredsFileHandle();
+    PasswordUtils passwordUtils = new PasswordUtils();
 
     public SignInServlet() {
     }
@@ -32,26 +34,34 @@ public class SignInServlet extends HttpServlet {
 
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        System.out.println("Received Username: " + username + " Password: " + password);
+
+        System.out.println("Received Username: " + username);
+        System.out.println("Received Password: " + password);
+
         if (username != null && !username.trim().isEmpty() && password != null && !password.trim().isEmpty()) {
-            System.out.println("Username: " + username);
-            System.out.println("Password: " + password);
             User user = credsFileHandle.getUserByUsername(username);
-            if (user !=null){
-                System.out.println("User found");
-                response.sendRedirect(request.getContextPath() + "/");
-            }else{
-                System.out.println("User not found");
-                request.setAttribute("errorMessage", "User not found");
+            System.out.println(user.getPassword());
+            if (user != null) {
+                if (passwordUtils.verifyPassword(password, user.getPassword())) {
+                    System.out.println("Login successful for user: " + username);
+                    request.getSession().setAttribute("name", user.getName());
+                    request.getSession().setAttribute("username", user.getUsername());
+                    request.getSession().setAttribute("ROLE", user.getROLE());
+                    response.sendRedirect(request.getContextPath() + "/");
+                } else {
+                    System.out.println("Incorrect password for user: " + username);
+                    request.setAttribute("errorMessage", "Incorrect password!");
+                    request.getRequestDispatcher("signin.jsp").forward(request, response);
+                }
+            } else {
+                System.out.println("User not found: " + username);
+                request.setAttribute("errorMessage", "User not found!");
                 request.getRequestDispatcher("signin.jsp").forward(request, response);
             }
-
-
         } else {
+            System.out.println("Username or Password cannot be empty.");
             request.setAttribute("errorMessage", "Username or Password cannot be empty.");
             request.getRequestDispatcher("signin.jsp").forward(request, response);
         }
-
-
     }
 }

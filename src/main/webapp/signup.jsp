@@ -18,6 +18,13 @@
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/signup.css" />
   </head>
   <body>
+  <% String username = (String) session.getAttribute("username"); %>
+  <%
+    if (username != null) {
+      response.sendRedirect(request.getContextPath() + "/");
+      return;
+    }
+  %>
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
       <a class="navbar-brand" href="<%= request.getContextPath() %>">Navbar</a>
@@ -39,32 +46,54 @@
             <a class="nav-link active" aria-current="page" href="<%= request.getContextPath() %>">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="<%= request.getContextPath() %>/about">About</a>
+            <a class="nav-link active" aria-current="page"
+               href="<%= request.getContextPath() %>/about">About</a>
           </li>
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="<%= request.getContextPath() %>/contact"
             >Contact</a
             >
           </li>
+
+          <% if (username != null) { %>
+
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#"></a>
+            <a class="nav-link active" aria-current="page" href="<%= request.getContextPath() %>/profile">Profile</a>
           </li>
+          <% } %>
+
         </ul>
+
         <div class="d-flex ms-auto">
+          <% if (username != null) { %>
+          <button class="btn">
+            <a href="<%= request.getContextPath() %>/logout">Logout</a>
+          </button>
+          <% } else {%>
           <button class="btn">
             <a href="<%= request.getContextPath() %>/signin">Sign In</a>
           </button>
           <button class="btn">
             <a href="<%= request.getContextPath() %>/signup">Sign Up</a>
           </button>
+          <% }%>
         </div>
+
       </div>
     </div>
   </nav>
 
     <div class="signup-wrap">
-      <form class="signup-form" action="">
+      <form class="signup-form" action="<%= request.getContextPath() %>/signup" method="post" enctype="multipart/form-data">
         <h1>Sign Up</h1>
+
+        <% String errorMessage = (String) request.getAttribute("errorMessage"); %>
+        <% if (errorMessage != null) { %>
+        <div class="alert alert-danger" role="alert">
+          <%= errorMessage %>
+        </div>
+        <% } %>
+
 
         <label for="name">Name</label>
         <input type="text" id="name" name="name" required />

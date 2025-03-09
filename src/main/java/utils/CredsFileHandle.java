@@ -8,7 +8,6 @@ import java.util.List;
 
 public class CredsFileHandle {
 
-    // change accordingly
     private final String filePath = "E:\\MyWork\\SLIIT\\OneDrive - Sri Lanka Institute of Information Technology\\Y1S2\\OOP\\Project\\backup\\data\\users.txt";
 
 

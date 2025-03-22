@@ -2,13 +2,13 @@ import entities.User;
 import utils.CredsFileHandle;
 import utils.PasswordUtils;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.MultipartConfig;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @MultipartConfig
@@ -40,12 +40,12 @@ public class SignInServlet extends HttpServlet {
 
         if (username != null && !username.trim().isEmpty() && password != null && !password.trim().isEmpty()) {
             User user = credsFileHandle.getUserByUsername(username);
-            System.out.println(user.getPassword());
             if (user != null) {
                 if (passwordUtils.verifyPassword(password, user.getPassword())) {
                     System.out.println("Login successful for user: " + username);
                     request.getSession().setAttribute("name", user.getName());
                     request.getSession().setAttribute("username", user.getUsername());
+                    request.getSession().setAttribute("email", user.getEmail());
                     request.getSession().setAttribute("ROLE", user.getROLE());
                     response.sendRedirect(request.getContextPath() + "/");
                 } else {

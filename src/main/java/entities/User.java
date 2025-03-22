@@ -1,18 +1,28 @@
 package entities;
 
 public class User {
+    private int ID;
     private String name;
     private String username;
     private String email;
     private String password;
     private String ROLE;
 
-    public User(String name, String username, String email, String password, String ROLE) {
+    public User(int ID, String name, String username, String email, String password, String ROLE) {
+        this.ID = ID;
         this.name = name;
         this.username = username;
         this.email = email;
         this.password = password;
         this.ROLE = ROLE;
+    }
+
+    public int getID() {
+        return ID;
+    }
+
+    public void setID(int ID) {
+        this.ID = ID;
     }
 
     public String getName() {

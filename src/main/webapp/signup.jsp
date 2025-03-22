@@ -1,3 +1,4 @@
+<%@ page import="java.util.List" %>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -87,12 +88,18 @@
       <form class="signup-form" action="<%= request.getContextPath() %>/signup" method="post" enctype="multipart/form-data">
         <h1>Sign Up</h1>
 
-        <% String errorMessage = (String) request.getAttribute("errorMessage"); %>
-        <% if (errorMessage != null) { %>
+        <%
+          List<String> errorMessages = (List<String>) request.getAttribute("errorMessages");
+          if (errorMessages != null && !errorMessages.isEmpty()) {
+            for (String errorMessage : errorMessages) {
+        %>
         <div class="alert alert-danger" role="alert">
           <%= errorMessage %>
         </div>
-        <% } %>
+        <%
+            }
+          }
+        %>
 
 
         <label for="name">Name</label>

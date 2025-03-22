@@ -1,15 +1,17 @@
 import entities.User;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import utils.CredsFileHandle;
 import utils.PasswordUtils;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.MultipartConfig;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @MultipartConfig
 @WebServlet("/signup")
@@ -43,28 +45,42 @@ public class SignUpServlet extends HttpServlet {
         System.out.println(confirmPassword);
 
         User existingUser = credsFileHandle.getUserByUsername(username);
-        String errorMessage = null;
+        List<String> errorMessages = new ArrayList<>();
 
+        // Check for empty fields and other conditions
         if (name == null || name.trim().isEmpty()) {
-            errorMessage = "Name is required!";
-        } else if (username == null || username.trim().isEmpty()) {
-            errorMessage = "Username is required!";
-        } else if (existingUser != null) {
-            errorMessage = "Username already exists!";
-        } else if (email == null || email.trim().isEmpty() || !email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
-            errorMessage = "Invalid email format!";
-        } else if (password == null || password.trim().isEmpty()) {
-            errorMessage = "Password is required!";
-        } else if (!password.equals(confirmPassword)) {
-            errorMessage = "Passwords do not match!";
+            errorMessages.add("Name is required!");
+        }
+        if (username == null || username.trim().isEmpty()) {
+            errorMessages.add("Username is required!");
+        }
+        if (existingUser != null) {
+            errorMessages.add("Username already exists!");
+        }
+        if (email == null || email.trim().isEmpty() || !email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+            errorMessages.add("Invalid email format!");
+        }
+        // Use the isEmailExists method to check if the email already exists
+        if (credsFileHandle.isEmailExists(email)) {
+            errorMessages.add("Email is already in use!");
+        }
+        if (password == null || password.trim().isEmpty()) {
+            errorMessages.add("Password is required!");
+        }
+        if (!password.equals(confirmPassword)) {
+            errorMessages.add("Passwords do not match!");
         }
 
-        if (errorMessage != null) {
-            request.setAttribute("errorMessage", errorMessage);
+        // If there are any errors, set the errorMessages list as a request attribute and forward back to the signup page
+        if (!errorMessages.isEmpty()) {
+            request.setAttribute("errorMessages", errorMessages);
+            request.setAttribute("name", name);
+            request.setAttribute("username", username);
+            request.setAttribute("email", email);
             request.getRequestDispatcher("signup.jsp").forward(request, response);
         } else {
-            credsFileHandle.addUser(name,username,email,passwordUtils.hashPassword(password),"USER");
-            response.sendRedirect(request.getContextPath() + "/");
+            credsFileHandle.addUser(name, username, email, passwordUtils.hashPassword(password), "USER");
+            response.sendRedirect(request.getContextPath() + "/signin");  // Redirect to signin page after successful registration
         }
     }
 }

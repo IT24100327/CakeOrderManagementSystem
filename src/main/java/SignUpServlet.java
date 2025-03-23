@@ -25,44 +25,35 @@ public class SignUpServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        System.out.println("signup");
+        System.out.println("signup page accessed");
         RequestDispatcher dispatcher = request.getRequestDispatcher("signup.jsp");
         dispatcher.forward(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String name = request.getParameter("name");
-        String username = request.getParameter("username");
+        String firstName = request.getParameter("first_name");
+        String lastName = request.getParameter("last_name");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
-        String confirmPassword = request.getParameter("confirm-password");
+        String confirmPassword = request.getParameter("password_repeat");
 
-        System.out.println(name);
-        System.out.println(username);
-        System.out.println(email);
-        System.out.println(password);
-        System.out.println(confirmPassword);
+        System.out.println("First Name: " + firstName);
+        System.out.println("Last Name: " + lastName);
+        System.out.println("Email: " + email);
+        System.out.println("Password: " + password);
+        System.out.println("Confirm Password: " + confirmPassword);
 
-        User existingUser = credsFileHandle.getUserByUsername(username);
         List<String> errorMessages = new ArrayList<>();
 
-        // Check for empty fields and other conditions
-        if (name == null || name.trim().isEmpty()) {
-            errorMessages.add("Name is required!");
+        if (firstName == null || firstName.trim().isEmpty()) {
+            errorMessages.add("First name is required!");
         }
-        if (username == null || username.trim().isEmpty()) {
-            errorMessages.add("Username is required!");
-        }
-        if (existingUser != null) {
-            errorMessages.add("Username already exists!");
+        if (lastName == null || lastName.trim().isEmpty()) {
+            errorMessages.add("Last name is required!");
         }
         if (email == null || email.trim().isEmpty() || !email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
             errorMessages.add("Invalid email format!");
-        }
-        // Use the isEmailExists method to check if the email already exists
-        if (credsFileHandle.isEmailExists(email)) {
-            errorMessages.add("Email is already in use!");
         }
         if (password == null || password.trim().isEmpty()) {
             errorMessages.add("Password is required!");
@@ -71,16 +62,29 @@ public class SignUpServlet extends HttpServlet {
             errorMessages.add("Passwords do not match!");
         }
 
-        // If there are any errors, set the errorMessages list as a request attribute and forward back to the signup page
+
+        User existingUser = credsFileHandle.getUserByEmail(email);
+        if (existingUser != null) {
+            errorMessages.add("An account with this email already exists!");
+        }
+
         if (!errorMessages.isEmpty()) {
             request.setAttribute("errorMessages", errorMessages);
-            request.setAttribute("name", name);
-            request.setAttribute("username", username);
-            request.setAttribute("email", email);
             request.getRequestDispatcher("signup.jsp").forward(request, response);
         } else {
-            credsFileHandle.addUser(name, username, email, passwordUtils.hashPassword(password), "USER");
-            response.sendRedirect(request.getContextPath() + "/signin");  // Redirect to signin page after successful registration
+            // Add user since no errors
+            boolean isAdded = credsFileHandle.addUser(firstName, lastName, email, password, "USER");
+
+            if (isAdded) {
+                System.out.println("Signup successful!");
+                response.sendRedirect(request.getContextPath() + "/login");
+            } else {
+                errorMessages.add("An error occurred while adding the user.");
+                request.setAttribute("errorMessages", errorMessages);
+                request.getRequestDispatcher("signup.jsp").forward(request, response);
+            }
         }
     }
+
+
 }

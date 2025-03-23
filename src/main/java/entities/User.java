@@ -2,16 +2,16 @@ package entities;
 
 public class User {
     private int ID;
-    private String name;
-    private String username;
+    private String fName;
+    private String lName;
     private String email;
     private String password;
     private String ROLE;
 
-    public User(int ID, String name, String username, String email, String password, String ROLE) {
+    public User(int ID, String fName, String lName, String email, String password, String ROLE) {
         this.ID = ID;
-        this.name = name;
-        this.username = username;
+        this.fName = fName;
+        this.lName = lName;
         this.email = email;
         this.password = password;
         this.ROLE = ROLE;
@@ -25,20 +25,20 @@ public class User {
         this.ID = ID;
     }
 
-    public String getName() {
-        return name;
+    public String getfName() {
+        return fName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setfName(String fName) {
+        this.fName = fName;
     }
 
-    public String getUsername() {
-        return username;
+    public String getlName() {
+        return lName;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setlName(String lName) {
+        this.lName = lName;
     }
 
     public String getEmail() {

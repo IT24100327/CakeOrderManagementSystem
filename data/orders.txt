@@ -1,0 +1,5 @@
+123|user1|Item1:10.0,Item2:20.0|Pending|30.0
+123|user1|Item1:10.0,Item2:20.0|Pending|30.0
+123|user1|Item1:10.0,Item2:20.0|Pending|30.0
+123|user1|null|Pending|30.0
+123|user1|Cake|Pending|30.0

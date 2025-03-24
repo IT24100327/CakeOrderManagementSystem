@@ -6,10 +6,12 @@ package entities;
 public class TestItem {
     private String name;
     private double price;
+    private String itemId;
 
-    public TestItem(String name, double price) {
+    public TestItem(String name, double price, String itemId) {
         this.name = name;
         this.price = price;
+        this.itemId = itemId;
     }
 
     public String getName() {
@@ -18,6 +20,10 @@ public class TestItem {
 
     public double getPrice() {
         return price;
+    }
+
+    public String getItemId() {
+        return itemId;
     }
 
     @Override

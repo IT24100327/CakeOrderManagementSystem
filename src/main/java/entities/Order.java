@@ -1,63 +1,70 @@
-// Implemented itemlist as a ArrayList
-
 package entities;
 
 import java.io.*;
 import java.util.ArrayList;
 
 public class Order {
+    private static int orderCounter = 0;
     private String orderId;
     private String userId;
-
-    //TODO: After Item Class is Properly Implemented Change Accordingly
-    private ArrayList<TestItem> itemList;
-
+    private String itemId;
     private String status;
     private double total;
 
-    public Order(String orderId, String userId, ArrayList<TestItem> itemList, String status, double total) {
+    public Order(String userId, String itemId, String status, double total) {
+        this.userId = userId;
+        this.itemId = itemId;
+        this.status = status;
+        this.total = total;
+
+        orderId = String.valueOf(orderCounter++);
+
+    }
+
+    public Order(String orderId, String userId, String itemId, String status, double total) {
         this.orderId = orderId;
         this.userId = userId;
-        this.itemList = (itemList != null) ? itemList : new ArrayList<>();
+        this.itemId = itemId;
         this.status = status;
         this.total = total;
     }
 
+    public static int getOrderCounter() {
+        return orderCounter;
+    }
+
+    public static void setOrderCount(int orderCount) {
+        orderCounter = orderCount;
+    }
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public String getItemId() {
+        return itemId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public double getTotal() {
+        return total;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
-        return orderId + "|" + userId + "|" + serializeItemList() + "|" + status + "|" + total;
+        return orderId + "|" + userId + "|" + itemId + "|" + status + "|" + total;
     }
-
-    // Converts ArrayList<Item> into a String (Item1_Name:Price,Item2_Name:Price,...)
-    private String serializeItemList() {
-        if (itemList.isEmpty()) return "EMPTY";
-
-        //TODO: After Item Class is Properly Implemented Change Accordingly
-        StringBuilder sb = new StringBuilder();
-        for (TestItem item : itemList) {
-            sb.append(item.getName()).append(":").append(item.getPrice()).append(",");
-        }
-        return sb.substring(0, sb.length() - 1); // Remove trailing comma
-    }
-
-    // Converts a String back into an ArrayList<Item>
-    private static ArrayList<TestItem> deserializeItemList(String str) {
-        ArrayList<TestItem> items = new ArrayList<>();
-        if (str.equals("EMPTY")) return items;
-
-        //TODO: After Item Class is Properly Implemented Change Accordingly
-        String[] itemParts = str.split(",");
-        for (String itemStr : itemParts) {
-            String[] itemData = itemStr.split(":");
-            if (itemData.length == 2) {
-                String name = itemData[0];
-                double price = Double.parseDouble(itemData[1]);
-                items.add(new TestItem(name, price));
-            }
-        }
-        return items;
-    }
-
 
     // Convert a string to an Order object
     public static Order fromString(String str) {
@@ -68,11 +75,11 @@ public class Order {
 
         String orderId = parts[0];
         String userId = parts[1];
-        ArrayList<TestItem> itemList = deserializeItemList(parts[2]);
+        String itemId = parts[2];
         String status = parts[3];
         double total = Double.parseDouble(parts[4]);
 
-        return new Order(orderId, userId, itemList, status, total);
+        return new Order(orderId, userId, itemId, status, total);
     }
 
     // Save order to file
@@ -81,17 +88,5 @@ public class Order {
             writer.write(this.toString());
             writer.newLine();
         }
-    }
-
-    // Load orders from file
-    public static ArrayList<Order> loadFromFile(String filename) throws IOException {
-        ArrayList<Order> orders = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                orders.add(fromString(line));
-            }
-        }
-        return orders;
     }
 }

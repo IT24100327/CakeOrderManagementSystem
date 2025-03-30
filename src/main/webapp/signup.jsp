@@ -1,3 +1,4 @@
+<%@ page import="java.util.List" %>
 <!DOCTYPE html>
 <html data-bs-theme="light" lang="en">
 
@@ -33,9 +34,20 @@
                                 <span style="color: rgb(136, 80, 48);">Create an Account!</span>
                             </h4>
                         </div>
-
+                        <%
+                            List<String> errorMessages = (List<String>) request.getAttribute("errorMessages");
+                            if (errorMessages != null && !errorMessages.isEmpty()) {
+                                for (String errorMessage : errorMessages) {
+                        %>
+                        <div class="alert alert-danger" role="alert">
+                            <%= errorMessage %>
+                        </div>
+                        <%
+                                }
+                            }
+                        %>
                         <!-- Signup Form -->
-                        <form class="user">
+                        <form class="user" action="<%= request.getContextPath() %>/signup" method="post" enctype="multipart/form-data">
                             <!-- First and Last Name Inputs -->
                             <div class="row mb-3">
                                 <div class="col-sm-6 mb-3 mb-sm-0">

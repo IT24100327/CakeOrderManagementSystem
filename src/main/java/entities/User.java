@@ -1,34 +1,44 @@
 package entities;
 
 public class User {
-    private String name;
-    private String username;
+    private int ID;
+    private String fName;
+    private String lName;
     private String email;
     private String password;
     private String ROLE;
 
-    public User(String name, String username, String email, String password, String ROLE) {
-        this.name = name;
-        this.username = username;
+    public User(int ID, String fName, String lName, String email, String password, String ROLE) {
+        this.ID = ID;
+        this.fName = fName;
+        this.lName = lName;
         this.email = email;
         this.password = password;
         this.ROLE = ROLE;
     }
 
-    public String getName() {
-        return name;
+    public int getID() {
+        return ID;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setID(int ID) {
+        this.ID = ID;
     }
 
-    public String getUsername() {
-        return username;
+    public String getfName() {
+        return fName;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setfName(String fName) {
+        this.fName = fName;
+    }
+
+    public String getlName() {
+        return lName;
+    }
+
+    public void setlName(String lName) {
+        this.lName = lName;
     }
 
     public String getEmail() {

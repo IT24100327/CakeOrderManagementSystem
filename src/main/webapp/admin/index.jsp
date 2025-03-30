@@ -5,11 +5,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>Dashboard - Heavenly Bakery</title>
-    <link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../assets/css/Abril%20Fatface.css">
-    <link rel="stylesheet" href="../assets/css/Alex%20Brush.css">
-    <link rel="stylesheet" href="../assets/css/Montserrat.css">
-    <link rel="stylesheet" href="../assets/fonts/fontawesome-all.min.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/Abril%20Fatface.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/Alex%20Brush.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/Montserrat.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/fonts/fontawesome-all.min.css">
     <style>
         :root {
             --bs-primary: #885030; /* Purple */
@@ -90,6 +90,19 @@
 </head>
 
 <body id="page-top">
+<%
+    String ROLE = (String) session.getAttribute("ROLE");
+    if (ROLE == null) {
+        response.sendRedirect(request.getContextPath());
+        return;
+    }else{
+        if (!ROLE.equals("ADMIN")) {
+            response.sendRedirect(request.getContextPath());
+            return;
+        }
+    }
+%>
+<%= ROLE%>
     <nav class="navbar navbar-expand-md py-3" style="background: var(--bs-secondary);">
         <div class="container">
             <a class="navbar-brand" href="#">Heavenly Bakery</a>

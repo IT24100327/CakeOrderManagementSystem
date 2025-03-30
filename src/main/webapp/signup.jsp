@@ -9,25 +9,19 @@
     <title>Sign Up - Heavenly Bakery</title>
 
     <!-- External CSS files -->
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/Abril%20Fatface.css">
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/Alex%20Brush.css">
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/Montserrat.css">
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/Raleway.css">
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/bs-theme-overrides.css">
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/Banner-Heading-Image-images.css">
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/Navbar-Centered-Links-icons.css">
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/Signup-page-with-overlay.css">
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/Abril%20Fatface.css">
+    <link rel="stylesheet" href="assets/css/Alex%20Brush.css">
+    <link rel="stylesheet" href="assets/css/Montserrat.css">
+    <link rel="stylesheet" href="assets/css/Raleway.css">
+    <link rel="stylesheet" href="assets/css/bs-theme-overrides.css">
+    <link rel="stylesheet" href="assets/css/Banner-Heading-Image-images.css">
+    <link rel="stylesheet" href="assets/css/Navbar-Centered-Links-icons.css">
+    <link rel="stylesheet" href="assets/css/Signup-page-with-overlay.css">
 </head>
 
 <body style="background: url('assets/img/pattern.svg') bottom / auto round;">
-<% String email = (String) session.getAttribute("email"); %>
-<%
-    if (email != null) {
-        response.sendRedirect(request.getContextPath() + "/");
-        return;
-    }
-%>
+
     <!-- Signup Section -->
     <section class="position-relative py-4 py-xl-5">
         <div class="container">

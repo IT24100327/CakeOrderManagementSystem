@@ -8,11 +8,7 @@ import java.util.List;
 
 public class CredsFileHandle {
 
-<<<<<<< Updated upstream
-    private final String filePath = "E:\\MyWork\\SLIIT\\OneDrive - Sri Lanka Institute of Information Technology\\Y1S2\\OOP\\Project\\backupwithui\\data\\users.txt";
-=======
     private final String filePath = "E:\\MyWork\\SLIIT\\OneDrive - Sri Lanka Institute of Information Technology\\Y1S2\\OOP\\Project\\CakeOrderManagementSystem\\data\\users.txt";
->>>>>>> Stashed changes
 
     PasswordUtils passwordUtils = new PasswordUtils();
 

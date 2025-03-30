@@ -1,16 +1,3 @@
-<<<<<<< Updated upstream:src/main/webapp/index.jsp
-=======
-<%@ page import="java.util.Queue" %>
-<%@ page import="entities.Item" %>
-<%@ page import="utils.OrderQueue" %>
-<%@ page import="utils.ItemCatalog" %>
-<%@ page import="java.util.List" %>
-
-<%
-//    List<TestItem> items = TestItemCatalog.getAllItems();
-%>
-
->>>>>>> Stashed changes:src/main/webapp/backup/index.jsp
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <!DOCTYPE html>

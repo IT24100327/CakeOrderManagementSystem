@@ -1,8 +1,8 @@
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import entities.Order;
@@ -27,8 +27,8 @@ public class OrderServlet extends HttpServlet {
             String status = request.getParameter("status");
             double total = Double.parseDouble(request.getParameter("total"));
 
-            Order newOrder = new Order(userId, itemId, status, total);
-            OrderQueue.add(newOrder);
+//            Order newOrder = new Order(userId, itemId, status, total);
+//            OrderQueue.add(newOrder);
             response.sendRedirect("orders.jsp");
 
         } else if ("process".equals(action)) {

@@ -1,38 +1,43 @@
+<<<<<<< Updated upstream:src/main/webapp/index.jsp
+=======
 <%@ page import="java.util.Queue" %>
-<%@ page import="entities.TestItem" %>
+<%@ page import="entities.Item" %>
 <%@ page import="utils.OrderQueue" %>
-<%@ page import="entities.TestItemCatalog" %>
+<%@ page import="utils.ItemCatalog" %>
 <%@ page import="java.util.List" %>
 
 <%
 //    List<TestItem> items = TestItemCatalog.getAllItems();
 %>
 
+>>>>>>> Stashed changes:src/main/webapp/backup/index.jsp
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <!DOCTYPE html>
 <html data-bs-theme="light" lang="en">
 
 <head>
-    <!-- Meta tags for character set and responsive design -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>Heavenly Bakery</title>
 
-    <!-- External CSS files -->
-    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/css/Abril%20Fatface.css">
-    <link rel="stylesheet" href="assets/css/Alex%20Brush.css">
-    <link rel="stylesheet" href="assets/css/Montserrat.css">
-    <link rel="stylesheet" href="assets/css/Raleway.css">
-    <link rel="stylesheet" href="assets/css/bs-theme-overrides.css">
-    <link rel="stylesheet" href="assets/css/Banner-Heading-Image-images.css">
-    <link rel="stylesheet" href="assets/css/Navbar-Centered-Links-icons.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/Abril%20Fatface.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/Alex%20Brush.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/Montserrat.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/Raleway.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/bs-theme-overrides.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/Banner-Heading-Image-images.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/Navbar-Centered-Links-icons.css">
 </head>
 
 <body class="text-secondary" style="background: var(--bs-secondary);">
 
-    <!-- Navigation Bar -->
+<%
+String email = (String) session.getAttribute("email");
+String ROLE = (String) session.getAttribute("ROLE");
+%>
+
     <nav class="navbar navbar-expand-md bg-primary py-3" style="background: var(--bs-secondary);color: var(--bs-primary);">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="#">
@@ -45,20 +50,52 @@
             <div class="collapse navbar-collapse" id="navcol-3">
                 <ul class="navbar-nav mx-auto">
                     <li class="nav-item" style="font-size: 12px;text-align: center;">
-                        <a class="nav-link active me-5" href="#" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-weight: bold;">HOME</a>
+                        <a class="nav-link active me-5" href="<%= request.getContextPath() %>/" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-weight: bold;">HOME</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link me-5" href="#" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-size: 12px;font-weight: bold;">ABOUT</a>
+                        <a class="nav-link me-5" href="<%= request.getContextPath() %>/about" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-size: 12px;font-weight: bold;">ABOUT</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link me-5" href="#" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-size: 12px;font-weight: bold;">CUSTOM CAKES</a>
+                        <a class="nav-link me-5" href="<%= request.getContextPath() %>/customcake" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-size: 12px;font-weight: bold;">CUSTOM CAKES</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link me-5" href="#" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-size: 12px;font-weight: bold;">REVIEWS</a>
+                        <a class="nav-link me-5" href="<%= request.getContextPath() %>/reviews" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-size: 12px;font-weight: bold;">REVIEWS</a>
                     </li>
+                    <%
+                        if(email != null){
+                    %>
+                    <li class="nav-item">
+                        <a class="nav-link me-5" href="#" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-size: 12px;font-weight: bold;">PROFILE</a>
+                    </li>
+                    <%
+                        }
+                    %>
+
+                    <%if(ROLE != null){
+                        if(ROLE.equals("ADMIN")){
+                    %>
+                    <li class="nav-item">
+                        <a class="nav-link me-5" href="<%= request.getContextPath() %>/admin" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-size: 12px;font-weight: bold;">ADMIN PANEL</a>
+                    </li>
+                    <%
+                        }
+                        }
+                    %>
+
                 </ul>
-                <button class="btn btn-secondary fw-light me-2" type="button" style="font-family: Raleway, sans-serif;font-size: 12px;border-radius: 0px;"><a class="nav-link" href="login.html">LOGIN</a></button>
-                <button class="btn btn-secondary fw-light" type="button" style="font-family: Raleway, sans-serif;font-size: 12px;border-radius: 0px;"><a class="nav-link" href="signup.html">SIGN UP</a></button>
+                <%
+                    if(email == null){
+                %>
+                <button class="btn btn-secondary fw-light me-2" type="button" style="font-family: Raleway, sans-serif;font-size: 12px;border-radius: 0px;"><a class="nav-link" href="<%= request.getContextPath() %>/login">LOGIN</a></button>
+                <button class="btn btn-secondary fw-light" type="button" style="font-family: Raleway, sans-serif;font-size: 12px;border-radius: 0px;"><a class="nav-link" href="<%= request.getContextPath() %>/signup">SIGN UP</a></button>
+
+                <%
+                    }else{
+                %>
+                <button class="btn btn-secondary fw-light me-2" type="button" style="font-family: Raleway, sans-serif;font-size: 12px;border-radius: 0px;"><a class="nav-link" href="<%= request.getContextPath() %>/logout">LOGOUT</a></button>
+                <%
+                    }
+                %>
             </div>
         </div>
     </nav>
@@ -154,7 +191,7 @@
                         <p class="card-text" style="font-family: Montserrat, sans-serif; color: var(--bs-primary);">Indulge in the ultimate chocolate experience! Our Chocolate Ganache Cake features layers of rich, moist chocolate cake smothered in smooth, velvety chocolate ganache. Perfect for chocolate lovers!</p>
                     </div>
                     <button class="btn btn-primary border rounded-0" type="button" data-bs-toggle="modal" data-bs-target="#chocolateGanacheModal">Order Now</button>
-                
+
                     <!-- Modal -->
                     <div id="chocolateGanacheModal" class="modal fade" role="dialog" tabindex="-1">
                         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">

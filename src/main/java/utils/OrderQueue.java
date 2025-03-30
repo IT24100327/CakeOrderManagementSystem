@@ -1,5 +1,6 @@
 package utils;
 
+import entities.Item;
 import entities.Order;
 
 import java.io.*;
@@ -11,27 +12,27 @@ import static entities.Order.fromString;
 public class OrderQueue {
     private static Queue<Order> orderQueue;
     private static String FILE_PATH;
+    private static int lastItemId = 0;
 
     // Constructor to initialize the queue and set the default file path
     public OrderQueue() {
-        orderQueue = new LinkedList<>(); // Initialize the class-level orderQueue
-        FILE_PATH = "data/orders.txt"; // Default file path
+        orderQueue = new LinkedList<>();
+        FILE_PATH = "E:/Data/OrderQueue.txt";
     }
 
-    // Method to set a custom file path
-    public static void setFilePath(File path) {
-        FILE_PATH = path.getAbsolutePath();
-        System.out.println("File path set to: " + FILE_PATH);
-        System.out.println("File exists: " + path.exists());
+    private static String generateItemId() {
+        lastItemId++;
+        return String.format("ORD%04d", lastItemId);
     }
 
     // Add an order to the queue and save it to the file
     public static void add(Order order) throws IOException {
+        if (order.getItemId() == null || order.getItemId().isEmpty()) {
+            order.setItemId(generateItemId());
+        }
         orderQueue.add(order);
         order.saveToFile(FILE_PATH);
-        System.out.println("Order added: " + order);
     }
-
 
     // Get the order queue
     public Queue<Order> getOrderQueue() {
@@ -51,10 +52,15 @@ public class OrderQueue {
             String line;
             int orderCount = 0;
             while ((line = reader.readLine()) != null) {
-                orderQueue.add(fromString(line));
-                orderCount++;
+                Order order = fromString(line);
+                orderQueue.add(order);
+                // remove text part
+                String idNumStr = order.getOrderId().replace("ORD", "");
+                int idNum = Integer.parseInt(idNumStr);
+                if (idNum > lastItemId) {
+                    lastItemId = idNum;
+                }
             }
-            Order.setOrderCount(orderCount);
         }
     }
 

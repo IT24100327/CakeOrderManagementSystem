@@ -16,6 +16,7 @@ import java.util.List;
 @MultipartConfig
 @WebServlet("/signup")
 public class SignUpServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
 
     CredsFileHandle credsFileHandle = new CredsFileHandle();
     PasswordUtils passwordUtils = new PasswordUtils();

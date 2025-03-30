@@ -1,1 +1,6 @@
 0001,Heshan,Thenura,admin@gmail.com,A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=,ADMIN
+<<<<<<< Updated upstream
+=======
+0002,Heshan,Thenura,user@gmail.com,A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=,USER
+0003,Heshan,Thenura,heshan@gmail.com,A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=,USER
+>>>>>>> Stashed changes

@@ -20,15 +20,24 @@
 </head>
 
 <body style="background: url('assets/img/pattern.svg') bottom / auto round;">
+<<<<<<< Updated upstream
 
 <% String email = (String) session.getAttribute("email"); %>
 <%
     if (email != null) {
+=======
+<% String username = (String) session.getAttribute("username"); %>
+<%
+    if (username != null) {
+>>>>>>> Stashed changes
         response.sendRedirect(request.getContextPath() + "/");
         return;
     }
 %>
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
     <!-- Login Section -->
     <section class="position-relative py-4 py-xl-5">
         <div class="container">
@@ -38,15 +47,25 @@
                         <div class="card-body d-flex flex-column align-items-center">
                             <!-- Login Heading -->
                             <h2 style="font-family: 'Abril Fatface', serif; color: var(--bs-primary); font-size: 62px;">Login</h2>
+<<<<<<< Updated upstream
                             <p class="w-lg-50"></p>
+=======
+>>>>>>> Stashed changes
                             <% String errorMessage = (String) request.getAttribute("errorMessage"); %>
                             <% if (errorMessage != null) { %>
                             <div class="alert alert-danger" role="alert">
                                 <%= errorMessage %>
                             </div>
                             <% } %>
+<<<<<<< Updated upstream
                             <!-- Login Form -->
                             <form class="text-center" method="post" action="<%= request.getContextPath() %>/login" enctype="multipart/form-data">
+=======
+<%--                            <p class="w-lg-50"></p>--%>
+
+                            <!-- Login Form -->
+                            <form class="text-center" method="post" enctype="multipart/form-data">
+>>>>>>> Stashed changes
                                 <!-- Email Input -->
                                 <div class="mb-3">
                                     <input class="form-control" type="email" name="email" placeholder="Email" style="font-family: Montserrat, sans-serif;" required>

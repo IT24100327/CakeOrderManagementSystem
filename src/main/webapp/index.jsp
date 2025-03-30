@@ -1,3 +1,8 @@
+<<<<<<< Updated upstream
+=======
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
+>>>>>>> Stashed changes
 <!DOCTYPE html>
 <html data-bs-theme="light" lang="en">
 
@@ -17,10 +22,19 @@
 </head>
 
 <body class="text-secondary" style="background: var(--bs-secondary);">
+<<<<<<< Updated upstream
 <%
     String email = (String) session.getAttribute("email");
     String role = (String) session.getAttribute("ROLE");
 %>
+=======
+
+<%
+String email = (String) session.getAttribute("email");
+String ROLE = (String) session.getAttribute("ROLE");
+%>
+
+>>>>>>> Stashed changes
     <nav class="navbar navbar-expand-md bg-primary py-3" style="background: var(--bs-secondary);color: var(--bs-primary);">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="#">
@@ -33,24 +47,61 @@
             <div class="collapse navbar-collapse" id="navcol-3">
                 <ul class="navbar-nav mx-auto">
                     <li class="nav-item" style="font-size: 12px;text-align: center;">
-                        <a class="nav-link active me-5" href="#" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-weight: bold;">HOME</a>
+                        <a class="nav-link active me-5" href="<%= request.getContextPath() %>/" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-weight: bold;">HOME</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link me-5" href="#" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-size: 12px;font-weight: bold;">ABOUT</a>
+                        <a class="nav-link me-5" href="<%= request.getContextPath() %>/about" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-size: 12px;font-weight: bold;">ABOUT</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link me-5" href="#" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-size: 12px;font-weight: bold;">CUSTOM CAKES</a>
+                        <a class="nav-link me-5" href="<%= request.getContextPath() %>/customcake" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-size: 12px;font-weight: bold;">CUSTOM CAKES</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link me-5" href="#" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-size: 12px;font-weight: bold;">REVIEWS</a>
+                        <a class="nav-link me-5" href="<%= request.getContextPath() %>/reviews" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-size: 12px;font-weight: bold;">REVIEWS</a>
                     </li>
+                    <%
+                        if(email != null){
+                    %>
+                    <li class="nav-item">
+                        <a class="nav-link me-5" href="#" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-size: 12px;font-weight: bold;">PROFILE</a>
+                    </li>
+                    <%
+                        }
+                    %>
+
+                    <%if(ROLE != null){
+                        if(ROLE.equals("ADMIN")){
+                    %>
+                    <li class="nav-item">
+                        <a class="nav-link me-5" href="<%= request.getContextPath() %>/admin" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-size: 12px;font-weight: bold;">ADMIN PANEL</a>
+                    </li>
+                    <%
+                        }
+                        }
+                    %>
+
                 </ul>
+<<<<<<< Updated upstream
                 <% if (email != null) { %>
                 <button class="btn btn-secondary fw-light" type="button" style="font-family: Raleway, sans-serif;font-size: 12px;border-radius: 0px;"><a class="nav-link" href="<%= request.getContextPath() %>/logout">LOGOUT</a></button>
                 <% } else { %>
                 <button class="btn btn-secondary fw-light me-2" type="button" style="font-family: Raleway, sans-serif;font-size: 12px;border-radius: 0px;"><a class="nav-link" href="<%= request.getContextPath() %>/login">LOGIN</a></button>
                 <button class="btn btn-secondary fw-light" type="button" style="font-family: Raleway, sans-serif;font-size: 12px;border-radius: 0px;"><a class="nav-link" href="<%= request.getContextPath() %>/signup">SIGN UP</a></button>
                 <% } %>
+=======
+                <%
+                    if(email == null){
+                %>
+                <button class="btn btn-secondary fw-light me-2" type="button" style="font-family: Raleway, sans-serif;font-size: 12px;border-radius: 0px;"><a class="nav-link" href="<%= request.getContextPath() %>/login">LOGIN</a></button>
+                <button class="btn btn-secondary fw-light" type="button" style="font-family: Raleway, sans-serif;font-size: 12px;border-radius: 0px;"><a class="nav-link" href="<%= request.getContextPath() %>/signup">SIGN UP</a></button>
+
+                <%
+                    }else{
+                %>
+                <button class="btn btn-secondary fw-light me-2" type="button" style="font-family: Raleway, sans-serif;font-size: 12px;border-radius: 0px;"><a class="nav-link" href="<%= request.getContextPath() %>/logout">LOGOUT</a></button>
+                <%
+                    }
+                %>
+>>>>>>> Stashed changes
             </div>
         </div>
     </nav>
@@ -143,7 +194,47 @@
                         <h4 class="card-title" style="font-family: 'Abril Fatface', serif;color: var(--bs-primary);">Chocolate Ganache</h4>
                         <p class="card-text" style="font-family: Montserrat, sans-serif;color: var(--bs-primary);">Indulge in the ultimate chocolate experience! Our Chocolate Ganache Cake features layers of rich, moist chocolate cake smothered in smooth, velvety chocolate ganache. Perfect for chocolate lovers!</p>
                     </div>
+<<<<<<< Updated upstream
                     <button class="btn btn-primary border rounded-0 d-flex d-xl-flex justify-content-xl-center" type="button">Order Now</button>
+=======
+                    <button class="btn btn-primary border rounded-0" type="button" data-bs-toggle="modal" data-bs-target="#chocolateGanacheModal">Order Now</button>
+
+                    <!-- Modal -->
+                    <div id="chocolateGanacheModal" class="modal fade" role="dialog" tabindex="-1">
+                        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header mb-0 pb-0" style="border-top-left-radius: 0px; border-top-right-radius: 0px; border-right-style: none; border-bottom-style: none;">
+                                    <button class="btn-close" type="button" aria-label="Close" data-bs-dismiss="modal" style="border-right-style: none;"></button>
+                                </div>
+                                <div class="modal-body p-4" style="border-right-style: none;">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-5 text-center">
+                                            <img class="img-fluid rounded" src="assets/img/clipboard-image.png" alt="Chocolate Ganache Cake" style="max-width: 100%; height: auto;">
+                                        </div>
+                                        <div class="col-md-7">
+                                            <h1 class="display-4" style="font-family: 'Abril Fatface', serif; color: var(--bs-primary);">Chocolate Ganache</h1>
+                                            <p class="lead" style="color: rgb(136, 80, 48);">Indulge in the ultimate chocolate experience! Our Chocolate Ganache Cake features layers of rich, moist chocolate cake smothered in smooth, velvety chocolate ganache. Perfect for chocolate lovers!</p>
+                                            <form>
+                                                <div class="mb-3">
+                                                    <label for="sizeSelect" class="form-label">Select Size:</label>
+                                                    <select class="form-select" id="sizeSelect">
+                                                        <optgroup label="Choose a size">
+                                                            <option value="12" selected>Small (500g)</option>
+                                                            <option value="13">Medium (1KG)</option>
+                                                            <option value="14">Large (2KG)</option>
+                                                        </optgroup>
+                                                    </select>
+                                                </div>
+                                                <button class="btn btn-primary btn-lg w-100" type="button">Order Now</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+>>>>>>> Stashed changes
                 </div>
             </div>
             <!-- Cake 2: Nougat Gateaux -->

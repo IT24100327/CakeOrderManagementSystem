@@ -1,28 +1,20 @@
-<<<<<<< Updated upstream
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-=======
-import jakarta.servlet.*;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
->>>>>>> Stashed changes
-import java.io.*;
 
-@WebServlet("/about")
-public class MyServlet extends HttpServlet {
+import java.io.IOException;
 
-    public MyServlet() {
-    }
-
+@WebServlet("/customcake")
+public class CustomCakeServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        System.out.println("test");
-        RequestDispatcher dispatcher = request.getRequestDispatcher("hello.jsp");
+        RequestDispatcher dispatcher = request.getRequestDispatcher("customCake.jsp");
         dispatcher.forward(request, response);
     }
 }
+
+
+

@@ -32,25 +32,27 @@
 <html data-bs-theme="light" lang="en">
 
 <head>
-    <!-- Meta tags for character set and responsive design -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>Heavenly Bakery</title>
 
-    <!-- External CSS files -->
-    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/css/Abril%20Fatface.css">
-    <link rel="stylesheet" href="assets/css/Alex%20Brush.css">
-    <link rel="stylesheet" href="assets/css/Montserrat.css">
-    <link rel="stylesheet" href="assets/css/Raleway.css">
-    <link rel="stylesheet" href="assets/css/bs-theme-overrides.css">
-    <link rel="stylesheet" href="assets/css/Banner-Heading-Image-images.css">
-    <link rel="stylesheet" href="assets/css/Navbar-Centered-Links-icons.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/Abril%20Fatface.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/Alex%20Brush.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/Montserrat.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/Raleway.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/bs-theme-overrides.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/Banner-Heading-Image-images.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/Navbar-Centered-Links-icons.css">
 </head>
 
 <body class="text-secondary" style="background: var(--bs-secondary);">
 
-    <!-- Navigation Bar -->
+<%
+String email = (String) session.getAttribute("email");
+String ROLE = (String) session.getAttribute("ROLE");
+%>
+
     <nav class="navbar navbar-expand-md bg-primary py-3" style="background: var(--bs-secondary);color: var(--bs-primary);">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="#">
@@ -63,20 +65,52 @@
             <div class="collapse navbar-collapse" id="navcol-3">
                 <ul class="navbar-nav mx-auto">
                     <li class="nav-item" style="font-size: 12px;text-align: center;">
-                        <a class="nav-link active me-5" href="#" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-weight: bold;">HOME</a>
+                        <a class="nav-link active me-5" href="<%= request.getContextPath() %>/" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-weight: bold;">HOME</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link me-5" href="#" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-size: 12px;font-weight: bold;">ABOUT</a>
+                        <a class="nav-link me-5" href="<%= request.getContextPath() %>/about" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-size: 12px;font-weight: bold;">ABOUT</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link me-5" href="#" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-size: 12px;font-weight: bold;">CUSTOM CAKES</a>
+                        <a class="nav-link me-5" href="<%= request.getContextPath() %>/customcake" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-size: 12px;font-weight: bold;">CUSTOM CAKES</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link me-5" href="#" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-size: 12px;font-weight: bold;">REVIEWS</a>
+                        <a class="nav-link me-5" href="<%= request.getContextPath() %>/reviews" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-size: 12px;font-weight: bold;">REVIEWS</a>
                     </li>
+                    <%
+                        if(email != null){
+                    %>
+                    <li class="nav-item">
+                        <a class="nav-link me-5" href="#" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-size: 12px;font-weight: bold;">PROFILE</a>
+                    </li>
+                    <%
+                        }
+                    %>
+
+                    <%if(ROLE != null){
+                        if(ROLE.equals("ADMIN")){
+                    %>
+                    <li class="nav-item">
+                        <a class="nav-link me-5" href="<%= request.getContextPath() %>/admin" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-size: 12px;font-weight: bold;">ADMIN PANEL</a>
+                    </li>
+                    <%
+                        }
+                        }
+                    %>
+
                 </ul>
-                <button class="btn btn-secondary fw-light me-2" type="button" style="font-family: Raleway, sans-serif;font-size: 12px;border-radius: 0px;"><a class="nav-link" href="login.html">LOGIN</a></button>
-                <button class="btn btn-secondary fw-light" type="button" style="font-family: Raleway, sans-serif;font-size: 12px;border-radius: 0px;"><a class="nav-link" href="signup.html">SIGN UP</a></button>
+                <%
+                    if(email == null){
+                %>
+                <button class="btn btn-secondary fw-light me-2" type="button" style="font-family: Raleway, sans-serif;font-size: 12px;border-radius: 0px;"><a class="nav-link" href="<%= request.getContextPath() %>/login">LOGIN</a></button>
+                <button class="btn btn-secondary fw-light" type="button" style="font-family: Raleway, sans-serif;font-size: 12px;border-radius: 0px;"><a class="nav-link" href="<%= request.getContextPath() %>/signup">SIGN UP</a></button>
+
+                <%
+                    }else{
+                %>
+                <button class="btn btn-secondary fw-light me-2" type="button" style="font-family: Raleway, sans-serif;font-size: 12px;border-radius: 0px;"><a class="nav-link" href="<%= request.getContextPath() %>/logout">LOGOUT</a></button>
+                <%
+                    }
+                %>
             </div>
         </div>
     </nav>
@@ -158,185 +192,129 @@
         </div>
     </div>
 
-    <!-- Cakes Section -->
+<!-- Cakes Section -->
 
-    <div class="container" id = "cakes">
-        <h6 class="display-2 mt-5 mb-2" style="font-family: 'Abril Fatface', serif;font-size: 62px;"><span style="color: rgb(136, 80, 48);">Cakes That Make Every Occasion Special!</span></h6>
-        <p style="font-family: Montserrat, sans-serif;" class="mb-xl-5"><span style="color: rgb(136, 80, 48);">From classic vanilla sponges to rich chocolate decadence, our cakes are baked to perfection. Whether it’s a birthday, anniversary, or just a Tuesday, we’ve got the perfect cake for you.</span></p>
-        <div class="row gx-3 gy-3 d-flex flex-column flex-wrap flex-sm-column flex-md-row flex-lg-row flex-xl-row flex-xxl-row">
+<div class="container" id = "cakes">
+    <h6 class="display-2 mt-5 mb-2" style="font-family: 'Abril Fatface', serif;font-size: 62px;"><span style="color: rgb(136, 80, 48);">Cakes That Make Every Occasion Special!</span></h6>
+    <p style="font-family: Montserrat, sans-serif;" class="mb-xl-5"><span style="color: rgb(136, 80, 48);">From classic vanilla sponges to rich chocolate decadence, our cakes are baked to perfection. Whether it’s a birthday, anniversary, or just a Tuesday, we’ve got the perfect cake for you.</span></p>
+    <div class="row gx-3 gy-3 d-flex flex-column flex-wrap flex-sm-column flex-md-row flex-lg-row flex-xl-row flex-xxl-row">
 
-            <% for (Item item : cakes) { %>
+        <% for (Item item : cakes) { %>
 
-            <div class="col d-flex">
-                <div class="card border rounded-0" style="min-height: 600px;">
-                    <img class="card-img-top w-100 d-block" src="assets/img/clipboard-image.png" />
-                    <div class="card-body">
-                        <h4 class="card-title" style="font-family: 'Abril Fatface', serif; color: var(--bs-primary);"><%=item.getName()%>></h4>
-                        <p class="card-text" style="font-family: Montserrat, sans-serif; color: var(--bs-primary);"><%=item.getDescription()%>></p>
-                    </div>
-                    <button class="btn btn-primary border rounded-0" type="button" data-bs-toggle="modal" data-bs-target="#chocolateGanacheModal">Order Now</button>
+        <div class="col d-flex">
+            <div class="card border rounded-0" style="min-height: 600px;">
+                <img class="card-img-top w-100 d-block" src="assets/img/clipboard-image.png" />
+                <div class="card-body">
+                    <h4 class="card-title" style="font-family: 'Abril Fatface', serif; color: var(--bs-primary);"><%=item.getName()%></h4>
+                    <p class="card-text" style="font-family: Montserrat, sans-serif; color: var(--bs-primary);"><%=item.getDescription()%>></p>
+                    <p class="price">Rs. <%= String.format("%.2f", item.getPrice()) %></p>
+                </div>
+                <button class="btn btn-primary border rounded-0" type="button" data-bs-toggle="modal" data-bs-target="#chocolateGanacheModal">Order Now</button>
 
-                    <!-- Modal -->
-                    <div id="chocolateGanacheModal" class="modal fade" role="dialog" tabindex="-1">
-                        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header mb-0 pb-0" style="border-top-left-radius: 0px; border-top-right-radius: 0px; border-right-style: none; border-bottom-style: none;">
-                                    <button class="btn-close" type="button" aria-label="Close" data-bs-dismiss="modal" style="border-right-style: none;"></button>
-                                </div>
-                                <div class="modal-body p-4" style="border-right-style: none;">
-                                    <div class="row align-items-center">
-                                        <div class="col-md-5 text-center">
-                                            <img class="img-fluid rounded" src="assets/img/clipboard-image.png" alt="Chocolate Ganache Cake" style="max-width: 100%; height: auto;">
-                                        </div>
-                                        <div class="col-md-7">
-                                            <h1 class="display-4" style="font-family: 'Abril Fatface', serif; color: var(--bs-primary);"><%=item.getName()%>></h1>
-                                            <p class="lead" style="color: rgb(136, 80, 48);"><%=item.getDescription()%>></p>
-                                            <form>
-                                                <div class="mb-3">
-                                                    <label for="sizeSelect" class="form-label">Select Size:</label>
-                                                    <select class="form-select" id="sizeSelect">
-                                                        <optgroup label="Choose a size">
-                                                            <option value="12" selected>Small (500g)</option>
-                                                            <option value="13">Medium (1KG)</option>
-                                                            <option value="14">Large (2KG)</option>
-                                                        </optgroup>
-                                                    </select>
-                                                </div>
-                                                <button class="btn btn-primary btn-lg w-100" type="button">Order Now</button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
+                <!-- Modal -->
+                <div id="chocolateGanacheModal" class="modal fade" role="dialog" tabindex="-1">
+                    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header mb-0 pb-0" style="border-top-left-radius: 0px; border-top-right-radius: 0px; border-right-style: none; border-bottom-style: none;">
+                                <button class="btn-close" type="button" aria-label="Close" data-bs-dismiss="modal" style="border-right-style: none;"></button>
                             </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-            <% } %>
-
-        </div>
-    </div>
-
-    <!-- Custom Cakes Section -->
-    <section class="py-4 py-xl-5">
-        <div class="container">
-            <div class="text-white bg-primary border rounded border-0 border-primary d-flex flex-column justify-content-between flex-lg-row p-4 p-md-5 pb-xl-5">
-                <div class="col-lg-8">
-                    <h1 style="font-family: 'Abril Fatface', serif;">Dream It, We’ll Bake It!</h1>
-                    <p style="font-family: Montserrat, sans-serif;">Celebrate life’s sweetest moments with a custom cake designed just for you. Whether it’s a birthday, wedding, or just because, we’ll bring your vision to life with delicious, handcrafted perfection.</p>
-                </div>
-                <div class="col d-lg-flex d-xl-flex d-xxl-flex justify-content-lg-center align-items-lg-center justify-content-xl-center align-items-xl-center justify-content-xxl-center align-items-xxl-center">
-                    <button class="btn btn-primary d-flex" type="button" style="background: var(--bs-secondary);color: var(--bs-primary);font-family: Raleway, sans-serif;font-weight: bold;font-size: 12px;padding: 12px 18px;">DESIGN YOUR CAKE</button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Pastries Section -->
-    <div class="container">
-        <h6 class="display-2 pt-0 mt-5 pb-0 mb-2" style="font-family: 'Abril Fatface', serif;"><span style="color: rgb(136, 80, 48);">Flaky, Buttery, Irresistible Pastries</span></h6>
-        <p style="font-family: Montserrat, sans-serif;color: var(--bs-primary);" class="mb-xl-5">Wake up to the aroma of freshly baked croissants, danishes, and muffins. Perfect with your morning coffee or as an afternoon treat.</p>
-        <div class="row gx-3 gy-3 d-flex flex-column flex-wrap flex-sm-column flex-md-row flex-lg-row flex-xl-row flex-xxl-row">
-
-            <% for (Item item : pastries) { %>
-
-            <div class="col d-flex">
-                <div class="card border rounded-0" style="min-height: 600px;">
-                    <img class="card-img-top w-100 d-block" src="assets/img/clipboard-image-4.png">
-                    <div class="card-body">
-                        <h4 class="card-title" style="font-family: 'Abril Fatface', serif;color: var(--bs-primary);"><%=item.getName()%></h4>
-                        <p class="card-text" style="color: var(--bs-primary);font-family: Montserrat, sans-serif;"><%=item.getDescription()%></p>
-                    </div>
-                    <button class="btn btn-primary border rounded-0" type="button" data-bs-toggle="modal" data-bs-target="#chickenPuffsModal">Order Now</button>
-
-                    <!-- Modal -->
-                    <div id="chickenPuffsModal" class="modal fade" role="dialog" tabindex="-1">
-                        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header mb-0 pb-0" style="border-top-left-radius: 0px; border-top-right-radius: 0px; border-right-style: none; border-bottom-style: none;">
-                                    <button class="btn-close" type="button" aria-label="Close" data-bs-dismiss="modal" style="border-right-style: none;"></button>
-                                </div>
-                                <div class="modal-body p-4" style="border-right-style: none;">
-                                    <div class="row align-items-center">
-                                        <div class="col-md-5 text-center">
-                                            <img class="img-fluid rounded" src="assets/img/clipboard-image-4.png" alt="Chicken Puffs" style="max-width: 100%; height: auto;">
-                                        </div>
-                                        <div class="col-md-7">
-                                            <h1 class="display-4" style="font-family: 'Abril Fatface', serif; color: var(--bs-primary);"><%=item.getName()%></h1>
-                                            <p class="lead" style="color: rgb(136, 80, 48);"><%=item.getDescription()%></p>
-                                            <form>
-                                                <div class="mb-3">
-                                                    <label for="sizeSelect" class="form-label">Select Size:</label>
-                                                    <select class="form-select" id="sizeSelect">
+                            <div class="modal-body p-4" style="border-right-style: none;">
+                                <div class="row align-items-center">
+                                    <div class="col-md-5 text-center">
+                                        <img class="img-fluid rounded" src="assets/img/clipboard-image.png" alt="Chocolate Ganache Cake" style="max-width: 100%; height: auto;">
+                                    </div>
+                                    <div class="col-md-7">
+                                        <h1 class="display-4" style="font-family: 'Abril Fatface', serif; color: var(--bs-primary);"><%=item.getName()%></h1>
+                                        <p class="lead" style="color: rgb(136, 80, 48);"><%=item.getDescription()%>></p>
+                                        <p class="price">Rs. <%= String.format("%.2f", item.getPrice()) %></p>
+                                        <form>
+                                            <div class="mb-3">
+                                                <label for="sizeSelect" class="form-label">Select Size:</label>
+                                                <select class="form-select" id="sizeSelect">
+                                                    <optgroup label="Choose a size">
                                                         <option value="12" selected>Small (500g)</option>
-                                                            <option value="13">Medium (1KG)</option>
-                                                            <option value="14">Large (2KG)</option>
-                                                    </select>
-                                                </div>
-                                                <button class="btn btn-primary btn-lg w-100" type="button">Order Now</button>
-                                            </form>
-                                        </div>
+                                                        <option value="13">Medium (1KG)</option>
+                                                        <option value="14">Large (2KG)</option>
+                                                    </optgroup>
+                                                </select>
+                                            </div>
+                                            <button class="btn btn-primary btn-lg w-100" type="button">Order Now</button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
             </div>
-
-            <% } %>
-
         </div>
-    </div>
 
-    <!-- Cookies Section -->
+        <% } %>
+
+    </div>
+</div>
+
+<!-- Custom Cakes Section -->
+<section class="py-4 py-xl-5">
     <div class="container">
-        <h6 class="display-2 mt-5 mb-2" style="font-family: 'Abril Fatface', serif;color: var(--bs-primary);">Cookies That Bring Joy to Every Bite!</h6>
-        <p style="color: var(--bs-primary);" class="mb-xl-5">Chewy, crunchy, or dipped in chocolate—our cookies are baked to perfection. Perfect for sharing (or not)!</p>
-        <div class="row gx-3 gy-3 d-flex flex-column flex-wrap flex-sm-column flex-md-row flex-lg-row flex-xl-row flex-xxl-row">
+        <div class="text-white bg-primary border rounded border-0 border-primary d-flex flex-column justify-content-between flex-lg-row p-4 p-md-5 pb-xl-5">
+            <div class="col-lg-8">
+                <h1 style="font-family: 'Abril Fatface', serif;">Dream It, We’ll Bake It!</h1>
+                <p style="font-family: Montserrat, sans-serif;">Celebrate life’s sweetest moments with a custom cake designed just for you. Whether it’s a birthday, wedding, or just because, we’ll bring your vision to life with delicious, handcrafted perfection.</p>
+            </div>
+            <div class="col d-lg-flex d-xl-flex d-xxl-flex justify-content-lg-center align-items-lg-center justify-content-xl-center align-items-xl-center justify-content-xxl-center align-items-xxl-center">
+                <button class="btn btn-primary d-flex" type="button" style="background: var(--bs-secondary);color: var(--bs-primary);font-family: Raleway, sans-serif;font-weight: bold;font-size: 12px;padding: 12px 18px;">DESIGN YOUR CAKE</button>
+            </div>
+        </div>
+    </div>
+</section>
 
-            <% for (Item item : cookies) { %>
+<!-- Pastries Section -->
+<div class="container">
+    <h6 class="display-2 pt-0 mt-5 pb-0 mb-2" style="font-family: 'Abril Fatface', serif;"><span style="color: rgb(136, 80, 48);">Flaky, Buttery, Irresistible Pastries</span></h6>
+    <p style="font-family: Montserrat, sans-serif;color: var(--bs-primary);" class="mb-xl-5">Wake up to the aroma of freshly baked croissants, danishes, and muffins. Perfect with your morning coffee or as an afternoon treat.</p>
+    <div class="row gx-3 gy-3 d-flex flex-column flex-wrap flex-sm-column flex-md-row flex-lg-row flex-xl-row flex-xxl-row">
 
-            <div class="col d-flex">
-                <div class="card border rounded-0" style="min-height: 600px;">
-                    <img class="card-img-top w-100 d-block" src="assets/img/clipboard-image-9.png">
-                    <div class="card-body">
-                        <h4 class="card-title" style="font-family: 'Abril Fatface', serif;color: var(--bs-primary);"><%=item.getName()%></h4>
-                        <p class="card-text" style="font-family: Montserrat, sans-serif;color: var(--bs-primary);"><%=item.getDescription()%></p>
-                    </div>
-                    <button class="btn btn-primary border rounded-0" type="button" data-bs-toggle="modal" data-bs-target="#chocolateChipCookiesModal">Order Now</button>
+        <% for (Item item : pastries) { %>
 
-                    <!-- Modal -->
-                    <div id="chocolateChipCookiesModal" class="modal fade" role="dialog" tabindex="-1">
-                        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header mb-0 pb-0" style="border-top-left-radius: 0px; border-top-right-radius: 0px; border-right-style: none; border-bottom-style: none;">
-                                    <button class="btn-close" type="button" aria-label="Close" data-bs-dismiss="modal" style="border-right-style: none;"></button>
-                                </div>
-                                <div class="modal-body p-4" style="border-right-style: none;">
-                                    <div class="row align-items-center">
-                                        <div class="col-md-5 text-center">
-                                            <img class="img-fluid rounded" src="assets/img/clipboard-image-9.png" alt="Chocolate Chip Cookies" style="max-width: 100%; height: auto;">
-                                        </div>
-                                        <div class="col-md-7">
-                                            <h1 class="display-4" style="font-family: 'Abril Fatface', serif; color: var(--bs-primary);"><%=item.getName()%></h1>
-                                            <p class="lead" style="color: rgb(136, 80, 48);"><%=item.getDescription()%></p>
-                                            <form>
-                                                <div class="mb-3">
-                                                    <label for="sizeSelect" class="form-label">Select Size:</label>
-                                                    <select class="form-select" id="sizeSelect">
-                                                        <optgroup label="Choose a size">
-                                                            <option value="12" selected>Small (500g)</option>
-                                                            <option value="13">Medium (1KG)</option>
-                                                            <option value="14">Large (2KG)</option>
-                                                        </optgroup>
-                                                    </select>
-                                                </div>
-                                                <button class="btn btn-primary btn-lg w-100" type="button">Order Now</button>
-                                            </form>
-                                        </div>
+        <div class="col d-flex">
+            <div class="card border rounded-0" style="min-height: 600px;">
+                <img class="card-img-top w-100 d-block" src="assets/img/clipboard-image-4.png">
+                <div class="card-body">
+                    <h4 class="card-title" style="font-family: 'Abril Fatface', serif;color: var(--bs-primary);"><%=item.getName()%></h4>
+                    <p class="card-text" style="color: var(--bs-primary);font-family: Montserrat, sans-serif;"><%=item.getDescription()%></p>
+                    <p class="price">Rs. <%= String.format("%.2f", item.getPrice()) %></p>
+                </div>
+                <button class="btn btn-primary border rounded-0" type="button" data-bs-toggle="modal" data-bs-target="#chickenPuffsModal">Order Now</button>
+
+                <!-- Modal -->
+                <div id="chickenPuffsModal" class="modal fade" role="dialog" tabindex="-1">
+                    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header mb-0 pb-0" style="border-top-left-radius: 0px; border-top-right-radius: 0px; border-right-style: none; border-bottom-style: none;">
+                                <button class="btn-close" type="button" aria-label="Close" data-bs-dismiss="modal" style="border-right-style: none;"></button>
+                            </div>
+                            <div class="modal-body p-4" style="border-right-style: none;">
+                                <div class="row align-items-center">
+                                    <div class="col-md-5 text-center">
+                                        <img class="img-fluid rounded" src="assets/img/clipboard-image-4.png" alt="Chicken Puffs" style="max-width: 100%; height: auto;">
+                                    </div>
+                                    <div class="col-md-7">
+                                        <h1 class="display-4" style="font-family: 'Abril Fatface', serif; color: var(--bs-primary);"><%=item.getName()%></h1>
+                                        <p class="lead" style="color: rgb(136, 80, 48);"><%=item.getDescription()%></p>
+                                        <p class="price">Rs. <%= String.format("%.2f", item.getPrice()) %></p>
+                                        <form>
+                                            <div class="mb-3">
+                                                <label for="sizeSelect" class="form-label">Select Size:</label>
+                                                <select class="form-select" id="sizeSelect">
+                                                    <option value="12" selected>Small (500g)</option>
+                                                    <option value="13">Medium (1KG)</option>
+                                                    <option value="14">Large (2KG)</option>
+                                                </select>
+                                            </div>
+                                            <button class="btn btn-primary btn-lg w-100" type="button">Order Now</button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -344,11 +322,73 @@
                     </div>
                 </div>
             </div>
-
-            <% } %>
-
         </div>
+
+        <% } %>
+
     </div>
+</div>
+
+<!-- Cookies Section -->
+<div class="container">
+    <h6 class="display-2 mt-5 mb-2" style="font-family: 'Abril Fatface', serif;color: var(--bs-primary);">Cookies That Bring Joy to Every Bite!</h6>
+    <p style="color: var(--bs-primary);" class="mb-xl-5">Chewy, crunchy, or dipped in chocolate—our cookies are baked to perfection. Perfect for sharing (or not)!</p>
+    <div class="row gx-3 gy-3 d-flex flex-column flex-wrap flex-sm-column flex-md-row flex-lg-row flex-xl-row flex-xxl-row">
+
+        <% for (Item item : cookies) { %>
+
+        <div class="col d-flex">
+            <div class="card border rounded-0" style="min-height: 600px;">
+                <img class="card-img-top w-100 d-block" src="assets/img/clipboard-image-9.png">
+                <div class="card-body">
+                    <h4 class="card-title" style="font-family: 'Abril Fatface', serif;color: var(--bs-primary);"><%=item.getName()%></h4>
+                    <p class="card-text" style="font-family: Montserrat, sans-serif;color: var(--bs-primary);"><%=item.getDescription()%></p>
+                    <p class="price">Rs. <%= String.format("%.2f", item.getPrice()) %></p>
+                </div>
+                <button class="btn btn-primary border rounded-0" type="button" data-bs-toggle="modal" data-bs-target="#chocolateChipCookiesModal">Order Now</button>
+
+                <!-- Modal -->
+                <div id="chocolateChipCookiesModal" class="modal fade" role="dialog" tabindex="-1">
+                    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header mb-0 pb-0" style="border-top-left-radius: 0px; border-top-right-radius: 0px; border-right-style: none; border-bottom-style: none;">
+                                <button class="btn-close" type="button" aria-label="Close" data-bs-dismiss="modal" style="border-right-style: none;"></button>
+                            </div>
+                            <div class="modal-body p-4" style="border-right-style: none;">
+                                <div class="row align-items-center">
+                                    <div class="col-md-5 text-center">
+                                        <img class="img-fluid rounded" src="assets/img/clipboard-image-9.png" alt="Chocolate Chip Cookies" style="max-width: 100%; height: auto;">
+                                    </div>
+                                    <div class="col-md-7">
+                                        <h1 class="display-4" style="font-family: 'Abril Fatface', serif; color: var(--bs-primary);"><%=item.getName()%></h1>
+                                        <p class="lead" style="color: rgb(136, 80, 48);"><%=item.getDescription()%></p>
+                                        <p class="price">Rs. <%= String.format("%.2f", item.getPrice()) %></p>
+                                        <form>
+                                            <div class="mb-3">
+                                                <label for="sizeSelect" class="form-label">Select Size:</label>
+                                                <select class="form-select" id="sizeSelect">
+                                                    <optgroup label="Choose a size">
+                                                        <option value="12" selected>Small (500g)</option>
+                                                        <option value="13">Medium (1KG)</option>
+                                                        <option value="14">Large (2KG)</option>
+                                                    </optgroup>
+                                                </select>
+                                            </div>
+                                            <button class="btn btn-primary btn-lg w-100" type="button">Order Now</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <% } %>
+
+    </div>
+</div>
 
     <!-- Footer Section -->
     <footer class="text-center">

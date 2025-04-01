@@ -12,7 +12,7 @@ import static entities.Order.fromString;
 public class OrderQueue {
     private static Queue<Order> orderQueue;
     private static String FILE_PATH;
-    private static int lastItemId = 0;
+    private static int lastOrderId = 0;
 
     // Constructor to initialize the queue and set the default file path
     public OrderQueue() {
@@ -20,15 +20,15 @@ public class OrderQueue {
         FILE_PATH = "E:/Data/OrderQueue.txt";
     }
 
-    private static String generateItemId() {
-        lastItemId++;
-        return String.format("ORD%04d", lastItemId);
+    private static String generateOrderId() {
+        lastOrderId++;
+        return String.format("ORD%04d", lastOrderId);
     }
 
     // Add an order to the queue and save it to the file
     public static void add(Order order) throws IOException {
-        if (order.getItemId() == null || order.getItemId().isEmpty()) {
-            order.setItemId(generateItemId());
+        if (order.getOrderId() == null || order.getOrderId().isEmpty()) {
+            order.setOrderId(generateOrderId());
         }
         orderQueue.add(order);
         order.saveToFile(FILE_PATH);
@@ -50,15 +50,14 @@ public class OrderQueue {
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
-            int orderCount = 0;
             while ((line = reader.readLine()) != null) {
                 Order order = fromString(line);
                 orderQueue.add(order);
                 // remove text part
                 String idNumStr = order.getOrderId().replace("ORD", "");
                 int idNum = Integer.parseInt(idNumStr);
-                if (idNum > lastItemId) {
-                    lastItemId = idNum;
+                if (idNum > lastOrderId) {
+                    lastOrderId = idNum;
                 }
             }
         }

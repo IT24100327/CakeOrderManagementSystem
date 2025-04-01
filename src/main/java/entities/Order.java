@@ -9,7 +9,7 @@ import utils.ItemCatalog;
 
 public class Order {
     private String orderId;
-    private String userId;
+    private int userId;
     private String itemId;
     private String status;
     private double total;
@@ -18,10 +18,10 @@ public class Order {
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    public Order(String userId, Item item, String status, double total, String deliveryDate) {
+    public Order(int userId, String itemId, String status, double total, String deliveryDate) {
         orderId = null;
         this.userId = userId;
-        this.itemId = item.getItemId();
+        this.itemId = itemId;
         this.status = status;
         this.total = total;
         this.orderDate = LocalDateTime.now().format(formatter);
@@ -29,14 +29,22 @@ public class Order {
     }
 
     // constructor for make object from string
-    public Order(String orderId, String userId, Item item, String status, double total, String orderDate,  String deliveryDate) {
+    public Order(String orderId, int userId, String itemId, String status, double total, String orderDate,  String deliveryDate) {
         this.orderId = orderId;
         this.userId = userId;
-        this.itemId = item.getItemId();
+        this.itemId = itemId;
         this.status = status;
         this.total = total;
         this.orderDate = orderDate;
         this.deliveryDate = deliveryDate;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public String getDeliveryDate() {
@@ -79,14 +87,6 @@ public class Order {
         this.itemId = itemId;
     }
 
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
     public String getOrderId() {
         return orderId;
     }
@@ -108,17 +108,16 @@ public class Order {
         }
 
         String orderId = parts[0];
-        String userId = parts[1];
+        int userId = Integer.parseInt(parts[1]);
 
         String itemId = parts[2];
-        Item item = ItemCatalog.findItemById(itemId);
 
         String status = parts[3];
         double total = Double.parseDouble(parts[4]);
         String orderDate = parts[5];
         String deliveryDate = parts[6];
 
-        return new Order(orderId, userId, item, status, total, orderDate, deliveryDate);
+        return new Order(orderId, userId, itemId, status, total, orderDate, deliveryDate);
     }
 
     // Save order to file

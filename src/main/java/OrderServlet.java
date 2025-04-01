@@ -11,8 +11,12 @@ import utils.OrderQueue;
 @WebServlet("/OrderServlet")
 public class OrderServlet extends HttpServlet {
     public void init() {
+        OrderQueue orderQueue = new OrderQueue();
+
         try {
+
             OrderQueue.loadFromFile();
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -22,14 +26,18 @@ public class OrderServlet extends HttpServlet {
         String action = request.getParameter("action");
 
         if ("place".equals(action)) {
-            String userId = request.getParameter("userId");
-            String itemId = request.getParameter("itemList");
-            String status = request.getParameter("status");
-            double total = Double.parseDouble(request.getParameter("total"));
+            int userId = Integer.parseInt(request.getParameter("userId"));
+            String itemId = request.getParameter("itemId");
+            String status = "pending";
+            int quantity = Integer.parseInt(request.getParameter("quantity"));
+            String deliveryDate = request.getParameter("deliveryDate");
+            double itemPrice = Double.parseDouble(request.getParameter("itemPrice"));
 
-//            Order newOrder = new Order(userId, itemId, status, total);
-//            OrderQueue.add(newOrder);
-            response.sendRedirect("orders.jsp");
+            double total = quantity * itemPrice;
+
+            Order newOrder = new Order(userId, itemId,status, total, deliveryDate);
+            OrderQueue.add(newOrder);
+            response.sendRedirect("index-new.jsp");
 
         } else if ("process".equals(action)) {
             OrderQueue.processNextOrder();

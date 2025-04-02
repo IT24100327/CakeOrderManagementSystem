@@ -8,14 +8,14 @@ import java.time.format.*;
 import utils.ItemCatalog;
 
 public class Order {
-    private String orderId;
-    private int userId;
-    private String itemId;
-    private int quantity;
-    private String status;
-    private double total;
-    private String orderDate;
-    private String deliveryDate;
+    protected String orderId;
+    protected int userId;
+    protected String itemId;
+    protected int quantity;
+    protected String status;
+    protected double total;
+    protected String orderDate;
+    protected String deliveryDate;
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -40,6 +40,12 @@ public class Order {
         this.total = total;
         this.orderDate = orderDate;
         this.deliveryDate = deliveryDate;
+    }
+// Constructor for customCakeOrder
+    public Order(String orderId, int userId) {
+        this.orderId = orderId;
+        this.userId = userId;
+
     }
 
     public int getUserId() {

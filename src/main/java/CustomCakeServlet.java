@@ -1,3 +1,4 @@
+import entities.CustomCakeOrder;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -13,6 +14,32 @@ public class CustomCakeServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         RequestDispatcher dispatcher = request.getRequestDispatcher("customCake.jsp");
         dispatcher.forward(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        String occasion = request.getParameter("occasion");
+        String flavour = request.getParameter("flavor");
+        String filling = request.getParameter("filling");
+        String size = request.getParameter("size");
+        String shape = request.getParameter("shape");
+        String deliveryDate = request.getParameter("deliveryDate");
+
+        System.out.println(deliveryDate);
+        System.out.println(occasion);
+
+        CustomCakeOrder co = new CustomCakeOrder("O1",1,occasion,flavour,filling,size,shape,deliveryDate);
+        System.out.println(co.getTotalPrice());
+
+
+
+
+
+
+
+
+
     }
 }
 

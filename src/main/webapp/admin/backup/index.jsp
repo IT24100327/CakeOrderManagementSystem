@@ -1,3 +1,16 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="entities.Item" %>
+<%@ page import="java.util.List" %>
+<%@ page import="utils.ItemCatalog" %>
+
+<%
+    ItemCatalog catalog = new ItemCatalog();
+    catalog.loadFromFile();
+
+    List<Item> item = catalog.getAllItems();
+%>
+
 <!DOCTYPE html>
 <html data-bs-theme="light" lang="en">
 
@@ -246,35 +259,59 @@
                         </table>
                     </div>
                     
+                    <%--Items Management--%>
+
                     <div class="tab-pane fade" id="items" role="tabpanel">
-                        <h4 class="mb-4">Menu Items</h4>
+                        <div class="align-items-stretch">
+                            <h4 class="mb-4">Bakery Items</h4>
+                            <a href="AddItems.jsp">
+                                <button type="button" class="btn btn-primary">Add Item</button>
+                            </a>
+                        </div>
+
+
                         <table class="table table-hover table-bordered">
                             <thead>
-                                <tr>
-                                    <th>Item Name</th>
-                                    <th>Description</th>
-                                    <th>Price</th>
-                                    <th>Stock</th>
-                                </tr>
+                            <tr>
+                                <th>Item ID</th>
+                                <th>Item Name</th>
+                                <th>Description</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Remove</th>
+                                <th>Update</th>
+                            </tr>
                             </thead>
+
+                            <% for (Item items : item) { %>
                             <tbody>
                                 <tr>
-                                    <td>Chocolate Cake</td>
-                                    <td>Rich chocolate cake with ganache</td>
-                                    <td>$25.00</td>
-                                    <td>10</td>
+                                    <td><%= items.getItemId()%></td>
+                                    <td><%= items.getName() %></td>
+                                    <td  class="text-truncate" style="max-width: 150px"><%= items.getDescription() %></td>
+                                    <td><%= items.getCategory() %></td>
+                                    <td><%= items.getPrice() %></td>
+                                    <td>
+                                        <form action="../processItem" method="POST">
+                                            <input type="hidden" name="action" value="remove">
+                                            <input type="hidden" name="itemId" value="<%= items.getItemId() %>">
+                                            <input type="submit" class="btn btn-danger" value="Remove">
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <form action="UpdateItems.jsp" method="POST">
+                                            <input type="hidden" name="itemId" value="<%= items.getItemId() %>">
+                                            <input type="hidden" name="description" value="<%= items.getDescription()%>">
+                                            <input type="submit" class="btn btn-info" value="Update">
+                                        </form>
+                                    </td>
                                 </tr>
-                                <tr>
-                                    <td>Vanilla Cupcake</td>
-                                    <td>Classic vanilla cupcake with buttercream frosting</td>
-                                    <td>$3.00</td>
-                                    <td>50</td>
-                                </tr>
-                                <!-- Add more items as needed -->
                             </tbody>
+                            <% } %>
                         </table>
-                        <p>Your bakery items content will go here.</p>
                     </div>
+
+                    <%--Items Management--%>
                     
                     <div class="tab-pane fade" id="reviews" role="tabpanel">
                         <h4 class="mb-4">Customer Reviews</h4>
@@ -286,6 +323,7 @@
     </div>
 
     <script src="../assets/bootstrap/js/bootstrap.min.js"></script>
+
 </body>
 
 </html>

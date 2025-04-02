@@ -1,3 +1,31 @@
+<%@ page import="java.util.Queue" %>
+<%@ page import="entities.Item" %>
+<%@ page import="utils.OrderQueue" %>
+<%@ page import="utils.ItemCatalog" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.ArrayList" %>
+
+<%
+    ItemCatalog catalog = new ItemCatalog();
+    catalog.loadFromFile();
+
+    List<Item> items = catalog.getAllItems();
+    ArrayList<Item> cakes = new ArrayList<>();
+    ArrayList<Item> cookies = new ArrayList<>();
+    ArrayList<Item> pastries = new ArrayList<>();
+
+    for (Item item : items) {
+        if(item.getCategory().equalsIgnoreCase("cakes")) {
+            cakes.add(item);
+        } else if(item.getCategory().equalsIgnoreCase("cookies")){
+            cookies.add(item);
+        } else if(item.getCategory().equalsIgnoreCase("pastries")){
+            pastries.add(item);
+        }
+    }
+
+%>
+
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <!DOCTYPE html>
@@ -164,586 +192,129 @@ String ROLE = (String) session.getAttribute("ROLE");
         </div>
     </div>
 
-    <!-- Cakes Section -->
-    <div class="container" id = "cakes">
-        <h6 class="display-2 mt-5 mb-2" style="font-family: 'Abril Fatface', serif;font-size: 62px;"><span style="color: rgb(136, 80, 48);">Cakes That Make Every Occasion Special!</span></h6>
-        <p style="font-family: Montserrat, sans-serif;" class="mb-xl-5"><span style="color: rgb(136, 80, 48);">From classic vanilla sponges to rich chocolate decadence, our cakes are baked to perfection. Whether it’s a birthday, anniversary, or just a Tuesday, we’ve got the perfect cake for you.</span></p>
-        <div class="row gx-3 gy-3 d-flex flex-column flex-wrap flex-sm-column flex-md-row flex-lg-row flex-xl-row flex-xxl-row">
-            <!-- Cake 1: Chocolate Ganache -->
-            <div class="col d-flex">
-                <div class="card border rounded-0" style="min-height: 600px;">
-                    <img class="card-img-top w-100 d-block" src="assets/img/clipboard-image.png" />
-                    <div class="card-body">
-                        <h4 class="card-title" style="font-family: 'Abril Fatface', serif; color: var(--bs-primary);">Chocolate Ganache</h4>
-                        <p class="card-text" style="font-family: Montserrat, sans-serif; color: var(--bs-primary);">Indulge in the ultimate chocolate experience! Our Chocolate Ganache Cake features layers of rich, moist chocolate cake smothered in smooth, velvety chocolate ganache. Perfect for chocolate lovers!</p>
-                    </div>
-                    <button class="btn btn-primary border rounded-0" type="button" data-bs-toggle="modal" data-bs-target="#chocolateGanacheModal">Order Now</button>
+<!-- Cakes Section -->
 
-                    <!-- Modal -->
-                    <div id="chocolateGanacheModal" class="modal fade" role="dialog" tabindex="-1">
-                        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header mb-0 pb-0" style="border-top-left-radius: 0px; border-top-right-radius: 0px; border-right-style: none; border-bottom-style: none;">
-                                    <button class="btn-close" type="button" aria-label="Close" data-bs-dismiss="modal" style="border-right-style: none;"></button>
-                                </div>
-                                <div class="modal-body p-4" style="border-right-style: none;">
-                                    <div class="row align-items-center">
-                                        <div class="col-md-5 text-center">
-                                            <img class="img-fluid rounded" src="assets/img/clipboard-image.png" alt="Chocolate Ganache Cake" style="max-width: 100%; height: auto;">
-                                        </div>
-                                        <div class="col-md-7">
-                                            <h1 class="display-4" style="font-family: 'Abril Fatface', serif; color: var(--bs-primary);">Chocolate Ganache</h1>
-                                            <p class="lead" style="color: rgb(136, 80, 48);">Indulge in the ultimate chocolate experience! Our Chocolate Ganache Cake features layers of rich, moist chocolate cake smothered in smooth, velvety chocolate ganache. Perfect for chocolate lovers!</p>
-                                            <form>
-                                                <div class="mb-3">
-                                                    <label for="sizeSelect" class="form-label">Select Size:</label>
-                                                    <select class="form-select" id="sizeSelect">
-                                                        <optgroup label="Choose a size">
-                                                            <option value="12" selected>Small (500g)</option>
-                                                            <option value="13">Medium (1KG)</option>
-                                                            <option value="14">Large (2KG)</option>
-                                                        </optgroup>
-                                                    </select>
-                                                </div>
-                                                <button class="btn btn-primary btn-lg w-100" type="button">Order Now</button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
+<div class="container" id = "cakes">
+    <h6 class="display-2 mt-5 mb-2" style="font-family: 'Abril Fatface', serif;font-size: 62px;"><span style="color: rgb(136, 80, 48);">Cakes That Make Every Occasion Special!</span></h6>
+    <p style="font-family: Montserrat, sans-serif;" class="mb-xl-5"><span style="color: rgb(136, 80, 48);">From classic vanilla sponges to rich chocolate decadence, our cakes are baked to perfection. Whether it’s a birthday, anniversary, or just a Tuesday, we’ve got the perfect cake for you.</span></p>
+    <div class="row gx-3 gy-3 d-flex flex-column flex-wrap flex-sm-column flex-md-row flex-lg-row flex-xl-row flex-xxl-row">
+
+        <% for (Item item : cakes) { %>
+
+        <div class="col d-flex">
+            <div class="card border rounded-0" style="min-height: 600px;">
+                <img class="card-img-top w-100 d-block" src="assets/img/clipboard-image.png" />
+                <div class="card-body">
+                    <h4 class="card-title" style="font-family: 'Abril Fatface', serif; color: var(--bs-primary);"><%=item.getName()%></h4>
+                    <p class="card-text" style="font-family: Montserrat, sans-serif; color: var(--bs-primary);"><%=item.getDescription()%>></p>
+                    <p class="price">Rs. <%= String.format("%.2f", item.getPrice()) %></p>
+                </div>
+                <button class="btn btn-primary border rounded-0" type="button" data-bs-toggle="modal" data-bs-target="#chocolateGanacheModal">Order Now</button>
+
+                <!-- Modal -->
+                <div id="chocolateGanacheModal" class="modal fade" role="dialog" tabindex="-1">
+                    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header mb-0 pb-0" style="border-top-left-radius: 0px; border-top-right-radius: 0px; border-right-style: none; border-bottom-style: none;">
+                                <button class="btn-close" type="button" aria-label="Close" data-bs-dismiss="modal" style="border-right-style: none;"></button>
                             </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-            <!-- Cake 2: Nougat Gateaux -->
-            <div class="col">
-                <div class="card border rounded-0" style="min-height: 600px;">
-                    <img class="card-img-top w-100 d-block" src="assets/img/clipboard-image-1.png">
-                    <div class="card-body">
-                        <h4 class="card-title" style="font-family: 'Abril Fatface', serif;color: var(--bs-primary);">Nougat Gateaux</h4>
-                        <p class="card-text" style="font-family: Montserrat, sans-serif;">A delightful blend of textures and flavors! This cake combines soft sponge layers with creamy nougat filling, topped with a light glaze. A treat that’s both luxurious and satisfying.</p>
-                    </div>
-                    <button class="btn btn-primary border rounded-0" type="button" data-bs-toggle="modal" data-bs-target="#nougatGateauxModal">Order Now</button>
-
-                    <!-- Modal -->
-                    <div id="nougatGateauxModal" class="modal fade" role="dialog" tabindex="-1">
-                        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header mb-0 pb-0" style="border-top-left-radius: 0px; border-top-right-radius: 0px; border-right-style: none; border-bottom-style: none;">
-                                    <button class="btn-close" type="button" aria-label="Close" data-bs-dismiss="modal" style="border-right-style: none;"></button>
-                                </div>
-                                <div class="modal-body p-4" style="border-right-style: none;">
-                                    <div class="row align-items-center">
-                                        <div class="col-md-5 text-center">
-                                            <img class="img-fluid rounded" src="assets/img/clipboard-image-1.png" alt="Nougat Gateaux" style="max-width: 100%; height: auto;">
-                                        </div>
-                                        <div class="col-md-7">
-                                            <h1 class="display-4" style="font-family: 'Abril Fatface', serif; color: var(--bs-primary);">Nougat Gateaux</h1>
-                                            <p class="lead" style="color: rgb(136, 80, 48);">A delightful blend of textures and flavors! This cake combines soft sponge layers with creamy nougat filling, topped with a light glaze. A treat that’s both luxurious and satisfying.</p>
-                                            <form>
-                                                <div class="mb-3">
-                                                    <label for="sizeSelect" class="form-label">Select Size:</label>
-                                                    <select class="form-select" id="sizeSelect">
-                                                        <optgroup label="Choose a size">
-                                                            <option value="12" selected>Small (500g)</option>
-                                                            <option value="13">Medium (1KG)</option>
-                                                            <option value="14">Large (2KG)</option>
-                                                        </optgroup>
-                                                    </select>
-                                                </div>
-                                                <button class="btn btn-primary btn-lg w-100" type="button">Order Now</button>
-                                            </form>
-                                        </div>
+                            <div class="modal-body p-4" style="border-right-style: none;">
+                                <div class="row align-items-center">
+                                    <div class="col-md-5 text-center">
+                                        <img class="img-fluid rounded" src="assets/img/clipboard-image.png" alt="Chocolate Ganache Cake" style="max-width: 100%; height: auto;">
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Cake 3: Ribbon Cake -->
-            <div class="col">
-                <div class="card border rounded-0" style="min-height: 600px;">
-                    <img class="card-img-top w-100 d-block" src="assets/img/clipboard-image-2.png">
-                    <div class="card-body">
-                        <h4 class="card-title" style="font-family: 'Abril Fatface', serif;color: var(--bs-primary);">Ribbon Cake</h4>
-                        <p class="card-text" style="font-family: Montserrat, sans-serif;">A classic favorite! Our Ribbon Cake is a beautiful swirl of vanilla and chocolate sponge, layered with creamy frosting. It’s as pretty as it is delicious.</p>
-                    </div>
-                    <button class="btn btn-primary border rounded-0" type="button" data-bs-toggle="modal" data-bs-target="#ribbonCakeModal">Order Now</button>
-
-                    <!-- Modal -->
-                    <div id="ribbonCakeModal" class="modal fade" role="dialog" tabindex="-1">
-                        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header mb-0 pb-0" style="border-top-left-radius: 0px; border-top-right-radius: 0px; border-right-style: none; border-bottom-style: none;">
-                                    <button class="btn-close" type="button" aria-label="Close" data-bs-dismiss="modal" style="border-right-style: none;"></button>
-                                </div>
-                                <div class="modal-body p-4" style="border-right-style: none;">
-                                    <div class="row align-items-center">
-                                        <div class="col-md-5 text-center">
-                                            <img class="img-fluid rounded" src="assets/img/clipboard-image-2.png" alt="Ribbon Cake" style="max-width: 100%; height: auto;">
-                                        </div>
-                                        <div class="col-md-7">
-                                            <h1 class="display-4" style="font-family: 'Abril Fatface', serif; color: var(--bs-primary);">Ribbon Cake</h1>
-                                            <p class="lead" style="color: rgb(136, 80, 48);">A classic favorite! Our Ribbon Cake is a beautiful swirl of vanilla and chocolate sponge, layered with creamy frosting. It’s as pretty as it is delicious.</p>
-                                            <form>
-                                                <div class="mb-3">
-                                                    <label for="sizeSelect" class="form-label">Select Size:</label>
-                                                    <select class="form-select" id="sizeSelect">
-                                                        <optgroup label="Choose a size">
-                                                            <option value="12" selected>Small (500g)</option>
-                                                            <option value="13">Medium (1KG)</option>
-                                                            <option value="14">Large (2KG)</option>
-                                                        </optgroup>
-                                                    </select>
-                                                </div>
-                                                <button class="btn btn-primary btn-lg w-100" type="button">Order Now</button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Cake 4: Chocolate Gateaux -->
-            <div class="col">
-                <div class="card border rounded-0" style="min-height: 600px;">
-                    <img class="card-img-top w-100 d-block" src="assets/img/clipboard-image-3.png">
-                    <div class="card-body">
-                        <h4 class="card-title" style="color: var(--bs-primary);font-family: 'Abril Fatface', serif;">Chocolate Gateaux</h4>
-                        <p class="card-text" style="font-family: Montserrat, sans-serif;color: var(--bs-primary);">For the true chocolate enthusiast! This decadent cake is layered with rich chocolate sponge and creamy chocolate filling, finished with a glossy chocolate glaze. Pure indulgence in every bite.</p>
-                    </div>
-                    <button class="btn btn-primary border rounded-0" type="button" data-bs-toggle="modal" data-bs-target="#chocolateGateauxModal">Order Now</button>
-
-                    <!-- Modal -->
-                    <div id="chocolateGateauxModal" class="modal fade" role="dialog" tabindex="-1">
-                        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header mb-0 pb-0" style="border-top-left-radius: 0px; border-top-right-radius: 0px; border-right-style: none; border-bottom-style: none;">
-                                    <button class="btn-close" type="button" aria-label="Close" data-bs-dismiss="modal" style="border-right-style: none;"></button>
-                                </div>
-                                <div class="modal-body p-4" style="border-right-style: none;">
-                                    <div class="row align-items-center">
-                                        <div class="col-md-5 text-center">
-                                            <img class="img-fluid rounded" src="assets/img/clipboard-image-3.png" alt="Chocolate Gateaux" style="max-width: 100%; height: auto;">
-                                        </div>
-                                        <div class="col-md-7">
-                                            <h1 class="display-4" style="font-family: 'Abril Fatface', serif; color: var(--bs-primary);">Chocolate Gateaux</h1>
-                                            <p class="lead" style="color: rgb(136, 80, 48);">For the true chocolate enthusiast! This decadent cake is layered with rich chocolate sponge and creamy chocolate filling, finished with a glossy chocolate glaze. Pure indulgence in every bite.</p>
-                                            <form>
-                                                <div class="mb-3">
-                                                    <label for="sizeSelect" class="form-label">Select Size:</label>
-                                                    <select class="form-select" id="sizeSelect">
-                                                        <optgroup label="Choose a size">
-                                                            <option value="12" selected>Small (500g)</option>
-                                                            <option value="13">Medium (1KG)</option>
-                                                            <option value="14">Large (2KG)</option>
-                                                        </optgroup>
-                                                    </select>
-                                                </div>
-                                                <button class="btn btn-primary btn-lg w-100" type="button">Order Now</button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Custom Cakes Section -->
-    <section class="py-4 py-xl-5">
-        <div class="container">
-            <div class="text-white bg-primary border rounded border-0 border-primary d-flex flex-column justify-content-between flex-lg-row p-4 p-md-5 pb-xl-5">
-                <div class="col-lg-8">
-                    <h1 style="font-family: 'Abril Fatface', serif;">Dream It, We’ll Bake It!</h1>
-                    <p style="font-family: Montserrat, sans-serif;">Celebrate life’s sweetest moments with a custom cake designed just for you. Whether it’s a birthday, wedding, or just because, we’ll bring your vision to life with delicious, handcrafted perfection.</p>
-                </div>
-                <div class="col d-lg-flex d-xl-flex d-xxl-flex justify-content-lg-center align-items-lg-center justify-content-xl-center align-items-xl-center justify-content-xxl-center align-items-xxl-center">
-                    <button class="btn btn-primary d-flex" type="button" style="background: var(--bs-secondary);color: var(--bs-primary);font-family: Raleway, sans-serif;font-weight: bold;font-size: 12px;padding: 12px 18px;">DESIGN YOUR CAKE</button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Pastries Section -->
-    <div class="container">
-        <h6 class="display-2 pt-0 mt-5 pb-0 mb-2" style="font-family: 'Abril Fatface', serif;"><span style="color: rgb(136, 80, 48);">Flaky, Buttery, Irresistible Pastries</span></h6>
-        <p style="font-family: Montserrat, sans-serif;color: var(--bs-primary);" class="mb-xl-5">Wake up to the aroma of freshly baked croissants, danishes, and muffins. Perfect with your morning coffee or as an afternoon treat.</p>
-        <div class="row gx-3 gy-3 d-flex flex-column flex-wrap flex-sm-column flex-md-row flex-lg-row flex-xl-row flex-xxl-row">
-            <!-- Pastry 1: Chicken Puffs -->
-            <div class="col d-flex">
-                <div class="card border rounded-0" style="min-height: 600px;">
-                    <img class="card-img-top w-100 d-block" src="assets/img/clipboard-image-4.png">
-                    <div class="card-body">
-                        <h4 class="card-title" style="font-family: 'Abril Fatface', serif;color: var(--bs-primary);">Chicken Puffs</h4>
-                        <p class="card-text" style="color: var(--bs-primary);font-family: Montserrat, sans-serif;">A Sri Lankan classic! Flaky, golden pastry filled with a savory and spiced chicken mixture. Perfect for tea time or as a quick snack.</p>
-                    </div>
-                    <button class="btn btn-primary border rounded-0" type="button" data-bs-toggle="modal" data-bs-target="#chickenPuffsModal">Order Now</button>
-
-                    <!-- Modal -->
-                    <div id="chickenPuffsModal" class="modal fade" role="dialog" tabindex="-1">
-                        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header mb-0 pb-0" style="border-top-left-radius: 0px; border-top-right-radius: 0px; border-right-style: none; border-bottom-style: none;">
-                                    <button class="btn-close" type="button" aria-label="Close" data-bs-dismiss="modal" style="border-right-style: none;"></button>
-                                </div>
-                                <div class="modal-body p-4" style="border-right-style: none;">
-                                    <div class="row align-items-center">
-                                        <div class="col-md-5 text-center">
-                                            <img class="img-fluid rounded" src="assets/img/clipboard-image-4.png" alt="Chicken Puffs" style="max-width: 100%; height: auto;">
-                                        </div>
-                                        <div class="col-md-7">
-                                            <h1 class="display-4" style="font-family: 'Abril Fatface', serif; color: var(--bs-primary);">Chicken Puffs</h1>
-                                            <p class="lead" style="color: rgb(136, 80, 48);">A Sri Lankan classic! Flaky, golden pastry filled with a savory and spiced chicken mixture. Perfect for tea time or as a quick snack.</p>
-                                            <form>
-                                                <div class="mb-3">
-                                                    <label for="sizeSelect" class="form-label">Select Size:</label>
-                                                    <select class="form-select" id="sizeSelect">
+                                    <div class="col-md-7">
+                                        <h1 class="display-4" style="font-family: 'Abril Fatface', serif; color: var(--bs-primary);"><%=item.getName()%></h1>
+                                        <p class="lead" style="color: rgb(136, 80, 48);"><%=item.getDescription()%>></p>
+                                        <p class="price">Rs. <%= String.format("%.2f", item.getPrice()) %></p>
+                                        <form>
+                                            <div class="mb-3">
+                                                <label for="sizeSelect" class="form-label">Select Size:</label>
+                                                <select class="form-select" id="sizeSelect">
+                                                    <optgroup label="Choose a size">
                                                         <option value="12" selected>Small (500g)</option>
-                                                            <option value="13">Medium (1KG)</option>
-                                                            <option value="14">Large (2KG)</option>
-                                                    </select>
-                                                </div>
-                                                <button class="btn btn-primary btn-lg w-100" type="button">Order Now</button>
-                                            </form>
-                                        </div>
+                                                        <option value="13">Medium (1KG)</option>
+                                                        <option value="14">Large (2KG)</option>
+                                                    </optgroup>
+                                                </select>
+                                            </div>
+                                            <button class="btn btn-primary btn-lg w-100" type="button">Order Now</button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <!-- Pastry 2: Fish Cutlet -->
-            <div class="col">
-                <div class="card border rounded-0" style="min-height: 600px;">
-                    <img class="card-img-top w-100 d-block" src="assets/img/clipboard-image-5.png">
-                    <div class="card-body">
-                        <h4 class="card-title" style="font-family: 'Abril Fatface', serif;color: var(--bs-primary);">Fish Cutlet</h4>
-                        <p class="card-text" style="font-family: Montserrat, sans-serif;color: var(--bs-primary);">Crispy on the outside, flavorful on the inside! Our fish cutlets are made with seasoned fish and potatoes, coated in breadcrumbs, and fried to golden perfection. A must-try for seafood lovers</p>
-                    </div>
-                    <button class="btn btn-primary border rounded-0" type="button" data-bs-toggle="modal" data-bs-target="#fishCutletModal">Order Now</button>
 
-                    <!-- Modal -->
-                    <div id="fishCutletModal" class="modal fade" role="dialog" tabindex="-1">
-                        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header mb-0 pb-0" style="border-top-left-radius: 0px; border-top-right-radius: 0px; border-right-style: none; border-bottom-style: none;">
-                                    <button class="btn-close" type="button" aria-label="Close" data-bs-dismiss="modal" style="border-right-style: none;"></button>
-                                </div>
-                                <div class="modal-body p-4" style="border-right-style: none;">
-                                    <div class="row align-items-center">
-                                        <div class="col-md-5 text-center">
-                                            <img class="img-fluid rounded" src="assets/img/clipboard-image-5.png" alt="Fish Cutlet" style="max-width: 100%; height: auto;">
-                                        </div>
-                                        <div class="col-md-7">
-                                            <h1 class="display-4" style="font-family: 'Abril Fatface', serif; color: var(--bs-primary);">Fish Cutlet</h1>
-                                            <p class="lead" style="color: rgb(136, 80, 48);">Crispy on the outside, flavorful on the inside! Our fish cutlets are made with seasoned fish and potatoes, coated in breadcrumbs, and fried to golden perfection. A must-try for seafood lovers</p>
-                                            <form>
-                                                <div class="mb-3">
-                                                    <label for="sizeSelect" class="form-label">Select Size:</label>
-                                                    <select class="form-select" id="sizeSelect">
-                                                        <optgroup label="Choose a size">
-                                                            <option value="12" selected>Small (500g)</option>
-                                                            <option value="13">Medium (1KG)</option>
-                                                            <option value="14">Large (2KG)</option>
-                                                        </optgroup>
-                                                    </select>
-                                                </div>
-                                                <button class="btn btn-primary btn-lg w-100" type="button">Order Now</button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Pastry 3: Egg Puffs -->
-            <div class="col">
-                <div class="card border rounded-0" style="min-height: 600px;">
-                    <img class="card-img-top w-100 d-block" src="assets/img/clipboard-image-6.png">
-                    <div class="card-body">
-                        <h4 class="card-title" style="font-family: 'Abril Fatface', serif;color: var(--bs-primary);">Egg Puffs</h4>
-                        <p class="card-text" style="font-family: Montserrat, sans-serif;color: var(--bs-primary);">A simple yet satisfying treat! Flaky pastry filled with a spiced egg mixture, perfect for breakfast or an afternoon snack.</p>
-                    </div>
-                    <button class="btn btn-primary border rounded-0" type="button" data-bs-toggle="modal" data-bs-target="#eggPuffsModal">Order Now</button>
-
-                    <!-- Modal -->
-                    <div id="eggPuffsModal" class="modal fade" role="dialog" tabindex="-1">
-                        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header mb-0 pb-0" style="border-top-left-radius: 0px; border-top-right-radius: 0px; border-right-style: none; border-bottom-style: none;">
-                                    <button class="btn-close" type="button" aria-label="Close" data-bs-dismiss="modal" style="border-right-style: none;"></button>
-                                </div>
-                                <div class="modal-body p-4" style="border-right-style: none;">
-                                    <div class="row align-items-center">
-                                        <div class="col-md-5 text-center">
-                                            <img class="img-fluid rounded" src="assets/img/clipboard-image-6.png" alt="Egg Puffs" style="max-width: 100%; height: auto;">
-                                        </div>
-                                        <div class="col-md-7">
-                                            <h1 class="display-4" style="font-family: 'Abril Fatface', serif; color: var(--bs-primary);">Egg Puffs</h1>
-                                            <p class="lead" style="color: rgb(136, 80, 48);">A simple yet satisfying treat! Flaky pastry filled with a spiced egg mixture, perfect for breakfast or an afternoon snack.</p>
-                                            <form>
-                                                <div class="mb-3">
-                                                    <label for="sizeSelect" class="form-label">Select Size:</label>
-                                                    <select class="form-select" id="sizeSelect">
-                                                        <optgroup label="Choose a size">
-                                                            <option value="12" selected>Small (500g)</option>
-                                                            <option value="13">Medium (1KG)</option>
-                                                            <option value="14">Large (2KG)</option>
-                                                        </optgroup>
-                                                    </select>
-                                                </div>
-                                                <button class="btn btn-primary btn-lg w-100" type="button">Order Now</button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Pastry 4: Chicken Bacon Pastry -->
-            <div class="col">
-                <div class="card border rounded-0" style="min-height: 600px;">
-                    <img class="card-img-top w-100 d-block" src="assets/img/clipboard-image-7.png">
-                    <div class="card-body">
-                        <h4 class="card-title" style="font-family: 'Abril Fatface', serif;color: var(--bs-primary);">Chicken Bacon Pastry</h4>
-                        <p class="card-text" style="color: var(--bs-primary);font-family: Montserrat, sans-serif;">A savory delight! This pastry combines tender chicken, crispy bacon, and a flaky crust for a flavor-packed bite. Ideal for those who love a hearty snack.</p>
-                    </div>
-                    <button class="btn btn-primary border rounded-0" type="button" data-bs-toggle="modal" data-bs-target="#chickenBaconPastryModal">Order Now</button>
-
-                    <!-- Modal -->
-                    <div id="chickenBaconPastryModal" class="modal fade" role="dialog" tabindex="-1">
-                        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header mb-0 pb-0" style="border-top-left-radius: 0px; border-top-right-radius: 0px; border-right-style: none; border-bottom-style: none;">
-                                    <button class="btn-close" type="button" aria-label="Close" data-bs-dismiss="modal" style="border-right-style: none;"></button>
-                                </div>
-                                <div class="modal-body p-4" style="border-right-style: none;">
-                                    <div class="row align-items-center">
-                                        <div class="col-md-5 text-center">
-                                            <img class="img-fluid rounded" src="assets/img/clipboard-image-7.png" alt="Chicken Bacon Pastry" style="max-width: 100%; height: auto;">
-                                        </div>
-                                        <div class="col-md-7">
-                                            <h1 class="display-4" style="font-family: 'Abril Fatface', serif; color: var(--bs-primary);">Chicken Bacon Pastry</h1>
-                                            <p class="lead" style="color: rgb(136, 80, 48);">A savory delight! This pastry combines tender chicken, crispy bacon, and a flaky crust for a flavor-packed bite. Ideal for those who love a hearty snack.</p>
-                                            <form>
-                                                <div class="mb-3">
-                                                    <label for="sizeSelect" class="form-label">Select Size:</label>
-                                                    <select class="form-select" id="sizeSelect">
-                                                        <optgroup label="Choose a size">
-                                                            <option value="12" selected>Small (500g)</option>
-                                                            <option value="13">Medium (1KG)</option>
-                                                            <option value="14">Large (2KG)</option>
-                                                        </optgroup>
-                                                    </select>
-                                                </div>
-                                                <button class="btn btn-primary btn-lg w-100" type="button">Order Now</button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Cookies Section -->
+        <% } %>
+
+    </div>
+</div>
+
+<!-- Custom Cakes Section -->
+<section class="py-4 py-xl-5">
     <div class="container">
-        <h6 class="display-2 mt-5 mb-2" style="font-family: 'Abril Fatface', serif;color: var(--bs-primary);">Cookies That Bring Joy to Every Bite!</h6>
-        <p style="color: var(--bs-primary);" class="mb-xl-5">Chewy, crunchy, or dipped in chocolate—our cookies are baked to perfection. Perfect for sharing (or not)!</p>
-        <div class="row gx-3 gy-3 d-flex flex-column flex-wrap flex-sm-column flex-md-row flex-lg-row flex-xl-row flex-xxl-row">
-            <!-- Cookie 1: Chocolate Chip Cookies -->
-            <div class="col d-flex">
-                <div class="card border rounded-0" style="min-height: 600px;">
-                    <img class="card-img-top w-100 d-block" src="assets/img/clipboard-image-9.png">
-                    <div class="card-body">
-                        <h4 class="card-title" style="font-family: 'Abril Fatface', serif;color: var(--bs-primary);">Chocolate Chip Cookies</h4>
-                        <p class="card-text" style="font-family: Montserrat, sans-serif;color: var(--bs-primary);">A timeless favorite! Our cookies are loaded with gooey chocolate chips and baked to perfection—chewy on the inside, crispy on the edges. Perfect for sharing (or not)!</p>
-                    </div>
-                    <button class="btn btn-primary border rounded-0" type="button" data-bs-toggle="modal" data-bs-target="#chocolateChipCookiesModal">Order Now</button>
-
-                    <!-- Modal -->
-                    <div id="chocolateChipCookiesModal" class="modal fade" role="dialog" tabindex="-1">
-                        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header mb-0 pb-0" style="border-top-left-radius: 0px; border-top-right-radius: 0px; border-right-style: none; border-bottom-style: none;">
-                                    <button class="btn-close" type="button" aria-label="Close" data-bs-dismiss="modal" style="border-right-style: none;"></button>
-                                </div>
-                                <div class="modal-body p-4" style="border-right-style: none;">
-                                    <div class="row align-items-center">
-                                        <div class="col-md-5 text-center">
-                                            <img class="img-fluid rounded" src="assets/img/clipboard-image-9.png" alt="Chocolate Chip Cookies" style="max-width: 100%; height: auto;">
-                                        </div>
-                                        <div class="col-md-7">
-                                            <h1 class="display-4" style="font-family: 'Abril Fatface', serif; color: var(--bs-primary);">Chocolate Chip Cookies</h1>
-                                            <p class="lead" style="color: rgb(136, 80, 48);">A timeless favorite! Our cookies are loaded with gooey chocolate chips and baked to perfection—chewy on the inside, crispy on the edges. Perfect for sharing (or not)!</p>
-                                            <form>
-                                                <div class="mb-3">
-                                                    <label for="sizeSelect" class="form-label">Select Size:</label>
-                                                    <select class="form-select" id="sizeSelect">
-                                                        <optgroup label="Choose a size">
-                                                            <option value="12" selected>Small (500g)</option>
-                                                            <option value="13">Medium (1KG)</option>
-                                                            <option value="14">Large (2KG)</option>
-                                                        </optgroup>
-                                                    </select>
-                                                </div>
-                                                <button class="btn btn-primary btn-lg w-100" type="button">Order Now</button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <div class="text-white bg-primary border rounded border-0 border-primary d-flex flex-column justify-content-between flex-lg-row p-4 p-md-5 pb-xl-5">
+            <div class="col-lg-8">
+                <h1 style="font-family: 'Abril Fatface', serif;">Dream It, We’ll Bake It!</h1>
+                <p style="font-family: Montserrat, sans-serif;">Celebrate life’s sweetest moments with a custom cake designed just for you. Whether it’s a birthday, wedding, or just because, we’ll bring your vision to life with delicious, handcrafted perfection.</p>
             </div>
-            <!-- Cookie 2: Butter Flavored Cookies -->
-            <div class="col">
-                <div class="card border rounded-0" style="min-height: 600px;">
-                    <img class="card-img-top w-100 d-block" src="assets/img/clipboard-image-8.png">
-                    <div class="card-body">
-                        <h4 class="card-title" style="font-family: 'Abril Fatface', serif;color: var(--bs-primary);">Butter Flavored Cookies</h4>
-                        <p class="card-text" style="font-family: Montserrat, sans-serif;color: var(--bs-primary);">Simple, buttery, and melt-in-your-mouth delicious! These cookies are made with pure butter for a rich, comforting flavor that pairs perfectly with a cup of tea.</p>
-                    </div>
-                    <button class="btn btn-primary border rounded-0" type="button" data-bs-toggle="modal" data-bs-target="#butterFlavoredCookiesModal">Order Now</button>
-
-                    <!-- Modal -->
-                    <div id="butterFlavoredCookiesModal" class="modal fade" role="dialog" tabindex="-1">
-                        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header mb-0 pb-0" style="border-top-left-radius: 0px; border-top-right-radius: 0px; border-right-style: none; border-bottom-style: none;">
-                                    <button class="btn-close" type="button" aria-label="Close" data-bs-dismiss="modal" style="border-right-style: none;"></button>
-                                </div>
-                                <div class="modal-body p-4" style="border-right-style: none;">
-                                    <div class="row align-items-center">
-                                        <div class="col-md-5 text-center">
-                                            <img class="img-fluid rounded" src="assets/img/clipboard-image-8.png" alt="Butter Flavored Cookies" style="max-width: 100%; height: auto;">
-                                        </div>
-                                        <div class="col-md-7">
-                                            <h1 class="display-4" style="font-family: 'Abril Fatface', serif; color: var(--bs-primary);">Butter Flavored Cookies</h1>
-                                            <p class="lead" style="color: rgb(136, 80, 48);">Simple, buttery, and melt-in-your-mouth delicious! These cookies are made with pure butter for a rich, comforting flavor that pairs perfectly with a cup of tea.</p>
-                                            <form>
-                                                <div class="mb-3">
-                                                    <label for="sizeSelect" class="form-label">Select Size:</label>
-                                                    <select class="form-select" id="sizeSelect">
-                                                        <optgroup label="Choose a size">
-                                                            <option value="12" selected>Small (500g)</option>
-                                                            <option value="13">Medium (1KG)</option>
-                                                            <option value="14">Large (2KG)</option>
-                                                        </optgroup>
-                                                    </select>
-                                                </div>
-                                                <button class="btn btn-primary btn-lg w-100" type="button">Order Now</button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="col d-lg-flex d-xl-flex d-xxl-flex justify-content-lg-center align-items-lg-center justify-content-xl-center align-items-xl-center justify-content-xxl-center align-items-xxl-center">
+                <button class="btn btn-primary d-flex" type="button" style="background: var(--bs-secondary);color: var(--bs-primary);font-family: Raleway, sans-serif;font-weight: bold;font-size: 12px;padding: 12px 18px;">DESIGN YOUR CAKE</button>
             </div>
-            <!-- Cookie 3: Assorted Cookies -->
-            <div class="col">
-                <div class="card border rounded-0" style="min-height: 600px;">
-                    <img class="card-img-top w-100 d-block" src="assets/img/clipboard-image-10.png">
-                    <div class="card-body">
-                        <h4 class="card-title" style="font-family: 'Abril Fatface', serif;color: var(--bs-primary);">Assorted Cookies</h4>
-                        <p class="card-text" style="font-family: Montserrat, sans-serif;">A mix of all your favorites! This assortment includes a variety of flavors and textures, from buttery to crunchy, ensuring there’s something for everyone.</p>
-                    </div>
-                    <button class="btn btn-primary border rounded-0" type="button" data-bs-toggle="modal" data-bs-target="#assortedCookiesModal">Order Now</button>
+        </div>
+    </div>
+</section>
 
-                    <!-- Modal -->
-                    <div id="assortedCookiesModal" class="modal fade" role="dialog" tabindex="-1">
-                        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header mb-0 pb-0" style="border-top-left-radius: 0px; border-top-right-radius: 0px; border-right-style: none; border-bottom-style: none;">
-                                    <button class="btn-close" type="button" aria-label="Close" data-bs-dismiss="modal" style="border-right-style: none;"></button>
-                                </div>
-                                <div class="modal-body p-4" style="border-right-style: none;">
-                                    <div class="row align-items-center">
-                                        <div class="col-md-5 text-center">
-                                            <img class="img-fluid rounded" src="assets/img/clipboard-image-10.png" alt="Assorted Cookies" style="max-width: 100%; height: auto;">
-                                        </div>
-                                        <div class="col-md-7">
-                                            <h1 class="display-4" style="font-family: 'Abril Fatface', serif; color: var(--bs-primary);">Assorted Cookies</h1>
-                                            <p class="lead" style="color: rgb(136, 80, 48);">A mix of all your favorites! This assortment includes a variety of flavors and textures, from buttery to crunchy, ensuring there’s something for everyone.</p>
-                                            <form>
-                                                <div class="mb-3">
-                                                    <label for="sizeSelect" class="form-label">Select Size:</label>
-                                                    <select class="form-select" id="sizeSelect">
-                                                        <optgroup label="Choose a size">
-                                                            <option value="12" selected>Small (500g)</option>
-                                                            <option value="13">Medium (1KG)</option>
-                                                            <option value="14">Large (2KG)</option>
-                                                        </optgroup>
-                                                    </select>
-                                                </div>
-                                                <button class="btn btn-primary btn-lg w-100" type="button">Order Now</button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+<!-- Pastries Section -->
+<div class="container">
+    <h6 class="display-2 pt-0 mt-5 pb-0 mb-2" style="font-family: 'Abril Fatface', serif;"><span style="color: rgb(136, 80, 48);">Flaky, Buttery, Irresistible Pastries</span></h6>
+    <p style="font-family: Montserrat, sans-serif;color: var(--bs-primary);" class="mb-xl-5">Wake up to the aroma of freshly baked croissants, danishes, and muffins. Perfect with your morning coffee or as an afternoon treat.</p>
+    <div class="row gx-3 gy-3 d-flex flex-column flex-wrap flex-sm-column flex-md-row flex-lg-row flex-xl-row flex-xxl-row">
+
+        <% for (Item item : pastries) { %>
+
+        <div class="col d-flex">
+            <div class="card border rounded-0" style="min-height: 600px;">
+                <img class="card-img-top w-100 d-block" src="assets/img/clipboard-image-4.png">
+                <div class="card-body">
+                    <h4 class="card-title" style="font-family: 'Abril Fatface', serif;color: var(--bs-primary);"><%=item.getName()%></h4>
+                    <p class="card-text" style="color: var(--bs-primary);font-family: Montserrat, sans-serif;"><%=item.getDescription()%></p>
+                    <p class="price">Rs. <%= String.format("%.2f", item.getPrice()) %></p>
                 </div>
-            </div>
-            <!-- Cookie 4: Rulang Cookies -->
-            <div class="col">
-                <div class="card border rounded-0" style="min-height: 600px;">
-                    <img class="card-img-top w-100 d-block" src="assets/img/clipboard-image-11.png">
-                    <div class="card-body border rounded-0">
-                        <h4 class="card-title" style="font-family: 'Abril Fatface', serif;color: var(--bs-primary);">Rulang Cookies</h4>
-                        <p class="card-text" style="font-family: Montserrat, sans-serif;">A Sri Lankan specialty! These crispy, golden cookies are made with a hint of cardamom and a touch of sweetness. Perfect for tea time or as a light snack.</p>
-                    </div>
-                    <button class="btn btn-primary border rounded-0" type="button" data-bs-toggle="modal" data-bs-target="#rulangCookiesModal">Order Now</button>
+                <button class="btn btn-primary border rounded-0" type="button" data-bs-toggle="modal" data-bs-target="#chickenPuffsModal">Order Now</button>
 
-                    <!-- Modal -->
-                    <div id="rulangCookiesModal" class="modal fade" role="dialog" tabindex="-1">
-                        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header mb-0 pb-0" style="border-top-left-radius: 0px; border-top-right-radius: 0px; border-right-style: none; border-bottom-style: none;">
-                                    <button class="btn-close" type="button" aria-label="Close" data-bs-dismiss="modal" style="border-right-style: none;"></button>
-                                </div>
-                                <div class="modal-body p-4" style="border-right-style: none;">
-                                    <div class="row align-items-center">
-                                        <div class="col-md-5 text-center">
-                                            <img class="img-fluid rounded" src="assets/img/clipboard-image-11.png" alt="Rulang Cookies" style="max-width: 100%; height: auto;">
-                                        </div>
-                                        <div class="col-md-7">
-                                            <h1 class="display-4" style="font-family: 'Abril Fatface', serif; color: var(--bs-primary);">Rulang Cookies</h1>
-                                            <p class="lead" style="color: rgb(136, 80, 48);">A Sri Lankan specialty! These crispy, golden cookies are made with a hint of cardamom and a touch of sweetness. Perfect for tea time or as a light snack.</p>
-                                            <form>
-                                                <div class="mb-3">
-                                                    <label for="sizeSelect" class="form-label">Select Size:</label>
-                                                    <select class="form-select" id="sizeSelect">
-                                                        <optgroup label="Choose a size">
-                                                            <option value="12" selected>Small (500g)</option>
-                                                            <option value="13">Medium (1KG)</option>
-                                                            <option value="14">Large (2KG)</option>
-                                                        </optgroup>
-                                                    </select>
-                                                </div>
-                                                <button class="btn btn-primary btn-lg w-100" type="button">Order Now</button>
-                                            </form>
-                                        </div>
+                <!-- Modal -->
+                <div id="chickenPuffsModal" class="modal fade" role="dialog" tabindex="-1">
+                    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header mb-0 pb-0" style="border-top-left-radius: 0px; border-top-right-radius: 0px; border-right-style: none; border-bottom-style: none;">
+                                <button class="btn-close" type="button" aria-label="Close" data-bs-dismiss="modal" style="border-right-style: none;"></button>
+                            </div>
+                            <div class="modal-body p-4" style="border-right-style: none;">
+                                <div class="row align-items-center">
+                                    <div class="col-md-5 text-center">
+                                        <img class="img-fluid rounded" src="assets/img/clipboard-image-4.png" alt="Chicken Puffs" style="max-width: 100%; height: auto;">
+                                    </div>
+                                    <div class="col-md-7">
+                                        <h1 class="display-4" style="font-family: 'Abril Fatface', serif; color: var(--bs-primary);"><%=item.getName()%></h1>
+                                        <p class="lead" style="color: rgb(136, 80, 48);"><%=item.getDescription()%></p>
+                                        <p class="price">Rs. <%= String.format("%.2f", item.getPrice()) %></p>
+                                        <form>
+                                            <div class="mb-3">
+                                                <label for="sizeSelect" class="form-label">Select Size:</label>
+                                                <select class="form-select" id="sizeSelect">
+                                                    <option value="12" selected>Small (500g)</option>
+                                                    <option value="13">Medium (1KG)</option>
+                                                    <option value="14">Large (2KG)</option>
+                                                </select>
+                                            </div>
+                                            <button class="btn btn-primary btn-lg w-100" type="button">Order Now</button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -752,7 +323,72 @@ String ROLE = (String) session.getAttribute("ROLE");
                 </div>
             </div>
         </div>
+
+        <% } %>
+
     </div>
+</div>
+
+<!-- Cookies Section -->
+<div class="container">
+    <h6 class="display-2 mt-5 mb-2" style="font-family: 'Abril Fatface', serif;color: var(--bs-primary);">Cookies That Bring Joy to Every Bite!</h6>
+    <p style="color: var(--bs-primary);" class="mb-xl-5">Chewy, crunchy, or dipped in chocolate—our cookies are baked to perfection. Perfect for sharing (or not)!</p>
+    <div class="row gx-3 gy-3 d-flex flex-column flex-wrap flex-sm-column flex-md-row flex-lg-row flex-xl-row flex-xxl-row">
+
+        <% for (Item item : cookies) { %>
+
+        <div class="col d-flex">
+            <div class="card border rounded-0" style="min-height: 600px;">
+                <img class="card-img-top w-100 d-block" src="assets/img/clipboard-image-9.png">
+                <div class="card-body">
+                    <h4 class="card-title" style="font-family: 'Abril Fatface', serif;color: var(--bs-primary);"><%=item.getName()%></h4>
+                    <p class="card-text" style="font-family: Montserrat, sans-serif;color: var(--bs-primary);"><%=item.getDescription()%></p>
+                    <p class="price">Rs. <%= String.format("%.2f", item.getPrice()) %></p>
+                </div>
+                <button class="btn btn-primary border rounded-0" type="button" data-bs-toggle="modal" data-bs-target="#chocolateChipCookiesModal">Order Now</button>
+
+                <!-- Modal -->
+                <div id="chocolateChipCookiesModal" class="modal fade" role="dialog" tabindex="-1">
+                    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header mb-0 pb-0" style="border-top-left-radius: 0px; border-top-right-radius: 0px; border-right-style: none; border-bottom-style: none;">
+                                <button class="btn-close" type="button" aria-label="Close" data-bs-dismiss="modal" style="border-right-style: none;"></button>
+                            </div>
+                            <div class="modal-body p-4" style="border-right-style: none;">
+                                <div class="row align-items-center">
+                                    <div class="col-md-5 text-center">
+                                        <img class="img-fluid rounded" src="assets/img/clipboard-image-9.png" alt="Chocolate Chip Cookies" style="max-width: 100%; height: auto;">
+                                    </div>
+                                    <div class="col-md-7">
+                                        <h1 class="display-4" style="font-family: 'Abril Fatface', serif; color: var(--bs-primary);"><%=item.getName()%></h1>
+                                        <p class="lead" style="color: rgb(136, 80, 48);"><%=item.getDescription()%></p>
+                                        <p class="price">Rs. <%= String.format("%.2f", item.getPrice()) %></p>
+                                        <form>
+                                            <div class="mb-3">
+                                                <label for="sizeSelect" class="form-label">Select Size:</label>
+                                                <select class="form-select" id="sizeSelect">
+                                                    <optgroup label="Choose a size">
+                                                        <option value="12" selected>Small (500g)</option>
+                                                        <option value="13">Medium (1KG)</option>
+                                                        <option value="14">Large (2KG)</option>
+                                                    </optgroup>
+                                                </select>
+                                            </div>
+                                            <button class="btn btn-primary btn-lg w-100" type="button">Order Now</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <% } %>
+
+    </div>
+</div>
 
     <!-- Footer Section -->
     <footer class="text-center">

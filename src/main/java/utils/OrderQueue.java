@@ -10,14 +10,11 @@ import java.util.Queue;
 import static entities.Order.fromString;
 
 public class OrderQueue {
-    private static Queue<Order> orderQueue;
-    private static String FILE_PATH;
+    private static Queue<Order> orderQueue = new LinkedList<>(); // Initialize here
+    private static String FILE_PATH = "E:/Data/OrderQueue.txt"; // Relative path
     private static int lastOrderId = 0;
 
-    // Constructor to initialize the queue and set the default file path
     public OrderQueue() {
-        orderQueue = new LinkedList<>();
-        FILE_PATH = "E:/Data/OrderQueue.txt";
     }
 
     private static String generateOrderId() {
@@ -25,70 +22,82 @@ public class OrderQueue {
         return String.format("ORD%04d", lastOrderId);
     }
 
-    // Add an order to the queue and save it to the file
     public static void add(Order order) throws IOException {
+        if (order == null) {
+            throw new IllegalArgumentException("Order cannot be null");
+        }
+
         if (order.getOrderId() == null || order.getOrderId().isEmpty()) {
             order.setOrderId(generateOrderId());
         }
         orderQueue.add(order);
-        order.saveToFile(FILE_PATH);
+        saveToFile();
     }
 
-    // Get the order queue
-    public Queue<Order> getOrderQueue() {
-        return orderQueue;
+    public static Queue<Order> getOrderQueue() {
+        return new LinkedList<>(orderQueue);
     }
 
-    // Load orders from file to the queue
     public static void loadFromFile() throws IOException {
         File file = new File(FILE_PATH);
+
+        // Create file if doesn't exist
         if (!file.exists()) {
-            System.out.println("File does not exist. Creating a new file.");
-            file.createNewFile(); // Create the file if it doesn't exist
+            file.createNewFile();
             return;
         }
+
+        // Clear existing orders before loading
+        orderQueue.clear();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                Order order = fromString(line);
-                orderQueue.add(order);
-                // remove text part
-                String idNumStr = order.getOrderId().replace("ORD", "");
-                int idNum = Integer.parseInt(idNumStr);
-                if (idNum > lastOrderId) {
-                    lastOrderId = idNum;
+                try {
+                    if (!line.trim().isEmpty()) {
+                        Order order = fromString(line);
+                        if (order != null) {
+                            orderQueue.add(order);
+
+                            // Update lastOrderId
+                            String idNumStr = order.getOrderId().replace("ORD", "");
+                            int idNum = Integer.parseInt(idNumStr);
+                            lastOrderId = Math.max(lastOrderId, idNum);
+                        }
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error parsing order from line: " + line);
+                    e.printStackTrace();
                 }
             }
         }
     }
 
-    // Process Next Order (Move to Baking)
     public static void processNextOrder() throws IOException {
         if (!orderQueue.isEmpty()) {
             Order order = orderQueue.poll();
             if (order != null) {
                 order.setStatus("Baking");
-                order.saveToFile(FILE_PATH);
+                saveToFile();
             }
         }
     }
 
-    // Cancel Order
     public static void cancelOrder(String orderId) {
-        // removeIf method can remove elements from anywhere in the queue based on the condition.
-        orderQueue.removeIf(order -> order.getOrderId().equals(orderId));
-        updateFile();
+        orderQueue.removeIf(order -> order != null && order.getOrderId().equals(orderId));
+        saveToFile();
     }
 
-    // Save Updated Orders Back to File
-    private static void updateFile() {
+    private static void saveToFile() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH))) {
             for (Order order : orderQueue) {
-                writer.write(order.getOrderId() + "," + order.getUserId() + "," + order.getItemId() + "," + order.getStatus());
-                writer.newLine();
+                if (order != null) {
+                    writer.write(order.toString());
+                    writer.newLine();
+                }
             }
         } catch (IOException e) {
+            System.err.println("Error saving orders to file: " + e.getMessage());
             e.printStackTrace();
         }
     }

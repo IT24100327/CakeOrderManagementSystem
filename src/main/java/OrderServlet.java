@@ -35,9 +35,9 @@ public class OrderServlet extends HttpServlet {
 
             double total = quantity * itemPrice;
 
-            Order newOrder = new Order(userId, itemId,status, total, deliveryDate);
+            Order newOrder = new Order(userId, itemId, quantity, status, total, deliveryDate);
             OrderQueue.add(newOrder);
-            response.sendRedirect("index-new.jsp");
+            response.sendRedirect("index.jsp");
 
         } else if ("process".equals(action)) {
             OrderQueue.processNextOrder();

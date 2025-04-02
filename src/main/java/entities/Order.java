@@ -11,6 +11,7 @@ public class Order {
     private String orderId;
     private int userId;
     private String itemId;
+    private int quantity;
     private String status;
     private double total;
     private String orderDate;
@@ -18,22 +19,24 @@ public class Order {
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    public Order(int userId, String itemId, String status, double total, String deliveryDate) {
+    public Order(int userId, String itemId, int quantity, String status, double total, String deliveryDate) {
         orderId = null;
         this.userId = userId;
         this.itemId = itemId;
         this.status = status;
+        this.quantity = quantity;
         this.total = total;
         this.orderDate = LocalDateTime.now().format(formatter);
         this.deliveryDate = deliveryDate;
     }
 
     // constructor for make object from string
-    public Order(String orderId, int userId, String itemId, String status, double total, String orderDate,  String deliveryDate) {
+    public Order(String orderId, int userId, String itemId, int quantity, String status, double total, String orderDate,  String deliveryDate) {
         this.orderId = orderId;
         this.userId = userId;
         this.itemId = itemId;
         this.status = status;
+        this.quantity = quantity;
         this.total = total;
         this.orderDate = orderDate;
         this.deliveryDate = deliveryDate;
@@ -41,6 +44,15 @@ public class Order {
 
     public int getUserId() {
         return userId;
+    }
+
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 
     public void setUserId(int userId) {
@@ -97,13 +109,13 @@ public class Order {
 
     @Override
     public String toString() {
-        return orderId + "|" + userId + "|" + itemId + "|" + status + "|" + total + "|" + orderDate + "|" + deliveryDate;
+        return orderId + "|" + userId + "|" + itemId + "|" + status + "|" + quantity + "|" + total + "|" + orderDate + "|" + deliveryDate;
     }
 
     // Convert a string to an Order object
     public static Order fromString(String str) {
         String[] parts = str.split("\\|");
-        if (parts.length < 7) {
+        if (parts.length < 8) {
             throw new IllegalArgumentException("Invalid order string format");
         }
 
@@ -113,11 +125,13 @@ public class Order {
         String itemId = parts[2];
 
         String status = parts[3];
-        double total = Double.parseDouble(parts[4]);
-        String orderDate = parts[5];
-        String deliveryDate = parts[6];
 
-        return new Order(orderId, userId, itemId, status, total, orderDate, deliveryDate);
+        int quantity = Integer.parseInt(parts[4]);
+        double total = Double.parseDouble(parts[5]);
+        String orderDate = parts[6];
+        String deliveryDate = parts[7];
+
+        return new Order(orderId, userId, itemId, quantity, status, total, orderDate, deliveryDate);
     }
 
     // Save order to file

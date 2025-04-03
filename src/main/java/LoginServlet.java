@@ -44,6 +44,7 @@ public class LoginServlet extends HttpServlet {
             if (user != null) {
                 if (passwordUtils.verifyPassword(password, user.getPassword())) {
                     System.out.println("Login successful for user: " + email);
+                    request.getSession().setAttribute("ID", String.valueOf(user.getID()));
                     request.getSession().setAttribute("fname", user.getfName());
                     request.getSession().setAttribute("lname", user.getlName());
                     request.getSession().setAttribute("email", user.getEmail());

@@ -121,11 +121,8 @@ public class Order {
 
         String orderId = parts[0];
         int userId = Integer.parseInt(parts[1]);
-
         String itemId = parts[2];
-
         String status = parts[3];
-
         int quantity = Integer.parseInt(parts[4]);
         double total = Double.parseDouble(parts[5]);
         String orderDate = parts[6];

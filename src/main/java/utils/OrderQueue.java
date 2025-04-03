@@ -47,7 +47,6 @@ public class OrderQueue {
             return;
         }
 
-        // Clear existing orders before loading
         orderQueue.clear();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
@@ -73,13 +72,35 @@ public class OrderQueue {
         }
     }
 
-    public static void processNextOrder() throws IOException {
-        if (!orderQueue.isEmpty()) {
-            Order order = orderQueue.poll();
-            if (order != null) {
-                order.setStatus("Baking");
-                saveToFile();
+    // Find an item by its ID
+    public static Order findOrderById(String orderId) {
+        for (Order order : orderQueue) {
+            if (order.getOrderId().equals(orderId)) {
+                return order;
             }
+        }
+        return null;
+    }
+
+    public static void sortOrderByDeliveryDate() {
+        OrderSorter.bubbleSortByDeliveryDate(orderQueue);
+    }
+
+    public static void updateItem(String orderId, int quantity, String deliveryDate, double newItemPrice) {
+        Order order = findOrderById(orderId);
+        if (order != null) {
+            order.setQuantity(quantity);
+            order.setDeliveryDate(deliveryDate);
+            order.setTotal(newItemPrice);
+        }
+
+        saveToFile();
+    }
+
+    public static void processOrder(Order orderToProcess) throws IOException {
+        if (orderToProcess != null) {
+            orderToProcess.setStatus("baking");
+            saveToFile();
         }
     }
 

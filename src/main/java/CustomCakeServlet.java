@@ -26,18 +26,11 @@ public class CustomCakeServlet extends HttpServlet {
         String shape = request.getParameter("shape");
         String deliveryDate = request.getParameter("deliveryDate");
 
-        System.out.println(deliveryDate);
-        System.out.println(occasion);
+
 
         CustomCakeOrder co = new CustomCakeOrder("O1",1,occasion,flavour,filling,size,shape,deliveryDate);
-        System.out.println(co.getTotalPrice());
 
-
-
-
-
-
-
+        co.saveInFile();
 
 
     }

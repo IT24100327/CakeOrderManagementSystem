@@ -65,8 +65,6 @@
                                     <select class="focus-ring focus-ring-primary form-select mb-3" name="occasion">
                                         <option value="birthday" selected>Birthday</option>
                                         <option value="wedding">Wedding</option>
-                                        <option value="anniversary">Anniversary</option>
-                                        <option value="other">Other</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6">

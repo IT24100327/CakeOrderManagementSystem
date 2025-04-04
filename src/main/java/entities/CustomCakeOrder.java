@@ -1,5 +1,9 @@
 package entities;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.*;
+
 public class CustomCakeOrder extends Order{
 
     private String occasion;
@@ -9,9 +13,10 @@ public class CustomCakeOrder extends Order{
     private String cakeShape;
     private double basePrice;
     private double priceWithFlavour;
-    private double priceWithSize;
+    public static String filepath ="E:\\custumCakeOrder\\Orders.txt";
 
-    public CustomCakeOrder(String  orderId,int userId,String occasion,String cakeFlavour,String filling,String cakeSize,String cakeShape,String deliveryDate){
+
+    public CustomCakeOrder(String  orderId,int userId,String occasion,String cakeFlavour,String filling,String cakeSize,String cakeShape,String deliveryDate) throws IOException {
         super(orderId,userId);
         this.occasion = occasion;
         this.cakeFlavour = cakeFlavour;
@@ -19,6 +24,23 @@ public class CustomCakeOrder extends Order{
         this.cakeSize = cakeSize;
         this.cakeShape = cakeShape;
         this.deliveryDate = deliveryDate;
+    }
+    public CustomCakeOrder(int userId,String orderId,String occasion,String cakeFlavour,String filling,String cakeSize,String cakeShape,String deliveryDate) throws IOException {
+        super(orderId, userId);
+        this.occasion = occasion;
+        this.cakeFlavour = cakeFlavour;
+        this.filling = filling;
+        this.cakeSize = cakeSize;
+        this.cakeShape = cakeShape;
+        this.deliveryDate = deliveryDate;
+    }
+
+    public String getOccasion() {
+        return occasion;
+    }
+
+    public void setOccasion(String occasion) {
+        this.occasion = occasion;
     }
 
     public double getPriceWithFlavour() {
@@ -98,9 +120,44 @@ public class CustomCakeOrder extends Order{
         return total;
     }
 
+    // Converting object in to readable object
+    @Override
+    public String toString(){
+        return orderId + "|" + userId + "|" + occasion + "|" + cakeFlavour + "|" + filling + "|" + cakeSize + "|" + cakeShape + "|" + deliveryDate;
+    }
 
+
+    public static CustomCakeOrder fromStringToObject(String order) throws IOException {
+        String[] customOrder = order.split("\\|");
+        if(customOrder.length < 8){
+            throw new IllegalArgumentException("Invalid order string format");
+        }
+        int userId = Integer.parseInt(customOrder[1]);
+        String orderId = customOrder[0];
+        String occasion = customOrder[2];
+        String cakeFlavour = customOrder[3];
+        String filling = customOrder[4];
+        String cakeSize = customOrder[5];
+        String cakeShape = customOrder[6];
+        String deliveryDate = customOrder[7];
+
+        return  new CustomCakeOrder(orderId,userId,occasion,cakeFlavour,filling,cakeSize,cakeShape,deliveryDate);
+    }
+
+    // Write in a file
+    public  void saveInFile() throws IOException{
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filepath,true))){
+            writer.write(this.toString());
+            writer.newLine();
+        }
+    // Testing fromStringToObject method
+        CustomCakeOrder co = new CustomCakeOrder(orderId,userId,occasion,cakeFlavour,filling,cakeSize,cakeShape,deliveryDate);
+        String str = co.toString();
+        CustomCakeOrder co1 = CustomCakeOrder.fromStringToObject(str);
+        System.out.println(co1.getOccasion());
 
     }
+}
 
 
 

@@ -390,9 +390,21 @@
 
                         <!-- Baking Tab -->
                         <div class="tab-pane fade" id="baking" role="tabpanel">
+                            <% if (!orders_baking.isEmpty()) { %>
+                            <div class="mb-3">
+                                <form action="<%=request.getContextPath()%>/OrderServlet" method="post">
+                                    <input type="hidden" name="action" value="baking">
+                                    <button type="submit" class="btn btn-primary">
+                                        Process Next Order (Mark as Completed)
+                                    </button>
+                                </form>
+                            </div>
+                            <% } %>
+
                             <table class="table table-hover table-bordered">
                                 <thead class="table-dark">
                                 <tr>
+                                    <th>#</th>
                                     <th>Order ID</th>
                                     <th>User ID</th>
                                     <th>Item ID</th>
@@ -401,12 +413,16 @@
                                     <th>Total</th>
                                     <th>Order Date</th>
                                     <th>Delivery Date</th>
-                                    <th>Actions</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <% for (Order order : orders_baking) { %>
+
+                                <%
+                                    position = 1;
+                                    for (Order order : orders_baking) {
+                                %>
                                 <tr>
+                                    <td><%= position++ %></td>
                                     <td><%=order.getOrderId()%></td>
                                     <td><%=order.getUserId()%></td>
                                     <td><%=order.getItemId()%></td>
@@ -415,9 +431,6 @@
                                     <td><%=order.getTotal()%></td>
                                     <td><%=order.getOrderDate()%></td>
                                     <td><%=order.getDeliveryDate()%></td>
-                                    <td>
-                                        <!-- Placeholder for baking actions -->
-                                    </td>
                                 </tr>
                                 <% } %>
                                 </tbody>

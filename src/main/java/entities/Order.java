@@ -8,14 +8,14 @@ import java.time.format.*;
 import utils.ItemCatalog;
 
 public class Order {
-    private String orderId;
-    private int userId;
-    private String itemId;
-    private int quantity;
-    private String status;
-    private double total;
-    private String orderDate;
-    private String deliveryDate;
+    protected String orderId;
+    protected int userId;
+    protected String itemId;
+    protected int quantity;
+    protected String status;
+    protected double total;
+    protected String orderDate;
+    protected String deliveryDate;
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -139,3 +139,4 @@ public class Order {
         }
     }
 }
+

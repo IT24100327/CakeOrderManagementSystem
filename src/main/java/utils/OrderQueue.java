@@ -52,8 +52,6 @@ public class OrderQueue {
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                try {
-                    if (!line.trim().isEmpty()) {
                         Order order = fromString(line);
                         orderQueue.add(order);
 
@@ -61,11 +59,6 @@ public class OrderQueue {
                         String idNumStr = order.getOrderId().replace("ORD", "");
                         int idNum = Integer.parseInt(idNumStr);
                         lastOrderId = Math.max(lastOrderId, idNum);
-                    }
-                } catch (Exception e) {
-                    System.err.println("Error parsing order from line: " + line);
-                    e.printStackTrace();
-                }
             }
         }
     }

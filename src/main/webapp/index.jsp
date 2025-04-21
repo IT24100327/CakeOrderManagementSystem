@@ -209,7 +209,7 @@ String userId = (String) session.getAttribute("ID");
                 <img class="card-img-top w-100 d-block" src="assets/img/clipboard-image.png" />
                 <div class="card-body">
                     <h4 class="card-title" style="font-family: 'Abril Fatface', serif; color: var(--bs-primary);"><%=item.getName()%></h4>
-                    <p class="card-text" style="font-family: Montserrat, sans-serif; color: var(--bs-primary);"><%=item.getDescription()%>></p>
+                    <p class="card-text" style="font-family: Montserrat, sans-serif; color: var(--bs-primary);"><%=item.getDescription()%></p>
                     <p class="price">Rs. <%= String.format("%.2f", item.getPrice()) %></p>
                 </div>
                 <button class="btn btn-primary border rounded-0" type="button" data-bs-toggle="modal" data-bs-target="#<%= item.getItemId() %>">Order Now</button>
@@ -228,7 +228,7 @@ String userId = (String) session.getAttribute("ID");
                                     </div>
                                     <div class="col-md-7">
                                         <h1 class="display-4" style="font-family: 'Abril Fatface', serif; color: var(--bs-primary);"><%=item.getName()%></h1>
-                                        <p class="lead" style="color: rgb(136, 80, 48);"><%=item.getDescription()%>></p>
+                                        <p class="lead" style="color: rgb(136, 80, 48);"><%=item.getDescription()%></p>
                                         <p class="price">Rs. <%= String.format("%.2f", item.getPrice()) %></p>
 
                                         <form action="OrderServlet" method="POST">

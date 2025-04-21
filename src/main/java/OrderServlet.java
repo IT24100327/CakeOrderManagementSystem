@@ -15,7 +15,6 @@ import utils.OrderQueue;
 
 @WebServlet("/OrderServlet")
 public class OrderServlet extends HttpServlet {
-    OrderQueue orderQueue = new OrderQueue();
     ItemCatalog catalog = new ItemCatalog();
 
     public void init() {

@@ -58,7 +58,7 @@
 </head>
 <body>
 <div class="container">
-    <h1>Test Item Entry Form</h1>
+    <h1>Update Item</h1>
 
     <form action="../processItem" method="post">
 

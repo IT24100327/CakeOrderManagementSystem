@@ -62,7 +62,7 @@ public class ItemCatalog {
     }
 
     // Find an item by its ID
-    public static Item findItemById(String itemId) {
+    public Item findItemById(String itemId) {
         for (Item item : items) {
             if (item.getItemId().equals(itemId)) {
                 return item;

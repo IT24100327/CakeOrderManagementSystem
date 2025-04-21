@@ -4,6 +4,8 @@
 <%@ page import="utils.ItemCatalog" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.ArrayList" %>
+<%@ page import="java.time.LocalDate" %>
+<%@ page import="java.time.format.DateTimeFormatter" %>
 
 <%
     ItemCatalog catalog = new ItemCatalog();
@@ -51,6 +53,7 @@
 <%
 String email = (String) session.getAttribute("email");
 String ROLE = (String) session.getAttribute("ROLE");
+String userId = (String) session.getAttribute("ID");
 %>
 
     <nav class="navbar navbar-expand-md bg-primary py-3" style="background: var(--bs-secondary);color: var(--bs-primary);">
@@ -80,7 +83,7 @@ String ROLE = (String) session.getAttribute("ROLE");
                         if(email != null){
                     %>
                     <li class="nav-item">
-                        <a class="nav-link me-5" href="#" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-size: 12px;font-weight: bold;">PROFILE</a>
+                        <a class="nav-link me-5" href="profile.jsp" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-size: 12px;font-weight: bold;">PROFILE</a>
                     </li>
                     <%
                         }
@@ -206,13 +209,13 @@ String ROLE = (String) session.getAttribute("ROLE");
                 <img class="card-img-top w-100 d-block" src="assets/img/clipboard-image.png" />
                 <div class="card-body">
                     <h4 class="card-title" style="font-family: 'Abril Fatface', serif; color: var(--bs-primary);"><%=item.getName()%></h4>
-                    <p class="card-text" style="font-family: Montserrat, sans-serif; color: var(--bs-primary);"><%=item.getDescription()%>></p>
+                    <p class="card-text" style="font-family: Montserrat, sans-serif; color: var(--bs-primary);"><%=item.getDescription()%></p>
                     <p class="price">Rs. <%= String.format("%.2f", item.getPrice()) %></p>
                 </div>
-                <button class="btn btn-primary border rounded-0" type="button" data-bs-toggle="modal" data-bs-target="#chocolateGanacheModal">Order Now</button>
+                <button class="btn btn-primary border rounded-0" type="button" data-bs-toggle="modal" data-bs-target="#<%= item.getItemId() %>">Order Now</button>
 
                 <!-- Modal -->
-                <div id="chocolateGanacheModal" class="modal fade" role="dialog" tabindex="-1">
+                <div id="<%= item.getItemId() %>" class="modal fade" role="dialog" tabindex="-1">
                     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
                         <div class="modal-content">
                             <div class="modal-header mb-0 pb-0" style="border-top-left-radius: 0px; border-top-right-radius: 0px; border-right-style: none; border-bottom-style: none;">
@@ -225,20 +228,31 @@ String ROLE = (String) session.getAttribute("ROLE");
                                     </div>
                                     <div class="col-md-7">
                                         <h1 class="display-4" style="font-family: 'Abril Fatface', serif; color: var(--bs-primary);"><%=item.getName()%></h1>
-                                        <p class="lead" style="color: rgb(136, 80, 48);"><%=item.getDescription()%>></p>
+                                        <p class="lead" style="color: rgb(136, 80, 48);"><%=item.getDescription()%></p>
                                         <p class="price">Rs. <%= String.format("%.2f", item.getPrice()) %></p>
-                                        <form>
+
+                                        <form action="OrderServlet" method="POST">
+                                            <input type="hidden" name="action" value="place">
+                                            <input type="hidden" name="itemPrice" value="<%= item.getPrice() %>">
+                                            <input type="hidden" name="itemId" value="<%= item.getItemId() %>">
+                                            <input type="hidden" name="userId" value=<%=userId%>>
+
                                             <div class="mb-3">
-                                                <label for="sizeSelect" class="form-label">Select Size:</label>
-                                                <select class="form-select" id="sizeSelect">
-                                                    <optgroup label="Choose a size">
-                                                        <option value="12" selected>Small (500g)</option>
-                                                        <option value="13">Medium (1KG)</option>
-                                                        <option value="14">Large (2KG)</option>
-                                                    </optgroup>
-                                                </select>
+                                                <label for="quantity" class="form-label">Quantity:</label>
+                                                <input type="number" class="form-control" id="quantity" name="quantity" min="1" value="1" required>
                                             </div>
-                                            <button class="btn btn-primary btn-lg w-100" type="button">Order Now</button>
+
+                                            <div class="mb-3">
+                                                <label for="deliveryDate" class="form-label">Delivery Date:</label>
+                                                <%
+                                                    // Set min date to tomorrow
+                                                    LocalDate tomorrow = LocalDate.now().plusDays(1);
+                                                    String tomorrowStr = tomorrow.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                                                %>
+                                                <input type="date" class="form-control" id="deliveryDate" name="deliveryDate" min="<%= tomorrowStr %>" required>
+                                            </div>
+
+                                            <button class="btn btn-primary py-2 px-4 fw-bold" type="submit">Order Now</button>
                                         </form>
                                     </div>
                                 </div>
@@ -286,10 +300,10 @@ String ROLE = (String) session.getAttribute("ROLE");
                     <p class="card-text" style="color: var(--bs-primary);font-family: Montserrat, sans-serif;"><%=item.getDescription()%></p>
                     <p class="price">Rs. <%= String.format("%.2f", item.getPrice()) %></p>
                 </div>
-                <button class="btn btn-primary border rounded-0" type="button" data-bs-toggle="modal" data-bs-target="#chickenPuffsModal">Order Now</button>
+                <button class="btn btn-primary border rounded-0" type="button" data-bs-toggle="modal" data-bs-target="#<%= item.getItemId() %>">Order Now</button>
 
                 <!-- Modal -->
-                <div id="chickenPuffsModal" class="modal fade" role="dialog" tabindex="-1">
+                <div id="<%= item.getItemId() %>" class="modal fade" role="dialog" tabindex="-1">
                     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
                         <div class="modal-content">
                             <div class="modal-header mb-0 pb-0" style="border-top-left-radius: 0px; border-top-right-radius: 0px; border-right-style: none; border-bottom-style: none;">
@@ -304,17 +318,32 @@ String ROLE = (String) session.getAttribute("ROLE");
                                         <h1 class="display-4" style="font-family: 'Abril Fatface', serif; color: var(--bs-primary);"><%=item.getName()%></h1>
                                         <p class="lead" style="color: rgb(136, 80, 48);"><%=item.getDescription()%></p>
                                         <p class="price">Rs. <%= String.format("%.2f", item.getPrice()) %></p>
-                                        <form>
+
+
+                                        <form action="OrderServlet" method="POST">
+                                            <input type="hidden" name="action" value="place">
+                                            <input type="hidden" name="itemPrice" value="<%= item.getPrice() %>">
+                                            <input type="hidden" name="itemId" value="<%= item.getItemId() %>">
+                                            <input type="hidden" name="userId" value=<%=userId%>>
+
                                             <div class="mb-3">
-                                                <label for="sizeSelect" class="form-label">Select Size:</label>
-                                                <select class="form-select" id="sizeSelect">
-                                                    <option value="12" selected>Small (500g)</option>
-                                                    <option value="13">Medium (1KG)</option>
-                                                    <option value="14">Large (2KG)</option>
-                                                </select>
+                                                <label for="quantity" class="form-label">Quantity:</label>
+                                                <input type="number" class="form-control" id="quantity" name="quantity" min="1" value="1" required>
                                             </div>
-                                            <button class="btn btn-primary btn-lg w-100" type="button">Order Now</button>
+
+                                            <div class="mb-3">
+                                                <label for="deliveryDate" class="form-label">Delivery Date:</label>
+                                                <%
+                                                    // Set min date to tomorrow
+                                                    LocalDate tomorrow = LocalDate.now().plusDays(1);
+                                                    String tomorrowStr = tomorrow.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                                                %>
+                                                <input type="date" class="form-control" id="deliveryDate" name="deliveryDate" min="<%= tomorrowStr %>" required>
+                                            </div>
+
+                                            <button class="btn btn-primary py-2 px-4 fw-bold" type="submit">Order Now</button>
                                         </form>
+
                                     </div>
                                 </div>
                             </div>
@@ -345,10 +374,10 @@ String ROLE = (String) session.getAttribute("ROLE");
                     <p class="card-text" style="font-family: Montserrat, sans-serif;color: var(--bs-primary);"><%=item.getDescription()%></p>
                     <p class="price">Rs. <%= String.format("%.2f", item.getPrice()) %></p>
                 </div>
-                <button class="btn btn-primary border rounded-0" type="button" data-bs-toggle="modal" data-bs-target="#chocolateChipCookiesModal">Order Now</button>
+                <button class="btn btn-primary border rounded-0" type="button" data-bs-toggle="modal" data-bs-target="#<%= item.getItemId() %>">Order Now</button>
 
                 <!-- Modal -->
-                <div id="chocolateChipCookiesModal" class="modal fade" role="dialog" tabindex="-1">
+                <div id="<%= item.getItemId() %>" class="modal fade" role="dialog" tabindex="-1">
                     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
                         <div class="modal-content">
                             <div class="modal-header mb-0 pb-0" style="border-top-left-radius: 0px; border-top-right-radius: 0px; border-right-style: none; border-bottom-style: none;">
@@ -363,25 +392,38 @@ String ROLE = (String) session.getAttribute("ROLE");
                                         <h1 class="display-4" style="font-family: 'Abril Fatface', serif; color: var(--bs-primary);"><%=item.getName()%></h1>
                                         <p class="lead" style="color: rgb(136, 80, 48);"><%=item.getDescription()%></p>
                                         <p class="price">Rs. <%= String.format("%.2f", item.getPrice()) %></p>
-                                        <form>
+
+                                        <form action="OrderServlet" method="POST">
+                                            <input type="hidden" name="action" value="place">
+                                            <input type="hidden" name="itemPrice" value="<%= item.getPrice() %>">
+                                            <input type="hidden" name="itemId" value="<%= item.getItemId() %>">
+                                            <input type="hidden" name="userId" value=<%=userId%>>
+
                                             <div class="mb-3">
-                                                <label for="sizeSelect" class="form-label">Select Size:</label>
-                                                <select class="form-select" id="sizeSelect">
-                                                    <optgroup label="Choose a size">
-                                                        <option value="12" selected>Small (500g)</option>
-                                                        <option value="13">Medium (1KG)</option>
-                                                        <option value="14">Large (2KG)</option>
-                                                    </optgroup>
-                                                </select>
+                                                <label for="quantity" class="form-label">Quantity:</label>
+                                                <input type="number" class="form-control" id="quantity" name="quantity" min="1" value="1" required>
                                             </div>
-                                            <button class="btn btn-primary btn-lg w-100" type="button">Order Now</button>
+
+                                            <div class="mb-3">
+                                                <label for="deliveryDate" class="form-label">Delivery Date:</label>
+                                                <%
+                                                    // Set min date to tomorrow
+                                                    LocalDate tomorrow = LocalDate.now().plusDays(1);
+                                                    String tomorrowStr = tomorrow.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                                                %>
+                                                <input type="date" class="form-control" id="deliveryDate" name="deliveryDate" min="<%= tomorrowStr %>" required>
+                                            </div>
+
+                                            <button class="btn btn-primary py-2 px-4 fw-bold" type="submit">Order Now</button>
                                         </form>
+
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
 

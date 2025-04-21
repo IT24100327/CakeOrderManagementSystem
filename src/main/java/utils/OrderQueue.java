@@ -52,22 +52,13 @@ public class OrderQueue {
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                try {
-                    if (!line.trim().isEmpty()) {
                         Order order = fromString(line);
-                        if (order != null) {
-                            orderQueue.add(order);
+                        orderQueue.add(order);
 
-                            // Update lastOrderId
-                            String idNumStr = order.getOrderId().replace("ORD", "");
-                            int idNum = Integer.parseInt(idNumStr);
-                            lastOrderId = Math.max(lastOrderId, idNum);
-                        }
-                    }
-                } catch (Exception e) {
-                    System.err.println("Error parsing order from line: " + line);
-                    e.printStackTrace();
-                }
+                        // Update lastOrderId
+                        String idNumStr = order.getOrderId().replace("ORD", "");
+                        int idNum = Integer.parseInt(idNumStr);
+                        lastOrderId = Math.max(lastOrderId, idNum);
             }
         }
     }
@@ -98,10 +89,15 @@ public class OrderQueue {
     }
 
     public static void processOrder(Order orderToProcess) throws IOException {
-        if (orderToProcess != null) {
+        if (orderToProcess != null && orderToProcess.getStatus().equals("pending")) {
+            orderToProcess.setStatus("to-process");
+        } else if (orderToProcess != null && orderToProcess.getStatus().equals("to-process")) {
             orderToProcess.setStatus("baking");
-            saveToFile();
+        } else if (orderToProcess != null && orderToProcess.getStatus().equals("baking")) {
+            orderToProcess.setStatus("finished");
         }
+
+        saveToFile();
     }
 
     public static void cancelOrder(String orderId) {

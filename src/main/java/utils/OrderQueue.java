@@ -1,13 +1,11 @@
 package utils;
 
-import entities.Item;
 import entities.Order;
 
 import java.io.*;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import static entities.Order.fromString;
 
 public class OrderQueue {
     private static Queue<Order> orderQueue = new LinkedList<>(); // Initialize here
@@ -15,6 +13,14 @@ public class OrderQueue {
     private static int lastOrderId = 0;
 
     public OrderQueue() {
+    }
+
+    public static int getLastOrderId() {
+        return lastOrderId;
+    }
+
+    public static void setLastOrderId(int lastOrderId) {
+        OrderQueue.lastOrderId = lastOrderId;
     }
 
     public static String generateOrderId() {
@@ -47,40 +53,57 @@ public class OrderQueue {
             return;
         }
 
-        // Clear existing orders before loading
         orderQueue.clear();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                try {
-                    if (!line.trim().isEmpty()) {
-                        Order order = fromString(line);
-                        if (order != null) {
-                            orderQueue.add(order);
+                        Order order = Order.fromString(line);
+                        orderQueue.add(order);
 
-                            // Update lastOrderId
-                            String idNumStr = order.getOrderId().replace("ORD", "");
-                            int idNum = Integer.parseInt(idNumStr);
-                            lastOrderId = Math.max(lastOrderId, idNum);
-                        }
-                    }
-                } catch (Exception e) {
-                    System.err.println("Error parsing order from line: " + line);
-                    e.printStackTrace();
-                }
+                        // Update lastOrderId
+                        String idNumStr = order.getOrderId().replace("ORD", "");
+                        int idNum = Integer.parseInt(idNumStr);
+                        lastOrderId = Math.max(lastOrderId, idNum);
             }
         }
     }
 
-    public static void processNextOrder() throws IOException {
-        if (!orderQueue.isEmpty()) {
-            Order order = orderQueue.poll();
-            if (order != null) {
-                order.setStatus("Baking");
-                saveToFile();
+    // Find an item by its ID
+    public static Order findOrderById(String orderId) {
+        for (Order order : orderQueue) {
+            if (order.getOrderId().equals(orderId)) {
+                return order;
             }
         }
+        return null;
+    }
+
+    public static void sortOrderByDeliveryDate() {
+        BubbleSorter.bubbleSortByDeliveryDate(orderQueue);
+    }
+
+    public static void updateItem(String orderId, int quantity, String deliveryDate, double newItemPrice) {
+        Order order = findOrderById(orderId);
+        if (order != null) {
+            order.setQuantity(quantity);
+            order.setDeliveryDate(deliveryDate);
+            order.setTotal(newItemPrice);
+        }
+
+        saveToFile();
+    }
+
+    public static void processOrder(Order orderToProcess) throws IOException {
+        if (orderToProcess != null && orderToProcess.getStatus().equals("pending")) {
+            orderToProcess.setStatus("to-process");
+        } else if (orderToProcess != null && orderToProcess.getStatus().equals("to-process")) {
+            orderToProcess.setStatus("baking");
+        } else if (orderToProcess != null && orderToProcess.getStatus().equals("baking")) {
+            orderToProcess.setStatus("finished");
+        }
+
+        saveToFile();
     }
 
     public static void cancelOrder(String orderId) {

@@ -31,7 +31,7 @@ public class Order {
     }
 
     // constructor for make object from string
-    public Order(String orderId, int userId, String itemId, int quantity, String status, double total, String orderDate,  String deliveryDate) {
+    public Order(String orderId, int userId, String itemId, int quantity, String status, double total, String orderDate, String deliveryDate) {
         this.orderId = orderId;
         this.userId = userId;
         this.itemId = itemId;
@@ -119,7 +119,7 @@ public class Order {
     }
 
     // Convert a string to an Order object
-    public static Order fromString(String str) {
+    public static Order fromString(String str) throws IOException {
         String[] parts = str.split("\\|");
         if (parts.length < 8) {
             throw new IllegalArgumentException("Invalid order string format");
@@ -127,11 +127,8 @@ public class Order {
 
         String orderId = parts[0];
         int userId = Integer.parseInt(parts[1]);
-
         String itemId = parts[2];
-
         String status = parts[3];
-
         int quantity = Integer.parseInt(parts[4]);
         double total = Double.parseDouble(parts[5]);
         String orderDate = parts[6];
@@ -140,11 +137,5 @@ public class Order {
         return new Order(orderId, userId, itemId, quantity, status, total, orderDate, deliveryDate);
     }
 
-    // Save order to file
-    public void saveToFile(String filename) throws IOException {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename, true))) {
-            writer.write(this.toString());
-            writer.newLine();
-        }
-    }
 }
+

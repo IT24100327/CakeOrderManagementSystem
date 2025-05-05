@@ -4,7 +4,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Test Item Data Entry</title>
+    <title>Add Item</title>
     <style>
         body {
             font-family: Arial, sans-serif;

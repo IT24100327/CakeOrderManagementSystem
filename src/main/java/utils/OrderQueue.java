@@ -1,13 +1,11 @@
 package utils;
 
-import entities.Item;
 import entities.Order;
 
 import java.io.*;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import static entities.Order.fromString;
 
 public class OrderQueue {
     private static Queue<Order> orderQueue = new LinkedList<>(); // Initialize here
@@ -17,7 +15,15 @@ public class OrderQueue {
     public OrderQueue() {
     }
 
-    private static String generateOrderId() {
+    public static int getLastOrderId() {
+        return lastOrderId;
+    }
+
+    public static void setLastOrderId(int lastOrderId) {
+        OrderQueue.lastOrderId = lastOrderId;
+    }
+
+    public static String generateOrderId() {
         lastOrderId++;
         return String.format("ORD%04d", lastOrderId);
     }
@@ -52,7 +58,7 @@ public class OrderQueue {
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                        Order order = fromString(line);
+                        Order order = Order.fromString(line);
                         orderQueue.add(order);
 
                         // Update lastOrderId
@@ -74,7 +80,7 @@ public class OrderQueue {
     }
 
     public static void sortOrderByDeliveryDate() {
-        OrderSorter.bubbleSortByDeliveryDate(orderQueue);
+        BubbleSorter.bubbleSortByDeliveryDate(orderQueue);
     }
 
     public static void updateItem(String orderId, int quantity, String deliveryDate, double newItemPrice) {

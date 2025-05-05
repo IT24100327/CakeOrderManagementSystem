@@ -1,10 +1,18 @@
-<%@ page import="utils.OrderQueue" %>
 <%@ page import="java.util.LinkedList" %>
-<%@ page import="entities.Order" %>
 <%@ page import="java.util.Queue" %>
+
+<%@ page import="entities.Order" %>
+<%@ page import="utils.OrderQueue" %>
+<%@ page import="entities.Item" %>
+<%@ page import="utils.ItemCatalog" %>
+
 
 <%
     Queue<Order> orders = null;
+
+    ItemCatalog catalog = new ItemCatalog();
+    catalog.loadFromFile();
+
 
     try {
         OrderQueue.loadFromFile();
@@ -60,7 +68,7 @@
                     <a class="nav-link me-5" href="<%= request.getContextPath() %>/about" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-size: 12px;font-weight: bold;">ABOUT</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link me-5" href="<%= request.getContextPath() %>/customcake" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-size: 12px;font-weight: bold;">CUSTOM CAKES</a>
+                    <a class="nav-link me-5" href="<%= request.getContextPath() %>/customCake.jsp" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-size: 12px;font-weight: bold;">CUSTOM CAKES</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link me-5" href="<%= request.getContextPath() %>/reviews" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-size: 12px;font-weight: bold;">REVIEWS</a>
@@ -143,7 +151,7 @@
                                 </div>
                             </div>
                         </div>
-                        <h1 class="text-dark mb-4" style="font-family: 'Abril Fatface', serif;"><span style="color: rgb(136, 80, 48);">Orders</span></h1>
+                        <h1 class="text-dark mb-4" style="font-family: 'Abril Fatface', serif;"><span style="color: rgb(136, 80, 48);">My Orders</span></h1>
                         <div class="card shadow mb-5">
                             <div class="card-body">
                                 <div class="row">
@@ -165,11 +173,15 @@
 
                                                 <% for (Order order : orders) {
                                                     if (order.getUserId() == Integer.parseInt(userId)) { %>
+
+                                                <% Item item = catalog.findItemById(order.getItemId());
+
+                                                %>
                                                 <tbody>
                                                 <tr>
                                                     <td style="font-family: Montserrat, sans-serif;"><%=order.getOrderId()%></td>
                                                     <td style="font-family: Montserrat, sans-serif;"><%=order.getItemId()%></td>
-                                                    <td style="font-family: Montserrat, sans-serif;">do later</td>
+                                                    <td style="font-family: Montserrat, sans-serif;"><%= item.getName() %></td>
                                                     <td style="font-family: Montserrat, sans-serif;"><%=order.getQuantity()%></td>
                                                     <td style="font-family: Montserrat, sans-serif;"><%=order.getTotal()%></td>
                                                     <td style="font-family: Montserrat, sans-serif;"><%=order.getDeliveryDate()%></td>
@@ -179,6 +191,9 @@
 
                                                         <form action="payment_details.jsp" method="post">
                                                             <input type="hidden" name="itemId" value="<%=order.getItemId()%>">
+                                                            <input type="hidden" name="quantity" value="<%=order.getQuantity()%>">
+                                                            <input type="hidden" name="total" value="<%=order.getTotal()%>">
+                                                            <input type="hidden" name="orderId" value="<%=order.getOrderId()%>">
                                                             <input type="submit" name="submit" value="Pay Now" class="btn btn-primary btn-sm" style="font-family: Raleway, sans-serif;">
                                                         </form>
 

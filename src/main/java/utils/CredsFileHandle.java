@@ -8,7 +8,7 @@ import java.util.List;
 
 public class CredsFileHandle {
 
-    private final String filePath = "E:\\MyWork\\SLIIT\\OneDrive - Sri Lanka Institute of Information Technology\\Y1S2\\OOP\\Project\\CakeOrderManagementSystem\\data\\users.txt";
+    private static final String filePath = "E:\\MyWork\\SLIIT\\OneDrive - Sri Lanka Institute of Information Technology\\Y1S2\\OOP\\Project\\CakeOrderManagementSystem\\data\\users.txt";
 
     PasswordUtils passwordUtils = new PasswordUtils();
 
@@ -151,7 +151,7 @@ public class CredsFileHandle {
         return userUpdated;
     }
 
-    public String getID() {
+    public static String getID() {
         File file = new File(filePath);
         if (!file.exists()) {
             System.out.println("File does not exist.");

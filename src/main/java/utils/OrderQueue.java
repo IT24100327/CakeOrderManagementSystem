@@ -17,7 +17,7 @@ public class OrderQueue {
     public OrderQueue() {
     }
 
-    private static String generateOrderId() {
+    public static String generateOrderId() {
         lastOrderId++;
         return String.format("ORD%04d", lastOrderId);
     }

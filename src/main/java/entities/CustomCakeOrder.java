@@ -4,8 +4,9 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.*;
 
-public class CustomCakeOrder extends Order{
 
+public class CustomCakeOrder extends Order{
+    private String customCakeId;
     private String occasion;
     private String cakeFlavour;
     private String filling;
@@ -14,10 +15,13 @@ public class CustomCakeOrder extends Order{
     private double basePrice;
     private double priceWithFlavour;
     public static String filepath ="E:\\custumCakeOrder\\Orders.txt";
+    private String[] customOrder;
 
 
-    public CustomCakeOrder(String  orderId,int userId,String occasion,String cakeFlavour,String filling,String cakeSize,String cakeShape,String deliveryDate) throws IOException {
-        super(orderId,userId);
+
+
+    public CustomCakeOrder(String userId, String customCakeId, int quantity, String status, double total, String deliveryDate, String occasion, String cakeFlavour, String filling ,String cakeSize, String cakeShape) throws IOException {
+        super(Integer.parseInt(userId), customCakeId,  quantity,  status, total, deliveryDate);
         this.occasion = occasion;
         this.cakeFlavour = cakeFlavour;
         this.filling = filling;
@@ -25,6 +29,7 @@ public class CustomCakeOrder extends Order{
         this.cakeShape = cakeShape;
         this.deliveryDate = deliveryDate;
     }
+
     public CustomCakeOrder(int userId,String orderId,String occasion,String cakeFlavour,String filling,String cakeSize,String cakeShape,String deliveryDate) throws IOException {
         super(orderId, userId);
         this.occasion = occasion;
@@ -41,6 +46,58 @@ public class CustomCakeOrder extends Order{
 
     public void setOccasion(String occasion) {
         this.occasion = occasion;
+    }
+
+    public String getCustomCakeId() {
+        return customCakeId;
+    }
+
+    public void setCustomCakeId(String customCakeId) {
+        this.customCakeId = customCakeId;
+    }
+
+    public String getCakeFlavour() {
+        return cakeFlavour;
+    }
+
+    public void setCakeFlavour(String cakeFlavour) {
+        this.cakeFlavour = cakeFlavour;
+    }
+
+    public String getFilling() {
+        return filling;
+    }
+
+    public void setFilling(String filling) {
+        this.filling = filling;
+    }
+
+    public String getCakeSize() {
+        return cakeSize;
+    }
+
+    public void setCakeSize(String cakeSize) {
+        this.cakeSize = cakeSize;
+    }
+
+    public String getCakeShape() {
+        return cakeShape;
+    }
+
+    public void setCakeShape(String cakeShape) {
+        this.cakeShape = cakeShape;
+    }
+
+    public double getBasePrice() {
+        return basePrice;
+    }
+
+    public void setBasePrice(double basePrice) {
+        this.basePrice = basePrice;
+    }
+
+    public void setPriceWithFlavour(double priceWithFlavour) {
+        this.priceWithFlavour = priceWithFlavour;
     }
 
     public double getPriceWithFlavour() {
@@ -123,7 +180,7 @@ public class CustomCakeOrder extends Order{
     // Converting object in to readable object
     @Override
     public String toString(){
-        return orderId + "|" + userId + "|" + occasion + "|" + cakeFlavour + "|" + filling + "|" + cakeSize + "|" + cakeShape + "|" + deliveryDate;
+        return customCakeId + "|" + userId + "|" + occasion + "|" + cakeFlavour + "|" + filling + "|" + cakeSize + "|" + cakeShape + "|" + deliveryDate;
     }
 
 
@@ -141,8 +198,9 @@ public class CustomCakeOrder extends Order{
         String cakeShape = customOrder[6];
         String deliveryDate = customOrder[7];
 
-        return  new CustomCakeOrder(orderId,userId,occasion,cakeFlavour,filling,cakeSize,cakeShape,deliveryDate);
+        return  new CustomCakeOrder(userId,orderId,occasion,cakeFlavour,filling,cakeSize,cakeShape,deliveryDate);
     }
+
 
     // Write in a file
     public  void saveInFile() throws IOException{
@@ -150,12 +208,6 @@ public class CustomCakeOrder extends Order{
             writer.write(this.toString());
             writer.newLine();
         }
-    // Testing fromStringToObject method
-        CustomCakeOrder co = new CustomCakeOrder(orderId,userId,occasion,cakeFlavour,filling,cakeSize,cakeShape,deliveryDate);
-        String str = co.toString();
-        CustomCakeOrder co1 = CustomCakeOrder.fromStringToObject(str);
-        System.out.println(co1.getOccasion());
-
     }
 }
 

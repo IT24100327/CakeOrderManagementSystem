@@ -74,7 +74,7 @@ String userId = (String) session.getAttribute("ID");
                         <a class="nav-link me-5" href="<%= request.getContextPath() %>/about" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-size: 12px;font-weight: bold;">ABOUT</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link me-5" href="<%= request.getContextPath() %>/customcake" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-size: 12px;font-weight: bold;">CUSTOM CAKES</a>
+                        <a class="nav-link me-5" href="<%= request.getContextPath() %>/customCake.jsp" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-size: 12px;font-weight: bold;">CUSTOM CAKES</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link me-5" href="<%= request.getContextPath() %>/reviews" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;font-size: 12px;font-weight: bold;">REVIEWS</a>

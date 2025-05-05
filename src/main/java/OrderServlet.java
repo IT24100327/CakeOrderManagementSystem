@@ -1,4 +1,5 @@
 import entities.Item;
+import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -46,14 +47,18 @@ public class OrderServlet extends HttpServlet {
             System.out.println("Item ID: " + itemId);
 
             double total = quantity * itemPrice;
+            request.setAttribute("total", total);
             System.out.println("Total calculated: " + total);
 
             Order newOrder = new Order(userId, itemId, quantity, status, total, deliveryDate);
             System.out.println("Created Order Object");
             OrderQueue.add(newOrder);
+            request.setAttribute("orderId", newOrder.getOrderId());
             System.out.println("Order added: " + newOrder.getOrderId());
             System.out.println("Redirecting...");
-            response.sendRedirect("index.jsp");
+
+            RequestDispatcher dispatcher = request.getRequestDispatcher("payment_details.jsp");
+            dispatcher.forward(request, response);
 
         } else if ("update".equals(action)) {
             String orderId = request.getParameter("orderId");

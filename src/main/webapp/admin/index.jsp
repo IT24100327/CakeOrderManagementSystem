@@ -6,6 +6,8 @@
 <%@ page import="utils.OrderQueue" %>
 <%@ page import="java.util.Queue" %>
 <%@ page import="entities.Order" %>
+<%@ page import="entities.Payment" %>
+<%@ page import="utils.paymentHandle" %>
 <%@ page import="java.util.LinkedList" %>
 <%@ page import="java.time.LocalDate" %>
 <%@ page import="java.time.format.DateTimeFormatter" %>
@@ -14,6 +16,10 @@
     ItemCatalog catalog = new ItemCatalog();
     catalog.loadFromFile();
     List<Item> item = catalog.getAllItems();
+
+    paymentHandle.loadFromFile();
+    paymentHandle.sortOrderByPaymentDate();
+    LinkedList<Payment> payments = paymentHandle.getPayments();
 
     Queue<Order> orders = null;
     Queue<Order> orders_pending = new LinkedList<>();
@@ -183,6 +189,9 @@
                 </li>
                 <li class="nav-item" role="presentation">
                     <a class="nav-link" id="items-tab" data-bs-toggle="tab" href="#items" role="tab" style="font-size: 28px;">Items</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" id="payments-tab" data-bs-toggle="tab" href="#payments" role="tab" style="font-size: 28px;">Payments</a>
                 </li>
                 <li class="nav-item" role="presentation">
                     <a class="nav-link" id="reviews-tab" data-bs-toggle="tab" href="#reviews" role="tab" style="font-size: 28px;">Reviews</a>
@@ -558,6 +567,83 @@
 
                     <p>Bakery Items go Here</p>
                 </div>
+
+                <div class="tab-pane fade" id="payments" role="tabpanel">
+                    <div class="align-items-stretch">
+                        <h4 class="mb-4">Payments</h4>
+                        <table class="table table-striped table-hover">
+                            <thead>
+                            <tr>
+                                <th scope="col">Payment ID</th>
+                                <th scope="col">Order ID</th>
+                                <th scope="col">Amount</th>
+                                <th scope="col">Payment Method</th>
+                                <th scope="col">Payment Date</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Refund</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <% for (Payment payment : payments) {
+                                if (payment != null) { %>
+                            <tr>
+                                <td><%= payment.getPaymentId() %></td>
+                                <td><%= payment.getOrderId() %></td>
+                                <td><%= payment.getPaymentAmount() %></td>
+                                <td><%= payment.getPaymentMethod() %></td>
+                                <td><%= payment.getPaymentDate() %></td>
+                                <td><%= payment.getPaymentStatus() %></td>
+                                <td>
+                                    <button class="btn btn-outline-danger btn-sm" type="button"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#refundModal<%= payment.getPaymentId() %>">
+                                        Refund
+                                    </button>
+                                </td>
+                            </tr>
+                            <% }
+                            } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Modals should be placed after the table, outside any loops -->
+                <% for (Payment payment : payments) {
+                    if (payment != null) { %>
+                <!-- Refund Payment Modal -->
+                <div class="modal fade" id="refundModal<%= payment.getPaymentId() %>" tabindex="-1"
+                     aria-labelledby="refundModalLabel<%= payment.getPaymentId() %>" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-danger text-white">
+                                <h5 class="modal-title" id="refundModalLabel<%= payment.getPaymentId() %>">
+                                    Refund Payment #<%= payment.getPaymentId() %>
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Are you sure you want to refund this payment?</p>
+                                <p><strong>Amount:</strong> <%= payment.getPaymentAmount() %></p>
+                                <p><strong>Method:</strong> <%= payment.getPaymentMethod() %></p>
+                                <p><strong>Payment Date:</strong> <%= payment.getPaymentDate() %></p>
+
+                                <form action="<%= request.getContextPath() %>/PaymentServlet" method="post"
+                                      id="refundForm<%= payment.getPaymentId() %>">
+                                    <input type="hidden" name="action" value="refund">
+                                    <input type="hidden" name="paymentId" value="<%= payment.getPaymentId() %>">
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" form="refundForm<%= payment.getPaymentId() %>"
+                                        class="btn btn-danger">Confirm Refund</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <% }
+                } %>
 
                 <div class="tab-pane fade" id="reviews" role="tabpanel">
                     <h4 class="mb-4">Customer Reviews</h4>

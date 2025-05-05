@@ -25,7 +25,7 @@ public class CustomOrderQueue extends OrderQueue{
         }
         customQueue.add(customCake);
         saveToFile();
-        System.out.println("Added a Custom Cake");
+        System.out.println("Added a New Custom Cake Order");
     }
 
     public static int getLastOrderId() {
@@ -51,10 +51,12 @@ public class CustomOrderQueue extends OrderQueue{
                 CustomCakeOrder order = CustomCakeOrder.fromStringToObject(line);
                 if (order.getCustomCakeId() == null || order.getCustomCakeId().isEmpty() || order.getCustomCakeId().equals("null")) {
                     order.setCustomCakeId(generateOrderId());
-                    System.out.println("Loaded from file and Saved");
+
                 }
                 customQueue.add(order);
             }
+            System.out.println("Loaded from file and Saved");
+
         }
 
     }

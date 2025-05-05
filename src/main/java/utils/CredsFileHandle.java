@@ -58,7 +58,7 @@ public class CredsFileHandle {
         }
     }
 
-    public User getUserByEmail(String email) {
+    public static User getUserByEmail(String email) {
         File file = new File(filePath);
         System.out.println("Checking file at: " + file.getAbsolutePath());
 

@@ -12,15 +12,16 @@ public class CustomCakeOrder extends Order{
     private String filling;
     private String cakeSize;
     private String cakeShape;
+    private String instructions;
     private double basePrice;
     private double priceWithFlavour;
-    public static String filepath ="E:\\custumCakeOrder\\Orders.txt";
+    public static String filepath ="E:\\customCakeOrder\\Orders.txt";
     private String[] customOrder;
 
 
 
 
-    public CustomCakeOrder(String userId, String customCakeId, int quantity, String status, double total, String deliveryDate, String occasion, String cakeFlavour, String filling ,String cakeSize, String cakeShape) throws IOException {
+    public CustomCakeOrder(String userId, String customCakeId, int quantity, String status, double total, String deliveryDate, String occasion, String cakeFlavour, String filling ,String cakeSize, String cakeShape,String instructions) throws IOException {
         super(Integer.parseInt(userId), customCakeId,  quantity,  status, total, deliveryDate);
         this.occasion = occasion;
         this.cakeFlavour = cakeFlavour;
@@ -28,6 +29,8 @@ public class CustomCakeOrder extends Order{
         this.cakeSize = cakeSize;
         this.cakeShape = cakeShape;
         this.deliveryDate = deliveryDate;
+        this.instructions = instructions;
+
     }
 
     public CustomCakeOrder(int userId,String orderId,String occasion,String cakeFlavour,String filling,String cakeSize,String cakeShape,String deliveryDate) throws IOException {
@@ -38,6 +41,7 @@ public class CustomCakeOrder extends Order{
         this.cakeSize = cakeSize;
         this.cakeShape = cakeShape;
         this.deliveryDate = deliveryDate;
+
     }
 
     public String getOccasion() {
@@ -180,7 +184,7 @@ public class CustomCakeOrder extends Order{
     // Converting object in to readable object
     @Override
     public String toString(){
-        return customCakeId + "|" + userId + "|" + occasion + "|" + cakeFlavour + "|" + filling + "|" + cakeSize + "|" + cakeShape + "|" + deliveryDate;
+        return customCakeId + "|" + userId + "|" + occasion + "|" + cakeFlavour + "|" + filling + "|" + cakeSize + "|" + cakeShape + "|" + deliveryDate + "|" + instructions;
     }
 
 
@@ -197,6 +201,7 @@ public class CustomCakeOrder extends Order{
         String cakeSize = customOrder[5];
         String cakeShape = customOrder[6];
         String deliveryDate = customOrder[7];
+
 
         return  new CustomCakeOrder(userId,orderId,occasion,cakeFlavour,filling,cakeSize,cakeShape,deliveryDate);
     }

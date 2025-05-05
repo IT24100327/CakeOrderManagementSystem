@@ -16,7 +16,7 @@ import java.io.IOException;
 @WebServlet("/customcake")
 public class CustomCakeServlet extends HttpServlet {
 
-
+    CredsFileHandle ch = new CredsFileHandle();
 
     public void init(){
        try{
@@ -48,7 +48,7 @@ public class CustomCakeServlet extends HttpServlet {
         HttpSession session = request.getSession();
         String email = (String) session.getAttribute("email");
 
-        User user = CredsFileHandle.getUserByEmail(email);
+        User user = ch.getUserByEmail(email);
         String id = String.valueOf(user.getID());
         System.out.println("User Id :" + id);
 

@@ -41,6 +41,12 @@ public class Order {
         this.orderDate = orderDate;
         this.deliveryDate = deliveryDate;
     }
+// Constructor for customCakeOrder
+    public Order(String orderId, int userId) {
+        this.orderId = orderId;
+        this.userId = userId;
+
+    }
 
     public int getUserId() {
         return userId;

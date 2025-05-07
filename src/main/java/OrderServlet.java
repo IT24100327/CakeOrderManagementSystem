@@ -77,7 +77,7 @@ public class OrderServlet extends HttpServlet {
             OrderQueue.updateItem(orderId, newQuantity, newDeliveryDate, newPrice);
             System.out.println("Order Successfully Updated: " + orderId);
             System.out.println("Redirecting...");
-            response.sendRedirect("admin/");
+            response.sendRedirect(request.getContextPath() + "/admin/ManageItems.jsp");
 
         } else if ("to-process".equals(action)) {
 
@@ -95,7 +95,7 @@ public class OrderServlet extends HttpServlet {
             System.out.println(orderToProcess.getOrderId() + " was Successfully processed");
             System.out.println(orderToProcess.getOrderId() + " : Status Changed to " + orderToProcess.getStatus());
 
-            response.sendRedirect("admin/");
+            response.sendRedirect(request.getContextPath() + "/admin/ManageOrders.jsp");
 
         } else if ("baking".equals(action)) {
 
@@ -113,7 +113,7 @@ public class OrderServlet extends HttpServlet {
             System.out.println(orderToProcess.getOrderId() + " was Successfully processed");
             System.out.println(orderToProcess.getOrderId() + " : Status Changed to " + orderToProcess.getStatus());
 
-            response.sendRedirect("admin/");
+            response.sendRedirect(request.getContextPath() + "/admin/ManageOrders.jsp");
 
         } else if ("cancel".equals(action)) {
             String orderId = request.getParameter("orderId");
@@ -121,7 +121,7 @@ public class OrderServlet extends HttpServlet {
             OrderQueue.cancelOrder(orderId);
             System.out.println("Order: " + orderId + " was Successfully cancelled");
             System.out.println("Redirecting...");
-            response.sendRedirect("admin/");
+            response.sendRedirect(request.getContextPath() + "/admin/ManageOrders.jsp");
         }
     }
 }

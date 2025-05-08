@@ -1,660 +1,235 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
-<%@ page import="java.util.ArrayList" %>
-<%@ page import="entities.Item" %>
-<%@ page import="java.util.List" %>
-<%@ page import="utils.ItemCatalog" %>
-<%@ page import="utils.OrderQueue" %>
-<%@ page import="java.util.Queue" %>
-<%@ page import="entities.Order" %>
-<%@ page import="entities.Payment" %>
-<%@ page import="utils.paymentHandle" %>
-<%@ page import="java.util.LinkedList" %>
-<%@ page import="java.time.LocalDate" %>
-<%@ page import="java.time.format.DateTimeFormatter" %>
-
-<%
-    ItemCatalog catalog = new ItemCatalog();
-    catalog.loadFromFile();
-    List<Item> item = catalog.getAllItems();
-
-    paymentHandle.loadFromFile();
-    paymentHandle.sortOrderByPaymentDate();
-    LinkedList<Payment> payments = paymentHandle.getPayments();
-
-    Queue<Order> orders = null;
-    Queue<Order> orders_pending = new LinkedList<>();
-    Queue<Order> orders_to_process = new LinkedList<>();
-    Queue<Order> orders_baking = new LinkedList<>();
-    Queue<Order> orders_finished = new LinkedList<>();
-
-    try {
-        OrderQueue.loadFromFile();
-        OrderQueue.sortOrderByDeliveryDate();
-        orders = OrderQueue.getOrderQueue();
-    } catch (Exception e) {
-        // Log error or handle appropriately
-        System.err.println("Error loading orders: " + e.getMessage());
-        orders = new LinkedList<>(); // Empty queue as fallback
-    }
-
-    try {
-        while (!orders.isEmpty()) {
-            Order order = orders.poll();
-            if (order.getStatus().equals("pending")) {
-                orders_pending.add(order);
-            } else if (order.getStatus().equals("to-process")) {
-                orders_to_process.add(order);
-            } else if (order.getStatus().equals("baking")) {
-                orders_baking.add(order);
-            } else if (order.getStatus().equals("finished")) {
-                orders_finished.add(order);
-            }
-        }
-    } catch (Exception e) {
-        System.err.println("Error sorting orders: " + e.getMessage());
-    }
-
-
-
-%>
-
 <!DOCTYPE html>
 <html data-bs-theme="light" lang="en">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Dashboard - Heavenly Bakery</title>
+    <title>Admin Dashboard - Heavenly Bakery</title>
     <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/Abril%20Fatface.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/Alex%20Brush.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/Montserrat.css">
     <style>
         :root {
-            --bs-primary: #885030; /* Purple */
-            --bs-secondary: #ffe2bb; /* Light gray */
+            --bs-primary: #885030;
+            --bs-secondary: #ffe2bb;
+            --bs-light: #f8f9fa;
+            --bs-dark: #212529;
+            --sidebar-width: 280px;
         }
 
         body {
-            background: var(--bs-primary);
             font-family: 'Montserrat', sans-serif;
+            background-color: #f5f5f5;
+            overflow-x: hidden;
         }
 
-        .navbar-brand {
-            font-family: 'Alex Brush', cursive;
-            font-size: 2rem;
-            color: var(--bs-primary) !important;
+        /* Header styles */
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 2rem;
         }
 
-        .nav-tabs {
-            background: var(--bs-primary);
-            border-bottom: none;
+        .dashboard-title {
+            font-family: 'Abril Fatface', cursive;
+            color: var(--bs-primary);
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
         }
 
-        .nav-tabs .nav-link {
-            font-family: 'Abril Fatface', serif;
-            color: var(--bs-secondary);
-            border: none;
-            padding: 1rem 1.5rem;
+        .dashboard-subtitle {
+            font-family: 'Montserrat', sans-serif;
+            color: #6c757d;
             font-size: 1.1rem;
-            transition: all 0.3s ease;
+            font-weight: 300;
         }
 
-        .nav-tabs .nav-link:hover {
-            color: var(--bs-primary);
-            background-color: var(--bs-secondary);
+        /* Main content area */
+        .main-content {
+            padding: 20px;
+            min-height: 100vh;
+            transition: all 0.3s;
         }
 
-        .nav-tabs .nav-link.active {
-            color: var(--bs-primary);
-            background-color: var(--bs-secondary);
+        /* Navbar styles */
+        .top-navbar {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1rem 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 999;
         }
 
-        .tab-content-container {
-            background: var(--bs-secondary);
-            border-radius: 0 0 8px 8px;
-        }
-
+        /* Dashboard cards */
         .dashboard-card {
-            transition: transform 0.3s ease;
-            border-left: 4px solid;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 20px;
+            height: 100%;
+            text-decoration: none;
+            color: inherit;
         }
 
         .dashboard-card:hover {
             transform: translateY(-5px);
-        }
-
-        .border-left-primary {
-            border-left-color: var(--bs-primary) !important;
-        }
-
-        .border-left-success {
-            border-left-color: #28a745 !important;
-        }
-
-        .border-left-info {
-            border-left-color: #17a2b8 !important;
-        }
-
-        .border-left-warning {
-            border-left-color: #ffc107 !important;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
         }
 
         .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
             color: var(--bs-primary);
-            opacity: 0.7;
+        }
+
+        .card-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-text {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--bs-primary);
+            border-radius: 4px;
         }
     </style>
 </head>
 
-<body id="page-top">
+<body>
 <%
     String ROLE = (String) session.getAttribute("ROLE");
     if (ROLE == null) {
         response.sendRedirect(request.getContextPath());
         return;
-    }else{
+    } else {
         if (!ROLE.equals("ADMIN")) {
             response.sendRedirect(request.getContextPath());
             return;
         }
     }
 %>
-<%= ROLE%>
 
-<nav class="navbar navbar-expand-md py-3" style="background: var(--bs-secondary);">
-    <div class="container">
-        <a class="navbar-brand" href="#">Heavenly Bakery Admin</a>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a href="<%= request.getContextPath() %>/logout" class="btn btn-primary">
-                        <i class="fas fa-sign-out-alt me-1"></i> Logout
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
+<!-- Main Content -->
+<div class="main-content">
+    <!-- Top Navbar -->
+    <nav class="top-navbar navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
+        <div class="container-fluid">
+            <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
+                <i class="fas fa-bars"></i>
+            </button>
 
-<div class="container py-4">
-    <div class="row">
-        <div class="col-12">
-            <ul class="nav nav-tabs" id="dashboardTabs" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <a class="nav-link active" id="dashboard-tab" data-bs-toggle="tab" href="#dashboard" role="tab" style="font-size: 28px;">Dashboard</a>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <a class="nav-link" id="orders-tab" data-bs-toggle="tab" href="#orders" role="tab" style="font-size: 28px;">Orders</a>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <a class="nav-link" id="items-tab" data-bs-toggle="tab" href="#items" role="tab" style="font-size: 28px;">Items</a>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <a class="nav-link" id="payments-tab" data-bs-toggle="tab" href="#payments" role="tab" style="font-size: 28px;">Payments</a>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <a class="nav-link" id="reviews-tab" data-bs-toggle="tab" href="#reviews" role="tab" style="font-size: 28px;">Reviews</a>
-                </li>
-            </ul>
-
-            <div class="tab-content tab-content-container p-4" id="dashboardTabsContent">
-                <div class="tab-pane fade show active" id="dashboard" role="tabpanel">
-                    <div class="row">
-                        <div class="col-md-6 col-xl-3 mb-4">
-                            <div class="card shadow border-left-primary py-2 dashboard-card">
-                                <div class="card-body">
-                                    <div class="row align-items-center">
-                                        <div class="col me-2">
-                                            <div class="text-uppercase text-primary fw-bold text-xs mb-1">Earnings (monthly)</div>
-                                            <div class="text-dark fw-bold h5 mb-0">$40,000</div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-xl-3 mb-4">
-                            <div class="card shadow border-left-success py-2 dashboard-card">
-                                <div class="card-body">
-                                    <div class="row align-items-center">
-                                        <div class="col me-2">
-                                            <div class="text-uppercase text-success fw-bold text-xs mb-1">Earnings (annual)</div>
-                                            <div class="text-dark fw-bold h5 mb-0">$215,000</div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-xl-3 mb-4">
-                            <div class="card shadow border-left-info py-2 dashboard-card">
-                                <div class="card-body">
-                                    <div class="row align-items-center">
-                                        <div class="col me-2">
-                                            <div class="text-uppercase text-info fw-bold text-xs mb-1">Tasks</div>
-                                            <div class="row align-items-center g-0">
-                                                <div class="col-auto">
-                                                    <div class="text-dark fw-bold h5 mb-0 me-3">50%</div>
-                                                </div>
-                                                <div class="col">
-                                                    <div class="progress progress-sm">
-                                                        <div class="progress-bar bg-info" style="width: 50%"></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-xl-3 mb-4">
-                            <div class="card shadow border-left-warning py-2 dashboard-card">
-                                <div class="card-body">
-                                    <div class="row align-items-center">
-                                        <div class="col me-2">
-                                            <div class="text-uppercase text-warning fw-bold text-xs mb-1">Pending Requests</div>
-                                            <div class="text-dark fw-bold h5 mb-0">18</div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-comments fa-2x text-gray-300"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="tab-pane fade" id="orders" role="tabpanel">
-                    <h4 class="mb-4">Orders Management</h4>
-
-                    <!-- Order Status Tabs -->
-                    <ul class="nav nav-pills mb-4" id="orderStatusTabs" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="payment-pending-tab" data-bs-toggle="pill"
-                                    data-bs-target="#payment-pending" type="button" role="tab">
-                                Payment Pending
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="to-process-tab" data-bs-toggle="pill"
-                                    data-bs-target="#to-process" type="button" role="tab">
-                                To Process
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="baking-tab" data-bs-toggle="pill"
-                                    data-bs-target="#baking" type="button" role="tab">
-                                Baking
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="finished-tab" data-bs-toggle="pill"
-                                    data-bs-target="#finished" type="button" role="tab">
-                                Finished
-                            </button>
-                        </li>
-                    </ul>
-
-                    <!-- Order Status Tab Content -->
-                    <div class="tab-content" id="orderStatusTabsContent">
-                        <!-- Payment Pending Tab -->
-                        <div class="tab-pane fade show active" id="payment-pending" role="tabpanel">
-                            <table class="table table-hover table-bordered">
-                                <thead class="table-dark">
-                                <tr>
-                                    <th>Order ID</th>
-                                    <th>User ID</th>
-                                    <th>Item ID</th>
-                                    <th>Status</th>
-                                    <th>Quantity</th>
-                                    <th>Total</th>
-                                    <th>Order Date</th>
-                                    <th>Delivery Date</th>
-                                    <th>Actions</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <% for (Order order : orders_pending) { %>
-                                <tr>
-                                    <td><%=order.getOrderId()%></td>
-                                    <td><%=order.getUserId()%></td>
-                                    <td><%=order.getItemId()%></td>
-                                    <td><%=order.getStatus()%></td>
-                                    <td><%=order.getQuantity()%></td>
-                                    <td><%=order.getTotal()%></td>
-                                    <td><%=order.getOrderDate()%></td>
-                                    <td><%=order.getDeliveryDate()%></td>
-                                    <td>
-                                        <button type="button" class="btn btn-warning btn-sm"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#<%=order.getOrderId()%>_update">
-                                            Edit
-                                        </button>
-                                        <button type="button" class="btn btn-danger btn-sm"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#<%=order.getOrderId()%>_cancel">
-                                            Cancel
-                                        </button>
-                                    </td>
-                                </tr>
-                                <% } %>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- To Process Tab -->
-                        <div class="tab-pane fade" id="to-process" role="tabpanel">
-                            <% if (!orders_to_process.isEmpty()) { %>
-                            <div class="mb-3">
-                                <form action="<%=request.getContextPath()%>/OrderServlet" method="post">
-                                    <input type="hidden" name="action" value="to-process">
-                                    <button type="submit" class="btn btn-primary">
-                                        Process Next Order (Move to Baking)
-                                    </button>
-                                </form>
-                            </div>
-                            <% } %>
-
-                            <table class="table table-hover table-bordered">
-                                <thead class="table-dark">
-                                <tr>
-                                    <th>#</th>
-                                    <th>Order ID</th>
-                                    <th>User ID</th>
-                                    <th>Item ID</th>
-                                    <th>Quantity</th>
-                                    <th>Total</th>
-                                    <th>Order Date</th>
-                                    <th>Delivery Date</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <%
-                                    int position = 1;
-                                    for (Order order : orders_to_process) {
-                                %>
-                                <tr>
-                                    <td><%=position++%></td>
-                                    <td><%=order.getOrderId()%></td>
-                                    <td><%=order.getUserId()%></td>
-                                    <td><%=order.getItemId()%></td>
-                                    <td><%=order.getQuantity()%></td>
-                                    <td><%=order.getTotal()%></td>
-                                    <td><%=order.getOrderDate()%></td>
-                                    <td><%=order.getDeliveryDate()%></td>
-                                </tr>
-                                <% } %>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- Baking Tab -->
-                        <div class="tab-pane fade" id="baking" role="tabpanel">
-                            <% if (!orders_baking.isEmpty()) { %>
-                            <div class="mb-3">
-                                <form action="<%=request.getContextPath()%>/OrderServlet" method="post">
-                                    <input type="hidden" name="action" value="baking">
-                                    <button type="submit" class="btn btn-primary">
-                                        Process Next Order (Mark as Completed)
-                                    </button>
-                                </form>
-                            </div>
-                            <% } %>
-
-                            <table class="table table-hover table-bordered">
-                                <thead class="table-dark">
-                                <tr>
-                                    <th>#</th>
-                                    <th>Order ID</th>
-                                    <th>User ID</th>
-                                    <th>Item ID</th>
-                                    <th>Status</th>
-                                    <th>Quantity</th>
-                                    <th>Total</th>
-                                    <th>Order Date</th>
-                                    <th>Delivery Date</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-
-                                <%
-                                    position = 1;
-                                    for (Order order : orders_baking) {
-                                %>
-                                <tr>
-                                    <td><%= position++ %></td>
-                                    <td><%=order.getOrderId()%></td>
-                                    <td><%=order.getUserId()%></td>
-                                    <td><%=order.getItemId()%></td>
-                                    <td><%=order.getStatus()%></td>
-                                    <td><%=order.getQuantity()%></td>
-                                    <td><%=order.getTotal()%></td>
-                                    <td><%=order.getOrderDate()%></td>
-                                    <td><%=order.getDeliveryDate()%></td>
-                                </tr>
-                                <% } %>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- Finished Tab -->
-                        <div class="tab-pane fade" id="finished" role="tabpanel">
-                            <table class="table table-hover table-bordered">
-                                <thead class="table-dark">
-                                <tr>
-                                    <th>Order ID</th>
-                                    <th>User ID</th>
-                                    <th>Item ID</th>
-                                    <th>Status</th>
-                                    <th>Quantity</th>
-                                    <th>Total</th>
-                                    <th>Order Date</th>
-                                    <th>Delivery Date</th>
-                                    <th>Completed On</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <% for (Order order : orders_finished) { %>
-                                <tr>
-                                    <td><%=order.getOrderId()%></td>
-                                    <td><%=order.getUserId()%></td>
-                                    <td><%=order.getItemId()%></td>
-                                    <td><%=order.getStatus()%></td>
-                                    <td><%=order.getQuantity()%></td>
-                                    <td><%=order.getTotal()%></td>
-                                    <td><%=order.getOrderDate()%></td>
-                                    <td><%=order.getDeliveryDate()%></td>
-                                    <td><!-- Placeholder for completed date --></td>
-                                </tr>
-                                <% } %>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Modals for pending orders -->
-                <% for (Order order : orders_pending) { %>
-                <!-- Update Modal -->
-                <div class="modal fade" id="<%=order.getOrderId()%>_update" tabindex="-1" aria-labelledby="editOrderModalLabel<%=order.getOrderId()%>" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="editOrderModalLabel<%=order.getOrderId()%>">Edit Order #<%=order.getOrderId()%></h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form action="<%=request.getContextPath()%>/OrderServlet" method="post">
-                                    <input type="hidden" name="action" value="update">
-                                    <input type="hidden" name="orderId" value="<%=order.getOrderId()%>">
-
-                                    <div class="mb-3">
-                                        <label for="itemId<%=order.getOrderId()%>" class="form-label">Item ID</label>
-                                        <input type="text" class="form-control" id="itemId<%=order.getOrderId()%>"
-                                               name="itemId" value="<%=order.getItemId()%>" readonly>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label for="quantity<%=order.getOrderId()%>" class="form-label">Quantity</label>
-                                        <input type="number" class="form-control" id="quantity<%=order.getOrderId()%>"
-                                               name="quantity" min="1" value="<%=order.getQuantity()%>" required>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label for="deliveryDate<%=order.getOrderId()%>" class="form-label">Delivery Date</label>
-                                        <%
-                                            LocalDate tomorrow = LocalDate.now().plusDays(1);
-                                            String tomorrowStr = tomorrow.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                                        %>
-                                        <input type="date" class="form-control" id="deliveryDate<%=order.getOrderId()%>"
-                                               name="deliveryDate" min="<%=tomorrowStr%>" value="<%=order.getDeliveryDate()%>" required>
-                                    </div>
-
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                        <button type="submit" class="btn btn-primary">Save Changes</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Cancel Order Modal -->
-                <div class="modal fade" id="<%=order.getOrderId()%>_cancel" tabindex="-1" aria-labelledby="cancelOrderModalLabel<%=order.getOrderId()%>" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header bg-danger text-white">
-                                <h5 class="modal-title" id="cancelOrderModalLabel<%=order.getOrderId()%>">Cancel Order #<%=order.getOrderId()%></h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <p>Are you sure you want to cancel this order?</p>
-                                <p><strong>Item:</strong> <%=order.getItemId()%></p>
-                                <p><strong>Quantity:</strong> <%=order.getQuantity()%></p>
-                                <p><strong>Delivery Date:</strong> <%=order.getDeliveryDate()%></p>
-
-                                <form action="<%=request.getContextPath()%>/OrderServlet" method="post" id="cancelForm<%=order.getOrderId()%>">
-                                    <input type="hidden" name="action" value="cancel">
-                                    <input type="hidden" name="orderId" value="<%=order.getOrderId()%>">
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, Keep Order</button>
-                                <button type="submit" form="cancelForm<%=order.getOrderId()%>" class="btn btn-danger">Yes, Cancel Order</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <% } %>
-
-                <div class="tab-pane fade" id="items" role="tabpanel">
-                    <div class="align-items-stretch">
-                        <h4 class="mb-4">Bakery Items</h4>
-                        <a href="<%= request.getContextPath() %>/admin/AddItems.jsp">
-                            <button type="button" class="btn btn-primary">Add Item</button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <div class="d-flex justify-content-between w-100 align-items-center">
+                    <span class="d-none d-sm-inline">Welcome, Admin</span>
+                    <div>
+                        <a href="<%= request.getContextPath() %>/logout" class="btn btn-outline-danger">
+                            <i class="fas fa-sign-out-alt me-1"></i> Logout
                         </a>
                     </div>
-
-                    <p>Bakery Items go Here</p>
                 </div>
+            </div>
+        </div>
+    </nav>
 
-                <div class="tab-pane fade" id="payments" role="tabpanel">
-                    <div class="align-items-stretch">
-                        <h4 class="mb-4">Payments</h4>
-                        <table class="table table-striped table-hover">
-                            <thead>
-                            <tr>
-                                <th scope="col">Payment ID</th>
-                                <th scope="col">Order ID</th>
-                                <th scope="col">Amount</th>
-                                <th scope="col">Payment Method</th>
-                                <th scope="col">Payment Date</th>
-                                <th scope="col">Status</th>
-                                <th scope="col">Refund</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <% for (Payment payment : payments) {
-                                if (payment != null) { %>
-                            <tr>
-                                <td><%= payment.getPaymentId() %></td>
-                                <td><%= payment.getOrderId() %></td>
-                                <td><%= payment.getPaymentAmount() %></td>
-                                <td><%= payment.getPaymentMethod() %></td>
-                                <td><%= payment.getPaymentDate() %></td>
-                                <td><%= payment.getPaymentStatus() %></td>
-                                <td>
-                                    <button class="btn btn-outline-danger btn-sm" type="button"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#refundModal<%= payment.getPaymentId() %>">
-                                        Refund
-                                    </button>
-                                </td>
-                            </tr>
-                            <% }
-                            } %>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+    <!-- Content -->
+    <div class="container-fluid">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">Dashboard</h1>
+            <p class="dashboard-subtitle">Manage your bakery operations with ease</p>
+        </div>
 
-                <!-- Modals should be placed after the table, outside any loops -->
-                <% for (Payment payment : payments) {
-                    if (payment != null) { %>
-                <!-- Refund Payment Modal -->
-                <div class="modal fade" id="refundModal<%= payment.getPaymentId() %>" tabindex="-1"
-                     aria-labelledby="refundModalLabel<%= payment.getPaymentId() %>" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header bg-danger text-white">
-                                <h5 class="modal-title" id="refundModalLabel<%= payment.getPaymentId() %>">
-                                    Refund Payment #<%= payment.getPaymentId() %>
-                                </h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <p>Are you sure you want to refund this payment?</p>
-                                <p><strong>Amount:</strong> <%= payment.getPaymentAmount() %></p>
-                                <p><strong>Method:</strong> <%= payment.getPaymentMethod() %></p>
-                                <p><strong>Payment Date:</strong> <%= payment.getPaymentDate() %></p>
-
-                                <form action="<%= request.getContextPath() %>/PaymentServlet" method="post"
-                                      id="refundForm<%= payment.getPaymentId() %>">
-                                    <input type="hidden" name="action" value="refund">
-                                    <input type="hidden" name="paymentId" value="<%= payment.getPaymentId() %>">
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                <button type="submit" form="refundForm<%= payment.getPaymentId() %>"
-                                        class="btn btn-danger">Confirm Refund</button>
-                            </div>
+        <!-- Navigation Cards -->
+        <div class="row">
+            <div class="col-md-4">
+                <a href="<%= request.getContextPath() %>/admin/ManageOrders.jsp" class="dashboard-card card">
+                    <div class="card-body text-center">
+                        <div class="card-icon">
+                            <i class="fas fa-clipboard-list"></i>
                         </div>
+                        <h5 class="card-title">Orders</h5>
+                        <p class="card-text">Manage customer orders and track their status</p>
                     </div>
-                </div>
-                <% }
-                } %>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="<%= request.getContextPath() %>/admin/ManageCustomOrders.jsp" class="dashboard-card card">
+                    <div class="card-body text-center">
+                        <div class="card-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <h5 class="card-title">Custom Orders</h5>
+                        <p class="card-text">Handle special requests and custom cakes</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="<%= request.getContextPath() %>/admin/ManageItems.jsp" class="dashboard-card card">
+                    <div class="card-body text-center">
+                        <div class="card-icon">
+                            <i class="fas fa-bread-slice"></i>
+                        </div>
+                        <h5 class="card-title">Menu Items</h5>
+                        <p class="card-text">Manage bakery products and pricing</p>
+                    </div>
+                </a>
+            </div>
+        </div>
 
-                <div class="tab-pane fade" id="reviews" role="tabpanel">
-                    <h4 class="mb-4">Customer Reviews</h4>
-                    <p>Your customer reviews content will go here.</p>
-                </div>
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <a href="<%= request.getContextPath() %>/admin/ManageUsers.jsp" class="dashboard-card card">
+                    <div class="card-body text-center">
+                        <div class="card-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h5 class="card-title">Users</h5>
+                        <p class="card-text">Manage customer and staff accounts</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="<%= request.getContextPath() %>/admin/ManagePayments.jsp" class="dashboard-card card">
+                    <div class="card-body text-center">
+                        <div class="card-icon">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <h5 class="card-title">Payments</h5>
+                        <p class="card-text">View and process payment transactions</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="<%= request.getContextPath() %>/admin/ManageReviews.jsp" class="dashboard-card card">
+                    <div class="card-body text-center">
+                        <div class="card-icon">
+                            <i class="fas fa-comment-alt"></i>
+                        </div>
+                        <h5 class="card-title">Reviews</h5>
+                        <p class="card-text">View and respond to customer feedback</p>
+                    </div>
+                </a>
             </div>
         </div>
     </div>
 </div>
 
 <script src="<%= request.getContextPath() %>/assets/bootstrap/js/bootstrap.min.js"></script>
-
 </body>
 </html>

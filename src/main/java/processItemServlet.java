@@ -35,12 +35,16 @@ public class processItemServlet extends HttpServlet {
             // itemId is null because catalog.addItem method will assign one
             Item newItem = new Item(name, price, null, category, description);
             catalog.addItem(newItem);
-            response.sendRedirect("admin/#items-tab");
+
+            response.sendRedirect(request.getContextPath() + "/admin/ManageItems.jsp");
 
         } else if ("remove".equals(action)) {
             String itemId = request.getParameter("itemId");
             catalog.removeItem(itemId);
-            response.sendRedirect("admin/#items-tab");
+
+            response.sendRedirect(request.getContextPath() + "/admin/ManageItems.jsp");
+
+
 
         } else if ("update".equals(action)) {
 
@@ -55,7 +59,8 @@ public class processItemServlet extends HttpServlet {
             Item newItem = new Item(name, price, itemId, category,description);
             catalog.addItem(newItem);
 
-            response.sendRedirect("admin/#items-tab");
+            response.sendRedirect(request.getContextPath() + "/admin/ManageItems.jsp");
+
         }
     }
 

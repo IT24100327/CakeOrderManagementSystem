@@ -3,14 +3,67 @@
 <%@ page import="utils.ItemCatalog" %>
 
 <%
-    // Get the selected item
-    String itemId = request.getParameter("itemId");
+    // Initialize with default values
+    int userId = 0;
+    String itemId = null;
+    String orderId = null;
+    int quantity = 1;
+    Double total = 0.0;
+    Item selectedItem = null;
+    String error = null;
 
-    ItemCatalog catalog = new ItemCatalog();
-    catalog.loadFromFile();
-    Item selectedItem = catalog.findItemById(itemId);
+    try {
+        // Safely get parameters
+        String userIdParam = request.getParameter("userId");
+        String quantityParam = request.getParameter("quantity");
+        Object orderIdAttrib = request.getAttribute("orderId");
+        Object totalAttrib = request.getAttribute("total");
 
+        // for then access though profile page
+        String orderIdParam = request.getParameter("orderId");
+        String totalParam = request.getParameter("total");
+
+        itemId = request.getParameter("itemId");
+
+        // Parse with validation
+        if (userIdParam != null && !userIdParam.isEmpty()) {
+            userId = Integer.parseInt(userIdParam);
+            System.out.println("User ID set");
+        }
+        if (quantityParam != null && !quantityParam.isEmpty()) {
+            quantity = Integer.parseInt(quantityParam);
+            System.out.println("Quantity set");
+        }
+        if (orderIdParam != null && !orderIdParam.isEmpty()) {
+            orderId = orderIdParam;
+            System.out.println("Order Id set (From Parameter)");
+        }
+        if (totalParam != null && !totalParam.isEmpty()) {
+            total = Double.parseDouble(totalParam);
+            System.out.println("Total set (From Parameter)");
+        }
+        if (orderIdAttrib != null) {
+            orderId = (String) orderIdAttrib;
+            System.out.println("Order ID set");
+        }
+        if (totalAttrib != null) {
+            total = (Double) totalAttrib;
+            System.out.println("Total set");
+        }
+
+        // Load item if we have an ID
+        if (itemId != null && !itemId.isEmpty()) {
+            ItemCatalog catalog = new ItemCatalog();
+            catalog.loadFromFile();
+            selectedItem = catalog.findItemById(itemId);
+        }
+    } catch (NumberFormatException e) {
+        error = "Invalid number format in parameters";
+    } catch (Exception e) {
+        error = "Error processing request: " + e.getMessage();
+    }
 %>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -53,55 +106,34 @@
                     <% if (selectedItem != null) { %>
                     <!-- Order Summary -->
                     <div class="order-summary mb-4">
-                        <h5 class="mb-3">Your Order</h5>
+                        <h5 class="mb-3">Your Order [<%= orderId %>]</h5>
                         <div class="d-flex justify-content-between mb-2">
                             <span><strong>Item:</strong></span>
                             <span><%= selectedItem.getName() %></span>
                         </div>
                         <div class="d-flex justify-content-between mb-2">
                             <span><strong>Price:</strong></span>
-                            <span>$<%= selectedItem.getPrice() %></span>
+                            <span>Rs. <%= selectedItem.getPrice() %></span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span><strong>Quantity:</strong></span>
+                            <span>x<%=quantity%></span>
                         </div>
                         <hr>
                         <div class="d-flex justify-content-between fw-bold">
                             <span>Total:</span>
-                            <span>$<%= selectedItem.getPrice() %></span>
+                            <span>Rs. <%=total%></span>
                         </div>
                     </div>
 
                     <!-- Customer Details Form -->
-                    <form action="OrderServlet" method="post">
-                        <input type="hidden" name="action" value="placeOrder">
-                        <input type="hidden" name="itemId" value="<%= itemId %>">
-                        <input type="hidden" name="total" value="<%= selectedItem.getPrice() %>">
+                    <form action="PaymentServlet" method="post">
+                        <div>
 
-                        <h5 class="mb-3">Customer Information</h5>
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Full Name</label>
-                            <input type="text" class="form-control" id="name" name="name" required>
-                        </div>
+                            <input type="hidden" name="action" value="pay">
+                            <input type="hidden" name="orderId" value="<%= orderId %>">
+                            <input type="hidden" name="paymentAmount" value="<%= total %>">
 
-                        <div class="mb-3">
-                            <label for="phone" class="form-label">Phone Number</label>
-                            <input type="tel" class="form-control" id="phone" name="phone" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="address" class="form-label">Delivery Address</label>
-                            <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="quantity" class="form-label">Quantity</label>
-                            <input type="number" class="form-control" id="quantity" name="quantity" min="1" value="1" required>
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="deliveryDate" class="form-label">Delivery Date</label>
-                            <input type="date" class="form-control" id="deliveryDate" name="deliveryDate" min="<%= java.time.LocalDate.now().plusDays(1) %>" required>
-                        </div>
-
-                        <div class="mb-4 p-3 bg-light rounded">
                             <h6>Payment Method</h6>
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="paymentMethod" id="cod" value="COD" checked>
@@ -118,6 +150,15 @@
                             </button>
                         </div>
                     </form>
+                    <div style="margin-top: 20px;">
+                        <form action="PaymentServlet" method="post" style="">
+                            <input type="hidden" name="action" value="cancel">
+                            <button type="submit" class="btn btn-outline-danger btn-lg">
+                                Cancel
+                            </button>
+                        </form>
+                    </div>
+
                     <% } else { %>
                     <div class="alert alert-danger">Item not found. Please try again.</div>
                     <% } %>

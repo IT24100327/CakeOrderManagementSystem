@@ -8,8 +8,9 @@ import java.util.List;
 
 public class CredsFileHandle {
 
-    private final String filePath = "E:\\MyWork\\SLIIT\\OneDrive - Sri Lanka Institute of Information Technology\\Y1S2\\OOP\\Project\\backup\\data\\users.txt";
+    private static final String filePath = "E:\\MyWork\\SLIIT\\OneDrive - Sri Lanka Institute of Information Technology\\Y1S2\\OOP\\Project\\CakeOrderManagementSystem\\data\\users.txt";
 
+    PasswordUtils passwordUtils = new PasswordUtils();
 
     private boolean checkFile() {
         File file = new File(filePath);
@@ -38,13 +39,18 @@ public class CredsFileHandle {
         return true;
     }
 
-    public boolean addUser(String name, String username, String email, String password, String ROLE) {
+    public boolean addUser(String firstName, String lastName, String email, String password, String role) {
         if (!checkFile()) {
             System.out.println("File does not exist");
             return false;
         }
+
         try (FileWriter writer = new FileWriter(filePath, true)) {
-            writer.write(name + "," + username + "," + email + "," + password + "," + ROLE + System.lineSeparator());
+            String hashedPassword = passwordUtils.hashPassword(password);
+            String userID = getID();
+
+            writer.write(userID + "," + firstName + "," + lastName + "," + email + "," + hashedPassword + "," + role + System.lineSeparator());
+            System.out.println("User added successfully!");
             return true;
         } catch (IOException e) {
             System.out.println("Error writing to file: " + e.getMessage());
@@ -52,96 +58,157 @@ public class CredsFileHandle {
         }
     }
 
-    public User getUserByUsername(String username) {
+    public  User getUserByEmail(String email) {
         File file = new File(filePath);
         System.out.println("Checking file at: " + file.getAbsolutePath());
-        System.out.println("method "+username);
+
         if (!file.exists()) {
             return null;
         }
+
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] userData = line.split(",");
-                if (userData.length == 5 && userData[1].equals(username)) {
-                    return new User(userData[0], userData[1], userData[2], userData[3], userData[4]);
+                if (userData.length >= 6 && userData[3].equals(email)) {
+                    int ID = Integer.parseInt(userData[0].trim());
+                    return new User(ID, userData[1], userData[2], userData[3], userData[4], userData[5]);
                 }
             }
+        } catch (IOException | NumberFormatException e) {
+            System.out.println("Error reading file: " + e.getMessage());
+        }
+        return null;
+    }
+
+    public boolean deleteUser(String email) {
+        File file = new File(filePath);
+        List<String> updatedLines = new ArrayList<>();
+        boolean userDeleted = false;
+
+        if (!file.exists()) return false;
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] userData = line.split(",");
+                if (!userData[3].equals(email)) {
+                    updatedLines.add(line);
+                } else {
+                    userDeleted = true;
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading file: " + e.getMessage());
+        }
+
+        if (!userDeleted) return false;
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            for (String updatedLine : updatedLines) {
+                writer.write(updatedLine);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            System.out.println("Error writing file: " + e.getMessage());
+        }
+
+        return true;
+    }
+
+    public boolean updateUser(String email, String newFirstName, String newLastName, String newEmail, String newPassword, String newRole) {
+        File file = new File(filePath);
+        List<String> updatedLines = new ArrayList<>();
+        boolean userUpdated = false;
+
+        if (!file.exists()) return false;
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] userData = line.split(",");
+                if (userData[3].equals(email)) {
+                    line = userData[0] + "," + newFirstName + "," + newLastName + "," + newEmail + "," + passwordUtils.hashPassword(newPassword) + "," + newRole;
+                    userUpdated = true;
+                }
+                updatedLines.add(line);
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading file: " + e.getMessage());
+        }
+
+        if (!userUpdated) return false;
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            for (String updatedLine : updatedLines) {
+                writer.write(updatedLine);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            System.out.println("Error writing file: " + e.getMessage());
+        }
+
+        return userUpdated;
+    }
+
+    public static String getID() {
+        File file = new File(filePath);
+        if (!file.exists()) {
+            System.out.println("File does not exist.");
+            return "0001";
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            int lineCount = 0;
+
+            while (reader.readLine() != null) {
+                lineCount++;
+            }
+
+            // Increment the line count by 1
+            int incrementedNumber = lineCount + 1;
+
+            // Return the incremented line count as a 4-digit formatted string
+            return String.format("%04d", incrementedNumber);
+
         } catch (IOException e) {
             System.out.println("Error reading file: " + e.getMessage());
         }
         return null;
     }
 
-    public boolean deleteUser(String username) {
-        try {
-            checkFile();
-            File file = new File(filePath);
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-            String line;
-            StringBuilder fileContent = new StringBuilder();
-
-            boolean userDeleted = false;
-
-            while ((line = reader.readLine()) != null) {
-                String[] userData = line.split(",");
-                if (!userData[1].equals(username)) {
-                    fileContent.append(line).append(System.lineSeparator());
-                } else {
-                    userDeleted = true;
-                }
-            }
-
-            reader.close();
-
-            if (!userDeleted) {
-                return false;
-            }
-
-            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-            writer.write(fileContent.toString());
-            writer.close();
-
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    public boolean updateUser(String oldUsername, String newName, String newEmail, String newPassword, String newRole) {
+    public boolean updatePassword(String email, String oldPassword, String newPassword) {
         File file = new File(filePath);
-        List<String> lines = new ArrayList<>();
-        boolean userUpdated = false;
+        List<String> updatedLines = new ArrayList<>();
+        boolean passwordUpdated = false;
+
+        if (!file.exists()) return false;
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                String[] userFields = line.split(",");
-                if (userFields.length == 5) {
-                    String username = userFields[1];
-                    if (username.equals(oldUsername)) {
-                        line = newName + "," + oldUsername + "," + newEmail + "," + newPassword + "," + newRole;
-                        userUpdated = true;
-                    }
+                String[] userData = line.split(",");
+                if (userData[3].equals(email) && passwordUtils.verifyPassword(oldPassword, userData[4])) {
+                    line = userData[0] + "," + userData[1] + "," + userData[2] + "," + email + "," + passwordUtils.hashPassword(newPassword) + "," + userData[5];
+                    passwordUpdated = true;
                 }
-                lines.add(line);
+                updatedLines.add(line);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Error reading file: " + e.getMessage());
         }
 
-        if (userUpdated) {
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-                for (String updatedLine : lines) {
-                    writer.write(updatedLine);
-                    writer.newLine();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+        if (!passwordUpdated) return false;
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            for (String updatedLine : updatedLines) {
+                writer.write(updatedLine);
+                writer.newLine();
             }
+        } catch (IOException e) {
+            System.out.println("Error writing file: " + e.getMessage());
         }
 
-        return userUpdated;
+        return passwordUpdated;
     }
 }

@@ -65,5 +65,6 @@ public class LoginServlet extends HttpServlet {
             request.setAttribute("errorMessage", "Email or Password cannot be empty.");
             request.getRequestDispatcher("login.jsp").forward(request, response);
         }
+
     }
 }

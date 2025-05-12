@@ -1,4 +1,5 @@
 import entities.CustomCakeOrder;
+import entities.Order;
 import entities.User;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -8,7 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import utils.CredsFileHandle;
-import utils.CustomOrderQueue;
+import utils.OrderQueue;
 
 
 import java.io.IOException;
@@ -18,9 +19,16 @@ public class CustomCakeServlet extends HttpServlet {
 
     CredsFileHandle ch = new CredsFileHandle();
 
+
+    private double basePrice;
+    private double priceWithFlavour;
+    private double total;
+
+
+
     public void init(){
        try{
-           CustomOrderQueue.loadFromFile();
+           OrderQueue.loadFromFile();
         } catch (IOException e) {
             System.err.println("Error load from file");
             e.printStackTrace();
@@ -44,7 +52,6 @@ public class CustomCakeServlet extends HttpServlet {
         String size = request.getParameter("size");
         String deliveryDate = request.getParameter("deliveryDate");
         String instructions = request.getParameter("instructions");
-
         HttpSession session = request.getSession();
         String email = (String) session.getAttribute("email");
 
@@ -52,8 +59,14 @@ public class CustomCakeServlet extends HttpServlet {
         String id = String.valueOf(user.getID());
         System.out.println("User Id :" + id);
 
-        CustomCakeOrder cco = new CustomCakeOrder(id,null, 1, "pending", 0, deliveryDate, occasion, flavour, filling, size, shape,instructions);
-        CustomOrderQueue.add(cco);
+
+
+        CustomCakeOrder cco = new CustomCakeOrder(id,1, "pending",0, deliveryDate, occasion, flavour, filling, size, shape,instructions);
+        cco.total();
+        OrderQueue.add(cco);
+
+        RequestDispatcher dispatcher = request.getRequestDispatcher("Custom_payment_details.jsp");
+        dispatcher.forward(request, response);
 
 
 

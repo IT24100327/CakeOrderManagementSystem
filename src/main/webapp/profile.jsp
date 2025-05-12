@@ -172,7 +172,8 @@
                                                 </thead>
 
                                                 <% for (Order order : orders) {
-                                                    if (order.getUserId() == Integer.parseInt(userId)) { %>
+                                                    if (order.getUserId() == Integer.parseInt(userId)) {
+                                                        %>
 
                                                 <% Item item = catalog.findItemById(order.getItemId());
 

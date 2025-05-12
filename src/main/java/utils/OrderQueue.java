@@ -1,5 +1,6 @@
 package utils;
 
+import entities.CustomCakeOrder;
 import entities.Order;
 
 import java.io.*;
@@ -8,7 +9,8 @@ import java.util.Queue;
 
 
 public class OrderQueue {
-    private static Queue<Order> orderQueue = new LinkedList<>(); // Initialize here
+    private static Queue<Order> orderQueue = new LinkedList<>();
+    private static Queue<Order> normalQueue = new LinkedList<>(); // Initialize here
     private static String FILE_PATH = "E:/Data/OrderQueue.txt"; // Relative path
     private static int lastOrderId = 0;
 
@@ -28,6 +30,27 @@ public class OrderQueue {
         return String.format("ORD%04d", lastOrderId);
     }
 
+    public static String[] getCustomOrderDetailsById() throws FileNotFoundException {
+        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                    CustomCakeOrder order =  CustomCakeOrder.fromStringToObject(line);
+                    String idNumStr = order.getOrderId().replace("ORD", "");
+                    int idNum = Integer.parseInt(idNumStr);
+                    if(idNum == lastOrderId){
+                        String[] parts = line.split("\\|");
+                        return parts;
+                    }
+            }
+        } catch (IOException e) {
+            System.err.println("Not Creat Custom Order Details Array " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
     public static void add(Order order) throws IOException {
         if (order == null) {
             throw new IllegalArgumentException("Order cannot be null");
@@ -38,11 +61,33 @@ public class OrderQueue {
         }
         orderQueue.add(order);
         saveToFile();
+        System.out.println("Added a order");
     }
+
 
     public static Queue<Order> getOrderQueue() {
         return new LinkedList<>(orderQueue);
     }
+
+    public static Queue<Order> getNormalOrderQueue(){
+        return new LinkedList<>(normalQueue);
+    }
+
+
+    public static Queue<CustomCakeOrder> getCustomQueue() {
+        LinkedList<CustomCakeOrder> cco = new LinkedList<>();
+        for (Order order: orderQueue) {
+            if (order instanceof CustomCakeOrder) {
+                CustomCakeOrder customOrder = (CustomCakeOrder) order;
+                cco.add(customOrder);
+            }
+        }
+        return cco;
+    }
+
+    //public static Queue<CustomCakeOrder> getCustomQueue() {
+        //return new LinkedList<>(customQueue);
+    //}
 
     public static void loadFromFile() throws IOException {
         File file = new File(FILE_PATH);
@@ -55,19 +100,37 @@ public class OrderQueue {
 
         orderQueue.clear();
 
+
+
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                        Order order = Order.fromString(line);
-                        orderQueue.add(order);
+                String[] parts = line.split("\\|");
+                if (parts[0].equals("normalOrder")) {
+                    Order order = Order.fromString(line);
+                    String idNumStr = order.getOrderId().replace("ORD", "");
+                    int idNum = Integer.parseInt(idNumStr);
+                    lastOrderId = Math.max(lastOrderId, idNum);
+                    orderQueue.add(order);
+                }
+
+                else if (parts[0].equals("customOrder")) {
+                    CustomCakeOrder order = CustomCakeOrder.fromStringToObject(line);
+                    String idNumStr = order.getOrderId().replace("ORD", "");
+                    int idNum = Integer.parseInt(idNumStr);
+                    lastOrderId = Math.max(lastOrderId, idNum);
+                    orderQueue.add(order);
+                }
 
                         // Update lastOrderId
-                        String idNumStr = order.getOrderId().replace("ORD", "");
-                        int idNum = Integer.parseInt(idNumStr);
-                        lastOrderId = Math.max(lastOrderId, idNum);
+                       // String idNumStr = order.getOrderId().replace("ORD", "");
+                        //int idNum = Integer.parseInt(idNumStr);
+                        //lastOrderId = Math.max(lastOrderId, idNum);
             }
+            System.out.println("File loaded");
         }
     }
+
 
     // Find an item by its ID
     public static Order findOrderById(String orderId) {
@@ -80,8 +143,20 @@ public class OrderQueue {
     }
 
     public static void sortOrderByDeliveryDate() {
+        for(Order order : orderQueue){
+            if(!order.getItemId().equals("CUSTOMCAKE")){
+                normalQueue.add(order);
+            }
+        }
+        BubbleSorter.bubbleSortByDeliveryDate(normalQueue);
+    }
+
+    // Sorting part for Custom Cake
+    public static void sortOrderByDate() {
         BubbleSorter.bubbleSortByDeliveryDate(orderQueue);
     }
+
+
 
     public static void updateItem(String orderId, int quantity, String deliveryDate, double newItemPrice) {
         Order order = findOrderById(orderId);
@@ -124,4 +199,6 @@ public class OrderQueue {
             e.printStackTrace();
         }
     }
+
+
 }

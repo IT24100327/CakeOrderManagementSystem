@@ -19,11 +19,11 @@ public class Order {
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    public Order(int userId, String itemId, int quantity, String status, double total, String deliveryDate) {
+    public Order(int userId, String itemId, int quantity, double total, String deliveryDate) {
         orderId = null;
         this.userId = userId;
         this.itemId = itemId;
-        this.status = status;
+        this.status = "pending";
         this.quantity = quantity;
         this.total = total;
         this.orderDate = LocalDateTime.now().format(formatter);

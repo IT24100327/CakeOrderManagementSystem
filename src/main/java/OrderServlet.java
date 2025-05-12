@@ -50,7 +50,7 @@ public class OrderServlet extends HttpServlet {
             request.setAttribute("total", total);
             System.out.println("Total calculated: " + total);
 
-            Order newOrder = new Order(userId, itemId, quantity, status, total, deliveryDate);
+            Order newOrder = new Order(userId, itemId, quantity, total, deliveryDate);
             System.out.println("Created Order Object");
             OrderQueue.add(newOrder);
             request.setAttribute("orderId", newOrder.getOrderId());
@@ -123,5 +123,6 @@ public class OrderServlet extends HttpServlet {
             System.out.println("Redirecting...");
             response.sendRedirect(request.getContextPath() + "/admin/ManageOrders.jsp");
         }
+
     }
 }

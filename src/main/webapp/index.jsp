@@ -152,16 +152,15 @@ String userId = (String) session.getAttribute("ID");
                 <p style="font-family: Montserrat, sans-serif;">Don’t just take our word for it—here’s what our happy customers have to say about their experience with us.</p>
             </div>
         </div>
-        <div class="row gy-4 row-cols-1 row-cols-sm-2 row-cols-lg-3">
+        <div class="row gy-4 row-cols-1 row-cols-sm-2 row-cols-lg-3 mx-5">
             <!-- Review 1 -->
             <div class="col">
                 <div>
-                    <p class="bg-body-tertiary border rounded border-0 p-4" style="color: var(--bs-primary);font-family: Montserrat, sans-serif;">Nisi sit justo faucibus nec ornare amet, tortor torquent. Blandit class dapibus, aliquet morbi.</p>
+                    <p class="bg-body-tertiary border rounded border-0 p-4" style="color: var(--bs-primary);font-family: Montserrat, sans-serif;">The chocolate cake was absolutely divine! Moist, rich, and perfectly sweet. Will definitely order again for my next celebration.</p>
                     <div class="d-flex">
-                        <img class="rounded-circle flex-shrink-0 me-3 fit-cover" width="50" height="50" src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png">
                         <div>
-                            <p class="fw-bold text-primary mb-0" style="font-family: Raleway, sans-serif;"><span style="color: rgba(255, 226, 187, 0.86);">John Smith</span></p>
-                            <p class="text-muted mb-0" style="font-family: Montserrat, sans-serif;"><span style="color: rgb(255, 226, 187);">Erat netus</span></p>
+                            <p class="fw-bold text-primary mb-0" style="font-family: Raleway, sans-serif;"><span style="color: rgba(255, 226, 187, 0.86);">Janith Perera</span></p>
+                            <p class="text-muted mb-0" style="font-family: Montserrat, sans-serif;"><span style="color: rgb(255, 226, 187);">janith@gmail.com</span></p>
                         </div>
                     </div>
                 </div>
@@ -169,12 +168,11 @@ String userId = (String) session.getAttribute("ID");
             <!-- Review 2 -->
             <div class="col">
                 <div>
-                    <p class="bg-body-tertiary border rounded border-0 p-4" style="color: var(--bs-primary);font-family: Montserrat, sans-serif;">Nisi sit justo faucibus nec ornare amet, tortor torquent. Blandit class dapibus, aliquet morbi.</p>
+                    <p class="bg-body-tertiary border rounded border-0 p-4" style="color: var(--bs-primary);font-family: Montserrat, sans-serif;">The croissants were good but not exceptional. A bit too buttery for my taste, but still better than most bakeries in town.</p>
                     <div class="d-flex">
-                        <img class="rounded-circle flex-shrink-0 me-3 fit-cover" width="50" height="50" src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png">
                         <div>
-                            <p class="fw-bold text-primary mb-0" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;"><span style="color: rgb(255, 226, 187);">John Smith</span></p>
-                            <p class="text-muted mb-0" style="font-family: Montserrat, sans-serif;"><span style="color: rgb(255, 226, 187);">Erat netus</span></p>
+                            <p class="fw-bold text-primary mb-0" style="color: var(--bs-secondary);font-family: Raleway, sans-serif;"><span style="color: rgb(255, 226, 187);">Ruvini Charuka</span></p>
+                            <p class="text-muted mb-0" style="font-family: Montserrat, sans-serif;"><span style="color: rgb(255, 226, 187);">charuka.r@gmail.com</span></p>
                         </div>
                     </div>
                 </div>
@@ -182,12 +180,11 @@ String userId = (String) session.getAttribute("ID");
             <!-- Review 3 -->
             <div class="col">
                 <div>
-                    <p class="bg-body-tertiary border rounded border-0 p-4" style="color: var(--bs-primary);font-family: Montserrat, sans-serif;">Nisi sit justo faucibus nec ornare amet, tortor torquent. Blandit class dapibus, aliquet morbi.</p>
+                    <p class="bg-body-tertiary border rounded border-0 p-4" style="color: var(--bs-primary);font-family: Montserrat, sans-serif;">The birthday cake was beautiful and tasted amazing! The decoration was exactly as requested. Only reason not 5 stars is that delivery was 15 minutes late.</p>
                     <div class="d-flex">
-                        <img class="rounded-circle flex-shrink-0 me-3 fit-cover" width="50" height="50" src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png">
                         <div>
-                            <p class="fw-bold text-primary mb-0"><span style="color: rgb(255, 226, 187);">John Smith</span></p>
-                            <p class="text-muted mb-0"><span style="color: rgb(255, 226, 187);">Erat netus</span></p>
+                            <p class="fw-bold text-primary mb-0"><span style="color: rgb(255, 226, 187);">Malith Gunarathna</span></p>
+                            <p class="text-muted mb-0"><span style="color: rgb(255, 226, 187);">IT2410033</span></p>
                         </div>
                     </div>
                 </div>
@@ -478,8 +475,8 @@ String userId = (String) session.getAttribute("ID");
                         <div class="col-md-6 col-lg-5 col-xl-4">
                             <div>
                                 <form class="p-3 p-xl-4" method="post">
-                                    <div class="mb-3"><input id="name-1" class="form-control" type="text" name="name" placeholder="Name" /></div>
-                                    <div class="mb-3"><input id="email-1" class="form-control" type="email" name="email" placeholder="Email" /></div>
+                                    <div class="mb-3"><input id="name-1" class="form-control" type="text" name="name" placeholder="Janith Perera" readonly></div>
+                                    <div class="mb-3"><input id="email-1" class="form-control" type="email" name="email" placeholder="janith@hotmail.com" readonly></div>
                                     <div class="mb-3"><textarea id="message-1" class="form-control" name="message" rows="6" placeholder="Message"></textarea></div>
                                     <div><button class="btn btn-primary d-block w-100" type="submit" style="border-color: var(--bs-primary);background: var(--bs-secondary);color: var(--bs-primary);">Send </button></div>
                                 </form>

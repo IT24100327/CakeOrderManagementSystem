@@ -1,97 +1,86 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Add Item</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Bakery Item</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            line-height: 1.6;
+        .form-container {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            background-color: white;
         }
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-        }
-        h1 {
+        .form-title {
+            color: #6c757d;
+            margin-bottom: 1.5rem;
             text-align: center;
-            color: #333;
+            font-weight: 600;
         }
-        .form-group {
-            margin-bottom: 15px;
+        .form-label {
+            font-weight: 500;
+            color: #495057;
         }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        input[type="text"], input[type="number"] {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        input[type="submit"] {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 15px;
+        .btn-submit {
+            background-color: #28a745;
             border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
+            padding: 0.5rem 1.5rem;
+            transition: all 0.3s;
         }
-        input[type="submit"]:hover {
-            background-color: #45a049;
-        }
-        .error {
-            color: red;
-            font-size: 14px;
+        .btn-submit:hover {
+            background-color: #218838;
         }
     </style>
 </head>
-<body>
+<body class="bg-light">
 <div class="container">
-    <h1>Test Item Entry Form</h1>
+    <div class="form-container">
+        <h2 class="form-title"><i class="bi bi-plus-circle"></i> Add New Bakery Item</h2>
 
-    <form action="../processItem" method="post">
+        <form action="../processItem" method="post">
+            <input type="hidden" name="action" value="place">
 
-        <input type="hidden" name="action" value="place">
+            <div class="mb-3">
+                <label for="name" class="form-label">Item Name</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
 
-        <div class="form-group">
-            <label for="name">Item Name:</label>
-            <input type="text" id="name" name="name" required>
-        </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+            </div>
 
-        <div class="form-group">
-            <label for="description" class="form-label">Description:</label>
-            <textarea class="form-control" id="description" name="description" rows="3" ></textarea>
-        </div>
+            <div class="mb-3">
+                <label for="category" class="form-label">Category</label>
+                <select class="form-select" id="category" name="category">
+                    <option value="cakes" selected>Cakes</option>
+                    <option value="pastries">Pastries</option>
+                    <option value="cookies">Cookies</option>
+                </select>
+            </div>
 
-        <div class="form-group">
-            <label for="category">Category:</label>
-            <select class="form-select" id="category" name="category">
-                <option value="cakes" selected>Cakes</option>
-                <option value="pastries">Pastries</option>
-                <option value="cookies">Cookies</option>
-            </select>
-        </div>
+            <div class="mb-3">
+                <label for="price" class="form-label">Price</label>
+                <div class="input-group">
+                    <span class="input-group-text">Rs. </span>
+                    <input type="number" class="form-control" id="price" name="price" step="0.01" min="0" required>
+                </div>
+            </div>
 
-        <div class="form-group">
-            <label for="price">Price:</label>
-            <input type="number" id="price" name="price" step="0.01" min="0" required>
-        </div>
-
-        <div class="form-group">
-            <input type="submit" value="Submit">
-        </div>
-    </form>
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-submit text-white">
+                    <i class="bi bi-save"></i> Add Item
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

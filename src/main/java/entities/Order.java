@@ -115,24 +115,24 @@ public class Order {
 
     @Override
     public String toString() {
-        return orderId + "|" + userId + "|" + itemId + "|" + status + "|" + quantity + "|" + total + "|" + orderDate + "|" + deliveryDate;
+        return "normalOrder" + "|" + orderId + "|" + userId + "|" + itemId + "|" + status + "|" + quantity + "|" + total + "|" + orderDate + "|" + deliveryDate;
     }
 
     // Convert a string to an Order object
     public static Order fromString(String str) throws IOException {
         String[] parts = str.split("\\|");
-        if (parts.length < 8) {
+        if (parts.length < 9) {
             throw new IllegalArgumentException("Invalid order string format");
         }
 
-        String orderId = parts[0];
-        int userId = Integer.parseInt(parts[1]);
-        String itemId = parts[2];
-        String status = parts[3];
-        int quantity = Integer.parseInt(parts[4]);
-        double total = Double.parseDouble(parts[5]);
-        String orderDate = parts[6];
-        String deliveryDate = parts[7];
+        String orderId = parts[1];
+        int userId = Integer.parseInt(parts[2]);
+        String itemId = parts[3];
+        String status = parts[4];
+        int quantity = Integer.parseInt(parts[5]);
+        double total = Double.parseDouble(parts[6]);
+        String orderDate = parts[7];
+        String deliveryDate = parts[8];
 
         return new Order(orderId, userId, itemId, quantity, status, total, orderDate, deliveryDate);
     }

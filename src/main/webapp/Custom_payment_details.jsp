@@ -9,7 +9,6 @@
     String itemId = null;
 
     int quantity = 1;
-    Double total = 0.0;
     Item selectedItem = null;
     String error = null;
 
@@ -18,7 +17,7 @@
     assert customOrderDetails != null;
 
     String orderId = customOrderDetails[1];
-    String price = customOrderDetails[5];
+    String total = customOrderDetails[5];
     String occasion = customOrderDetails[7];
     String flavor = customOrderDetails[8];
     String fillings = customOrderDetails[9];
@@ -26,56 +25,6 @@
     String shape = customOrderDetails[11];
 
 
-//    try {
-//        // Safely get parameters
-//        String userIdParam = request.getParameter("userId");
-//        String quantityParam = request.getParameter("quantity");
-//        Object orderIdAttrib = request.getAttribute("orderId");
-//        Object totalAttrib = request.getAttribute("total");
-//
-//        // for then access though profile page
-//        String orderIdParam = request.getParameter("orderId");
-//        String totalParam = request.getParameter("total");
-//
-//        itemId = request.getParameter("itemId");
-//
-//        // Parse with validation
-//        if (userIdParam != null && !userIdParam.isEmpty()) {
-//            userId = Integer.parseInt(userIdParam);
-//            System.out.println("User ID set");
-//        }
-//        if (quantityParam != null && !quantityParam.isEmpty()) {
-//            quantity = Integer.parseInt(quantityParam);
-//            System.out.println("Quantity set");
-//        }
-//        if (orderIdParam != null && !orderIdParam.isEmpty()) {
-//            orderId = orderIdParam;
-//            System.out.println("Order Id set (From Parameter)");
-//        }
-//        if (totalParam != null && !totalParam.isEmpty()) {
-//            total = Double.parseDouble(totalParam);
-//            System.out.println("Total set (From Parameter)");
-//        }
-//        if (orderIdAttrib != null) {
-//            orderId = (String) orderIdAttrib;
-//            System.out.println("Order ID set");
-//        }
-//        if (totalAttrib != null) {
-//            total = (Double) totalAttrib;
-//            System.out.println("Total set");
-//        }
-//
-//        // Load item if we have an ID
-////        if (itemId != null && !itemId.isEmpty()) {
-////            ItemCatalog catalog = new ItemCatalog();
-////            catalog.loadFromFile();
-////            selectedItem = catalog.findItemById(itemId);
-//        //}
-//    } catch (NumberFormatException e) {
-//        error = "Invalid number format in parameters";
-//    } catch (Exception e) {
-//        error = "Error processing request: " + e.getMessage();
-//    }
 %>
 
 
@@ -127,7 +76,7 @@
                         </div>
                         <div class="d-flex justify-content-between mb-2">
                             <span><strong>Price:</strong></span>
-                            <span>Rs. <%= price %></span>
+                            <span>Rs. <%= total %></span>
                         </div>
                         <div class="d-flex justify-content-between mb-2">
                             <span><strong>Quantity:</strong></span>
@@ -160,7 +109,7 @@
                         <hr>
                         <div class="d-flex justify-content-between fw-bold">
                             <span>Total:</span>
-                            <span>Rs. <%=price%></span>
+                            <span>Rs. <%=total%></span>
                         </div>
                     </div>
 
@@ -170,7 +119,7 @@
 
                             <input type="hidden" name="action" value="pay">
                             <input type="hidden" name="orderId" value="<%= orderId %>">
-                            <input type="hidden" name="paymentAmount" value="<%= price %>">
+                            <input type="hidden" name="paymentAmount" value="<%= total %>">
 
                             <h6>Payment Method</h6>
                             <div class="form-check">

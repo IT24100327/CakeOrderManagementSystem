@@ -5,10 +5,12 @@
 <%@ page import="utils.OrderQueue" %>
 <%@ page import="entities.Item" %>
 <%@ page import="utils.ItemCatalog" %>
+<%@ page import="entities.CustomCakeOrder" %>
 
 
 <%
     Queue<Order> orders = null;
+
 
     ItemCatalog catalog = new ItemCatalog();
     catalog.loadFromFile();
@@ -18,6 +20,7 @@
         OrderQueue.loadFromFile();
         OrderQueue.sortOrderByDeliveryDate();
         orders = OrderQueue.getOrderQueue();
+
     } catch (Exception e) {
         // Log error or handle appropriately
         System.err.println("Error loading orders: " + e.getMessage());
@@ -172,17 +175,20 @@
                                                 </thead>
 
                                                 <% for (Order order : orders) {
+                                                    LinkedList<CustomCakeOrder> customOrder = new LinkedList<>();
                                                     if (order.getUserId() == Integer.parseInt(userId)) {
-                                                        %>
+                                                        if(order instanceof CustomCakeOrder){
+                                                            orders = Queue<Order> OrderQueue.getCustomQueue();
+                                                        }%>
 
-                                                <% Item item = catalog.findItemById(order.getItemId());
+<%--                                                <% Item item = catalog.findItemById(order.getItemId());--%>
 
-                                                %>
+<%--                                                %>--%>
                                                 <tbody>
                                                 <tr>
                                                     <td style="font-family: Montserrat, sans-serif;"><%=order.getOrderId()%></td>
                                                     <td style="font-family: Montserrat, sans-serif;"><%=order.getItemId()%></td>
-                                                    <td style="font-family: Montserrat, sans-serif;"><%= item.getName() %></td>
+                                                    <td style="font-family: Montserrat, sans-serif;"><%= order.getItemId() %></td>
                                                     <td style="font-family: Montserrat, sans-serif;"><%=order.getQuantity()%></td>
                                                     <td style="font-family: Montserrat, sans-serif;"><%=order.getTotal()%></td>
                                                     <td style="font-family: Montserrat, sans-serif;"><%=order.getDeliveryDate()%></td>

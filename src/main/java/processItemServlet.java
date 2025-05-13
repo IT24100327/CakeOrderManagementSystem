@@ -62,6 +62,7 @@ public class processItemServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/admin/ManageItems.jsp");
 
         }
+
     }
 
 }

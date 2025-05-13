@@ -6,18 +6,20 @@
 <%@ page import="java.util.LinkedList" %>
 <%@ page import="java.time.LocalDate" %>
 <%@ page import="java.time.format.DateTimeFormatter" %>
+<%@ page import="entities.CustomCakeOrder" %>
+<%@ page import="utils.OrderQueue" %>
 
 <%
-    Queue<Order> orders = null;
-    Queue<Order> orders_pending = new LinkedList<>();
-    Queue<Order> orders_to_process = new LinkedList<>();
-    Queue<Order> orders_baking = new LinkedList<>();
-    Queue<Order> orders_finished = new LinkedList<>();
+    Queue<CustomCakeOrder> orders = null;
+    Queue<CustomCakeOrder> orders_pending = new LinkedList<>();
+    Queue<CustomCakeOrder> orders_to_process = new LinkedList<>();
+    Queue<CustomCakeOrder> orders_baking = new LinkedList<>();
+    Queue<CustomCakeOrder> orders_finished = new LinkedList<>();
 
     try {
         OrderQueue.loadFromFile();
-        OrderQueue.sortOrderByDeliveryDate();
-        orders = OrderQueue.getOrderQueue();
+        OrderQueue.sortOrderByDate();
+        orders = OrderQueue.getCustomQueue();
     } catch (Exception e) {
         System.err.println("Error loading orders: " + e.getMessage());
         orders = new LinkedList<>(); // Empty queue as fallback
@@ -25,7 +27,7 @@
 
     try {
         while (!orders.isEmpty()) {
-            Order order = orders.poll();
+            CustomCakeOrder order = orders.poll();
             if (order.getStatus().equals("pending")) {
                 orders_pending.add(order);
             } else if (order.getStatus().equals("to-process")) {
@@ -39,6 +41,11 @@
     } catch (Exception e) {
         System.err.println("Error sorting orders: " + e.getMessage());
     }
+
+    for (Order cco : orders) {
+        System.out.println(cco.getStatus());
+    }
+
 %>
 
 <!DOCTYPE html>
@@ -458,6 +465,11 @@
                                                 data-bs-target="#<%=order.getOrderId()%>_cancel">
                                             <i class="fas fa-times"></i>
                                         </button>
+                                        <button type="button" class="btn btn-outline-info btn-sm"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#<%=order.getOrderId()%>_view">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -622,7 +634,7 @@
         </div>
 
         <!-- Modals for pending orders -->
-        <% for (Order order : orders_pending) { %>
+        <% for (CustomCakeOrder order : orders_pending) { %>
         <!-- Update Modal -->
         <div class="modal fade" id="<%=order.getOrderId()%>_update" tabindex="-1" aria-labelledby="editOrderModalLabel<%=order.getOrderId()%>" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
@@ -698,9 +710,44 @@
                 </div>
             </div>
         </div>
-        <% } %>
     </div>
 </div>
+
+<!-- View Order Modal -->
+<div class="modal fade" id="<%=order.getOrderId()%>_view" tabindex="-1" aria-labelledby="viewOrderModalLabel<%=order.getOrderId()%>" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="viewOrderModalLabel<%=order.getOrderId()%>">Order #<%=order.getOrderId()%></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Custom Cake Order Information</p>
+                <div class="card bg-light mb-3">
+                    <div class="card-body">
+                        <p class="mb-1"><strong>Occasion:</strong> <%=order.getOccasion()%></p>
+                        <p class="mb-1"><strong>Cake Flavor:</strong> <%=order.getCakeFlavour()%></p>
+                        <p class="mb-0"><strong>Filling:</strong> <%=order.getFilling()%></p>
+                        <p class="mb-1"><strong>Cake Size:</strong> <%=order.getCakeSize()%></p>
+                        <p class="mb-1"><strong>Cake Shape:</strong> <%=order.getCakeShape()%></p>
+                        <p class="mb-0"><strong>Special Instructions:</strong> <%=order.getInstructions()%></p>
+                    </div>
+                </div>
+
+                <form action="<%=request.getContextPath()%>/OrderServlet" method="post" id="cancelForm<%=order.getOrderId()%>">
+                    <input type="hidden" name="action" value="cancel">
+                    <input type="hidden" name="orderId" value="<%=order.getOrderId()%>">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+    <% } %>
+</body>
+</html>
 
 <script src="<%= request.getContextPath() %>/assets/bootstrap/js/bootstrap.min.js"></script>
 <script>

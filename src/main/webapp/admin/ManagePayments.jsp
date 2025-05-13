@@ -264,7 +264,7 @@
                         <tr>
                             <td><%= payment.getPaymentId() %></td>
                             <td><%= payment.getOrderId() %></td>
-                            <td>$<%= payment.getPaymentAmount() %></td>
+                            <td>Rs<%= payment.getPaymentAmount() %></td>
                             <td><%= payment.getPaymentMethod() %></td>
                             <td><%= payment.getPaymentDate() %></td>
                             <td>
@@ -314,7 +314,7 @@
                 <div class="card bg-light mb-3">
                     <div class="card-body">
                         <p class="mb-1"><strong>Order ID:</strong> <%= payment.getOrderId() %></p>
-                        <p class="mb-1"><strong>Amount:</strong> $<%= payment.getPaymentAmount() %></p>
+                        <p class="mb-1"><strong>Amount:</strong> Rs<%= payment.getPaymentAmount() %></p>
                         <p class="mb-1"><strong>Method:</strong> <%= payment.getPaymentMethod() %></p>
                         <p class="mb-0"><strong>Date:</strong> <%= payment.getPaymentDate() %></p>
                     </div>

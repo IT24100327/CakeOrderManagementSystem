@@ -63,17 +63,17 @@
                                 <div class="col-md-6">
                                     <label class="form-label" style="font-family: Montserrat, sans-serif;font-weight: bold;color: var(--bs-primary);font-size: 20px;">Occasion:</label>
                                     <select class="focus-ring focus-ring-primary form-select mb-3" name="occasion">
-                                        <option value="birthday" selected>Birthday</option>
-                                        <option value="wedding">Wedding</option>
+                                        <option value="Birthday" selected>Birthday</option>
+                                        <option value="Wedding">Wedding</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label" style="font-family: Montserrat, sans-serif;font-weight: bold;color: var(--bs-primary);font-size: 20px;">Cake Flavor:</label>
                                     <select class="form-select mb-3" name="flavor">
-                                        <option value="chocolate" selected>Chocolate</option>
-                                        <option value="vanilla">Vanilla</option>
-                                        <option value="strawberry">Strawberry</option>
-                                        <option value="red-velvet">Red Velvet</option>
+                                        <option value="Chocolate" selected>Chocolate</option>
+                                        <option value="Vanilla">Vanilla</option>
+                                        <option value="Strawberry">Strawberry</option>
+                                        <option value="Red-velvet">Red Velvet</option>
                                     </select>
                                 </div>
                             </div>
@@ -81,19 +81,19 @@
                                 <div class="col-md-6">
                                     <label class="form-label" style="font-family: Montserrat, sans-serif;font-weight: bold;color: var(--bs-primary);font-size: 20px;">Filling/Topping:</label>
                                     <select class="form-select mb-3" name="filling">
-                                        <option value="buttercream" selected>Buttercream</option>
-                                        <option value="ganache">Ganache</option>
-                                        <option value="fruit">Fruit</option>
-                                        <option value="none">None</option>
+                                        <option value="Buttercream" selected>Buttercream</option>
+                                        <option value="Ganache">Ganache</option>
+                                        <option value="Fruit">Fruit</option>
+                                        <option value="None">None</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label" style="font-family: Montserrat, sans-serif;font-weight: bold;color: var(--bs-primary);font-size: 20px;">Cake Size:</label>
                                     <select class="form-select mb-3" name="size">
-                                        <option value="small" selected>Small (h:6",w:500g)</option>
-                                        <option value="medium">Medium (h:12",w:1kg)</option>
-                                        <option value="large">Large (h:18",w:1.5kg)</option>
-                                        <option value="x-large">Extra Large (h:24",w:2kg)</option>
+                                        <option value="Small" selected>Small (h:6",w:500g)</option>
+                                        <option value="Medium">Medium (h:12",w:1kg)</option>
+                                        <option value="Large">Large (h:18",w:1.5kg)</option>
+                                        <option value="Extra-large">Extra Large (h:24",w:2kg)</option>
                                     </select>
                                 </div>
                             </div>
@@ -101,10 +101,10 @@
                                 <div class="col-md-6">
                                     <label class="form-label" style="font-family: Montserrat, sans-serif;font-weight: bold;color: var(--bs-primary);font-size: 20px;">Cake Shape:</label>
                                     <select class="form-select mb-3" name="shape">
-                                        <option value="round" selected>Round</option>
-                                        <option value="square">Square</option>
-                                        <option value="heart">Heart</option>
-                                        <option value="custom">Custom</option>
+                                        <option value="Round" selected>Round</option>
+                                        <option value="Square">Square</option>
+                                        <option value="Heart">Heart</option>
+                                        <option value="Custom">Custom</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6">

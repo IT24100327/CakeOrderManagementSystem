@@ -17,7 +17,7 @@
     try {
         OrderQueue.loadFromFile();
         OrderQueue.sortOrderByDeliveryDate();
-        orders = OrderQueue.getOrderQueue();
+        orders = OrderQueue.getNormalOrderQueue();
     } catch (Exception e) {
         System.err.println("Error loading orders: " + e.getMessage());
         orders = new LinkedList<>(); // Empty queue as fallback

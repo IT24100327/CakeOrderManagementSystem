@@ -1,0 +1,8 @@
+Chocolate Gateaux|3000.0|ITM0009|cakes|For the true chocolate enthusiast! This decadent cake is layered with rich chocolate sponge and creamy chocolate filling, finished with a glossy chocolate glaze. Pure indulgence in every bite.
+Chicken Puffs|250.0|ITM0010|pastries|A Sri Lankan classic! Flaky, golden pastry filled with a savory and spiced chicken mixture. Perfect for tea time or as a quick snack.
+Fish Cutlet|120.0|ITM0011|pastries|Crispy on the outside, flavorful on the inside! Our fish cutlets are made with seasoned fish and potatoes, coated in breadcrumbs, and fried to golden perfection. A must-try for seafood lovers
+Chicken Bacon Pastry|300.0|ITM0013|pastries|A savory delight! This pastry combines tender chicken, crispy bacon, and a flaky crust for a flavor-packed bite. Ideal for those who love a hearty snack.
+Chocolate Chip Cookies|800.0|ITM0014|cookies|A timeless favorite! Our cookies are loaded with gooey chocolate chips and baked to perfection, chewy on the inside, crispy on the edges. Perfect for sharing (or not)!
+Assorted Cookies|1000.0|ITM0016|cookies|A mix of all your favorites! This assortment includes a variety of flavors and textures, from buttery to crunchy, ensuring there's something for everyone.
+Butter Flavored Cookies|800.0|ITM0015|cookies|Simple, buttery, and melt-in-your-mouth delicious! These cookies are made with pure butter for a rich, comforting flavor that pairs perfectly with a cup of tea.
+Nougat Gateaux|2500.0|ITM0007|cakes|A delightful blend of textures and flavors! This cake combines soft sponge layers with creamy nougat filling, topped with a light glaze. A treat that's both luxurious and satisfying.

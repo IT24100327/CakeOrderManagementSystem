@@ -1,291 +1,235 @@
+<%@ page contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
 <html data-bs-theme="light" lang="en">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Dashboard - Heavenly Bakery</title>
+    <title>Admin Dashboard - Heavenly Bakery</title>
     <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/Abril%20Fatface.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/Alex%20Brush.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/Montserrat.css">
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/fonts/fontawesome-all.min.css">
     <style>
         :root {
-            --bs-primary: #885030; /* Purple */
-            --bs-secondary: #ffe2bb; /* Light gray */
+            --bs-primary: #885030;
+            --bs-secondary: #ffe2bb;
+            --bs-light: #f8f9fa;
+            --bs-dark: #212529;
+            --sidebar-width: 280px;
         }
-        
+
         body {
-            background: var(--bs-primary);
             font-family: 'Montserrat', sans-serif;
+            background-color: #f5f5f5;
+            overflow-x: hidden;
         }
-        
-        .navbar-brand {
-            font-family: 'Alex Brush', cursive;
-            font-size: 2rem;
-            color: var(--bs-primary) !important;
+
+        /* Header styles */
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 2rem;
         }
-        
-        .nav-tabs {
-            background: var(--bs-primary);
-            border-bottom: none;
+
+        .dashboard-title {
+            font-family: 'Abril Fatface', cursive;
+            color: var(--bs-primary);
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
         }
-        
-        .nav-tabs .nav-link {
-            font-family: 'Abril Fatface', serif;
-            color: var(--bs-secondary);
-            border: none;
-            padding: 1rem 1.5rem;
+
+        .dashboard-subtitle {
+            font-family: 'Montserrat', sans-serif;
+            color: #6c757d;
             font-size: 1.1rem;
-            transition: all 0.3s ease;
+            font-weight: 300;
         }
-        
-        .nav-tabs .nav-link:hover {
-            color: var(--bs-primary);
-            background-color: var(--bs-secondary);
+
+        /* Main content area */
+        .main-content {
+            padding: 20px;
+            min-height: 100vh;
+            transition: all 0.3s;
         }
-        
-        .nav-tabs .nav-link.active {
-            color: var(--bs-primary);
-            background-color: var(--bs-secondary);
-            
+
+        /* Navbar styles */
+        .top-navbar {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1rem 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 999;
         }
-        
-        .tab-content-container {
-            background: var(--bs-secondary);
-            border-radius: 0 0 8px 8px;
-        }
-        
+
+        /* Dashboard cards */
         .dashboard-card {
-            transition: transform 0.3s ease;
-            border-left: 4px solid;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 20px;
+            height: 100%;
+            text-decoration: none;
+            color: inherit;
         }
-        
+
         .dashboard-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
         }
-        
-        .border-left-primary {
-            border-left-color: var(--bs-primary) !important;
-        }
-        
-        .border-left-success {
-            border-left-color: #28a745 !important;
-        }
-        
-        .border-left-info {
-            border-left-color: #17a2b8 !important;
-        }
-        
-        .border-left-warning {
-            border-left-color: #ffc107 !important;
-        }
-        
+
         .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
             color: var(--bs-primary);
-            opacity: 0.7;
+        }
+
+        .card-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-text {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--bs-primary);
+            border-radius: 4px;
         }
     </style>
 </head>
 
-<body id="page-top">
+<body>
 <%
     String ROLE = (String) session.getAttribute("ROLE");
     if (ROLE == null) {
         response.sendRedirect(request.getContextPath());
         return;
-    }else{
+    } else {
         if (!ROLE.equals("ADMIN")) {
             response.sendRedirect(request.getContextPath());
             return;
         }
     }
 %>
-<%= ROLE%>
-    <nav class="navbar navbar-expand-md py-3" style="background: var(--bs-secondary);">
-        <div class="container">
-            <a class="navbar-brand" href="#">Heavenly Bakery</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <button class="btn btn-primary" type="button">
-                            <i class="fas fa-user me-1"></i> Login
-                        </button>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
 
-    <div class="container py-4">
-        <div class="row">
-            <div class="col-12">
-                <ul class="nav nav-tabs" id="dashboardTabs" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <a class="nav-link active" id="dashboard-tab" data-bs-toggle="tab" href="#dashboard" role="tab" style="font-size: 28px;">Dashboard</a>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <a class="nav-link" id="orders-tab" data-bs-toggle="tab" href="#orders" role="tab" style="font-size: 28px;">Orders</a>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <a class="nav-link" id="items-tab" data-bs-toggle="tab" href="#items" role="tab" style="font-size: 28px;">Items</a>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <a class="nav-link" id="reviews-tab" data-bs-toggle="tab" href="#reviews" role="tab" style="font-size: 28px;">Reviews</a>
-                    </li>
-                </ul>
-                
-                <div class="tab-content tab-content-container p-4" id="dashboardTabsContent">
-                    <div class="tab-pane fade show active" id="dashboard" role="tabpanel">
-                        <div class="row">
-                            <div class="col-md-6 col-xl-3 mb-4">
-                                <div class="card shadow border-left-primary py-2 dashboard-card">
-                                    <div class="card-body">
-                                        <div class="row align-items-center">
-                                            <div class="col me-2">
-                                                <div class="text-uppercase text-primary fw-bold text-xs mb-1">Earnings (monthly)</div>
-                                                <div class="text-dark fw-bold h5 mb-0">$40,000</div>
-                                            </div>
-                                            <div class="col-auto">
-                                                <i class="fas fa-calendar fa-2x text-gray-300"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 col-xl-3 mb-4">
-                                <div class="card shadow border-left-success py-2 dashboard-card">
-                                    <div class="card-body">
-                                        <div class="row align-items-center">
-                                            <div class="col me-2">
-                                                <div class="text-uppercase text-success fw-bold text-xs mb-1">Earnings (annual)</div>
-                                                <div class="text-dark fw-bold h5 mb-0">$215,000</div>
-                                            </div>
-                                            <div class="col-auto">
-                                                <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 col-xl-3 mb-4">
-                                <div class="card shadow border-left-info py-2 dashboard-card">
-                                    <div class="card-body">
-                                        <div class="row align-items-center">
-                                            <div class="col me-2">
-                                                <div class="text-uppercase text-info fw-bold text-xs mb-1">Tasks</div>
-                                                <div class="row align-items-center g-0">
-                                                    <div class="col-auto">
-                                                        <div class="text-dark fw-bold h5 mb-0 me-3">50%</div>
-                                                    </div>
-                                                    <div class="col">
-                                                        <div class="progress progress-sm">
-                                                            <div class="progress-bar bg-info" style="width: 50%"></div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-auto">
-                                                <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 col-xl-3 mb-4">
-                                <div class="card shadow border-left-warning py-2 dashboard-card">
-                                    <div class="card-body">
-                                        <div class="row align-items-center">
-                                            <div class="col me-2">
-                                                <div class="text-uppercase text-warning fw-bold text-xs mb-1">Pending Requests</div>
-                                                <div class="text-dark fw-bold h5 mb-0">18</div>
-                                            </div>
-                                            <div class="col-auto">
-                                                <i class="fas fa-comments fa-2x text-gray-300"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="tab-pane fade" id="orders" role="tabpanel">
-                        <h4 class="mb-4">Orders Management</h4>
-                        <table class="table table-hover table-bordered">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>Order ID</th>
-                                    <th>Customer Name</th>
-                                    <th>Status</th>
-                                    <th>Total Amount</th>
-                                    <th>Date</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>#1001</td>
-                                    <td>John Doe</td>
-                                    <td>Shipped</td>
-                                    <td>$50.00</td>
-                                    <td>2023-10-01</td>
-                                </tr>
-                                <tr>
-                                    <td>#1002</td>
-                                    <td>Jane Smith</td>
-                                    <td>Processing</td>
-                                    <td>$75.00</td>
-                                    <td>2023-10-02</td>
-                                </tr>
-                                <!-- Add more orders as needed -->
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <div class="tab-pane fade" id="items" role="tabpanel">
-                        <h4 class="mb-4">Menu Items</h4>
-                        <table class="table table-hover table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Item Name</th>
-                                    <th>Description</th>
-                                    <th>Price</th>
-                                    <th>Stock</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Chocolate Cake</td>
-                                    <td>Rich chocolate cake with ganache</td>
-                                    <td>$25.00</td>
-                                    <td>10</td>
-                                </tr>
-                                <tr>
-                                    <td>Vanilla Cupcake</td>
-                                    <td>Classic vanilla cupcake with buttercream frosting</td>
-                                    <td>$3.00</td>
-                                    <td>50</td>
-                                </tr>
-                                <!-- Add more items as needed -->
-                            </tbody>
-                        </table>
-                        <p>Your bakery items content will go here.</p>
-                    </div>
-                    
-                    <div class="tab-pane fade" id="reviews" role="tabpanel">
-                        <h4 class="mb-4">Customer Reviews</h4>
-                        <p>Your customer reviews content will go here.</p>
+<!-- Main Content -->
+<div class="main-content">
+    <!-- Top Navbar -->
+    <nav class="top-navbar navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
+        <div class="container-fluid">
+            <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <div class="d-flex justify-content-between w-100 align-items-center">
+                    <span class="d-none d-sm-inline">Welcome, Admin</span>
+                    <div>
+                        <a href="<%= request.getContextPath() %>/logout" class="btn btn-outline-danger">
+                            <i class="fas fa-sign-out-alt me-1"></i> Logout
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
+    </nav>
+
+    <!-- Content -->
+    <div class="container-fluid">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">Dashboard</h1>
+            <p class="dashboard-subtitle">Manage your bakery operations with ease</p>
+        </div>
+
+        <!-- Navigation Cards -->
+        <div class="row">
+            <div class="col-md-4">
+                <a href="<%= request.getContextPath() %>/admin/ManageOrders.jsp" class="dashboard-card card">
+                    <div class="card-body text-center">
+                        <div class="card-icon">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <h5 class="card-title">Orders</h5>
+                        <p class="card-text">Manage customer orders and track their status</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="<%= request.getContextPath() %>/admin/ManageCustomOrders.jsp" class="dashboard-card card">
+                    <div class="card-body text-center">
+                        <div class="card-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <h5 class="card-title">Custom Orders</h5>
+                        <p class="card-text">Handle special requests and custom cakes</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="<%= request.getContextPath() %>/admin/ManageItems.jsp" class="dashboard-card card">
+                    <div class="card-body text-center">
+                        <div class="card-icon">
+                            <i class="fas fa-bread-slice"></i>
+                        </div>
+                        <h5 class="card-title">Menu Items</h5>
+                        <p class="card-text">Manage bakery products and pricing</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <a href="<%= request.getContextPath() %>/admin/ManageUsers.jsp" class="dashboard-card card">
+                    <div class="card-body text-center">
+                        <div class="card-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h5 class="card-title">Users</h5>
+                        <p class="card-text">Manage customer and staff accounts</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="<%= request.getContextPath() %>/admin/ManagePayments.jsp" class="dashboard-card card">
+                    <div class="card-body text-center">
+                        <div class="card-icon">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <h5 class="card-title">Payments</h5>
+                        <p class="card-text">View and process payment transactions</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="<%= request.getContextPath() %>/admin/ManageReviews.jsp" class="dashboard-card card">
+                    <div class="card-body text-center">
+                        <div class="card-icon">
+                            <i class="fas fa-comment-alt"></i>
+                        </div>
+                        <h5 class="card-title">Reviews</h5>
+                        <p class="card-text">View and respond to customer feedback</p>
+                    </div>
+                </a>
+            </div>
+        </div>
     </div>
+</div>
 
-    <script src="../assets/bootstrap/js/bootstrap.min.js"></script>
+<script src="<%= request.getContextPath() %>/assets/bootstrap/js/bootstrap.min.js"></script>
 </body>
-
 </html>

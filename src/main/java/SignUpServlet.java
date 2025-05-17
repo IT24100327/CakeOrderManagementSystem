@@ -85,6 +85,7 @@ public class SignUpServlet extends HttpServlet {
                 request.getRequestDispatcher("signup.jsp").forward(request, response);
             }
         }
+
     }
 
 

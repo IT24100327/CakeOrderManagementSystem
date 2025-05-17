@@ -20,7 +20,7 @@ public class UpdatePasswordServlet extends HttpServlet {
         if (!newPassword.equals(confirmPassword)) {
             request.setAttribute("errorMessage", "New password and Confirm password do not match.");
             request.getRequestDispatcher("profile.jsp").forward(request, response);
-            return;
+
         }
         System.out.println(username);
         System.out.println(oldPassword);
@@ -36,5 +36,6 @@ public class UpdatePasswordServlet extends HttpServlet {
         }
 
         request.getRequestDispatcher("profile.jsp").forward(request, response);
+
     }
 }

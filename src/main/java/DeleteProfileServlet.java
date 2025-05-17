@@ -1,43 +1,54 @@
-//import entities.User;
-//import utils.CredsFileHandle;
-//import utils.PasswordUtils;
-//
-//import jakarta.servlet.ServletException;
-//import jakarta.servlet.annotation.WebServlet;
-//import jakarta.servlet.http.HttpServlet;
-//import jakarta.servlet.http.HttpServletRequest;
-//import jakarta.servlet.http.HttpServletResponse;
-//import java.io.IOException;
-//
-//@WebServlet("/deleteprofile")
-//public class DeleteProfileServlet extends HttpServlet {
-//    CredsFileHandle credsFileHandle = new CredsFileHandle();
-//    PasswordUtils passwordUtils = new PasswordUtils();
-//
-//    @Override
-//    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//        System.out.println("Get");
-//    }
-//
-//    @Override
-//    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//        String username = request.getParameter("username");
-//        String password = request.getParameter("password");
-//        System.out.println("Deletion came");
-//
-//        User user = credsFileHandle.getUserByUsername(username);
-//        System.out.println(user.getName());
-//        System.out.println(user);
-//        System.out.println(passwordUtils.verifyPassword(password, user.getPassword()));
-//        if (user != null && passwordUtils.verifyPassword(password, user.getPassword())) {
-//             credsFileHandle.deleteUser(username);
-//            System.out.println("removed");
-//            response.sendRedirect(request.getContextPath() + "/logout");
-//        } else {
-//
-//            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//            response.getWriter().write("Incorrect password. Please try again.");
-//        }
-//    }
-//
-//}
+import entities.User;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import utils.CredsFileHandle;
+import utils.PasswordUtils;
+
+import java.io.IOException;
+
+@WebServlet("/deleteprofile")
+public class DeleteProfileServlet extends HttpServlet {
+    private CredsFileHandle credsFileHandle = new CredsFileHandle();
+    private PasswordUtils passwordUtils = new PasswordUtils();
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        String currentEmail = (String) session.getAttribute("email");
+        String confirmPassword = request.getParameter("confirmPassword");
+
+        // Get current user
+        User currentUser = credsFileHandle.getUserByEmail(currentEmail);
+        
+        if (currentUser == null) {
+            session.setAttribute("errorMessage", "User not found!");
+            response.sendRedirect(request.getContextPath() + "/profile");
+            return;
+        }
+
+        // Verify password
+        if (!passwordUtils.verifyPassword(confirmPassword, currentUser.getPassword())) {
+            session.setAttribute("errorMessage", "Incorrect password!");
+            response.sendRedirect(request.getContextPath() + "/profile");
+            return;
+        }
+
+        boolean deleted = credsFileHandle.deleteUser(currentEmail);
+        
+        if (deleted) {
+            // Invalidate session
+            session.invalidate();
+            // Create new session for message
+            session = request.getSession();
+            session.setAttribute("successMessage", "Profile deleted successfully!");
+            response.sendRedirect(request.getContextPath() + "/");
+        } else {
+            session.setAttribute("errorMessage", "Failed to delete profile!");
+            response.sendRedirect(request.getContextPath() + "/profile");
+        }
+    }
+}

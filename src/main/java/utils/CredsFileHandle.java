@@ -8,7 +8,7 @@ import java.util.List;
 
 public class CredsFileHandle {
 
-    private static final String filePath = "E:\\MyWork\\SLIIT\\OneDrive - Sri Lanka Institute of Information Technology\\Y1S2\\OOP\\Project\\CakeOrderManagementSystem\\data\\users.txt";
+    private static final String filePath = "E:\\MyWork\\SLIIT\\OneDrive - Sri Lanka Institute of Information Technology\\Y1S2\\OOP\\Project\\CakeOrderManagementSystem - Copy\\data\\users.txt";
 
     PasswordUtils passwordUtils = new PasswordUtils();
 
@@ -128,7 +128,7 @@ public class CredsFileHandle {
             while ((line = reader.readLine()) != null) {
                 String[] userData = line.split(",");
                 if (userData[3].equals(email)) {
-                    line = userData[0] + "," + newFirstName + "," + newLastName + "," + newEmail + "," + passwordUtils.hashPassword(newPassword) + "," + newRole;
+                    line = userData[0] + "," + newFirstName + "," + newLastName + "," + newEmail + "," + newPassword + "," + newRole;
                     userUpdated = true;
                 }
                 updatedLines.add(line);
@@ -165,10 +165,8 @@ public class CredsFileHandle {
                 lineCount++;
             }
 
-            // Increment the line count by 1
             int incrementedNumber = lineCount + 1;
 
-            // Return the incremented line count as a 4-digit formatted string
             return String.format("%04d", incrementedNumber);
 
         } catch (IOException e) {

@@ -5,12 +5,10 @@
 <%@ page import="utils.OrderQueue" %>
 <%@ page import="entities.Item" %>
 <%@ page import="utils.ItemCatalog" %>
-<%@ page import="entities.CustomCakeOrder" %>
 
 
 <%
     Queue<Order> orders = null;
-
 
     ItemCatalog catalog = new ItemCatalog();
     catalog.loadFromFile();
@@ -20,7 +18,6 @@
         OrderQueue.loadFromFile();
         OrderQueue.sortOrderByDeliveryDate();
         orders = OrderQueue.getOrderQueue();
-
     } catch (Exception e) {
         // Log error or handle appropriately
         System.err.println("Error loading orders: " + e.getMessage());
@@ -49,6 +46,8 @@
     String email = (String) session.getAttribute("email");
     String ROLE = (String) session.getAttribute("ROLE");
     String userId = (String) session.getAttribute("ID");
+    String firstName = (String) session.getAttribute("fname");
+    String lastName = (String) session.getAttribute("lname");
 %>
 
 <body id="page-top" style="color: var(--bs-light);background: var(--bs-secondary);">
@@ -129,25 +128,83 @@
                                                 <p class="text-primary m-0 fw-bold" style="font-family: Montserrat, sans-serif;">User Settings</p>
                                             </div>
                                             <div class="card-body">
-                                                <form>
+                                                <% 
+                                                    String errorMessage = (String) session.getAttribute("errorMessage");
+                                                    if (errorMessage != null) {
+                                                %>
+                                                    <div class="alert alert-danger">
+                                                        <%= errorMessage %>
+                                                    </div>
+                                                <%
+                                                    session.removeAttribute("errorMessage");
+                                                    }
+                                                %>
+                                                <% 
+                                                    String successMessage = (String) session.getAttribute("successMessage");
+                                                    if (successMessage != null) {
+                                                %>
+                                                    <div class="alert alert-success">
+                                                        <%= successMessage %>
+                                                    </div>
+                                                <%
+                                                    session.removeAttribute("successMessage");
+                                                    }
+                                                %>
+                                                <form action="<%= request.getContextPath() %>/updateprofile" method="post">
                                                     <div class="row">
                                                         <div class="col">
-                                                            <div class="mb-3"><label class="form-label" for="username" style="font-family: Montserrat, sans-serif;"><strong>Username</strong></label><input class="form-control" type="text" id="username" placeholder="user.name" name="username"></div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label" for="first_name" style="font-family: Montserrat, sans-serif;"><strong>First Name</strong></label>
+                                                                <input class="form-control" type="text" id="first_name" name="firstName" value="<%= firstName %>" required>
+                                                            </div>
                                                         </div>
                                                         <div class="col">
-                                                            <div class="mb-3"><label class="form-label" for="email" style="font-family: Montserrat, sans-serif;"><strong>Email Address</strong></label><input class="form-control" type="email" id="email" placeholder="user@example.com" name="email"></div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label" for="last_name" style="font-family: Montserrat, sans-serif;"><strong>Last Name</strong></label>
+                                                                <input class="form-control" type="text" id="last_name" name="lastName" value="<%= lastName %>" required>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                     <div class="row">
                                                         <div class="col">
-                                                            <div class="mb-3"><label class="form-label" for="first_name" style="font-family: Montserrat, sans-serif;"><strong>First Name</strong></label><input class="form-control" type="text" id="first_name" placeholder="John" name="first_name"></div>
-                                                        </div>
-                                                        <div class="col">
-                                                            <div class="mb-3"><label class="form-label" for="last_name" style="font-family: Montserrat, sans-serif;"><strong>Last Name</strong></label><input class="form-control" type="text" id="last_name" placeholder="Doe" name="last_name"></div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label" for="email" style="font-family: Montserrat, sans-serif;"><strong>Email Address</strong></label>
+                                                                <input class="form-control" type="email" id="email" name="email" value="<%= email %>" required>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                    <div class="mb-3"><button class="btn btn-primary btn-sm" type="submit" style="font-family: Raleway, sans-serif;">Save Settings</button></div>
+                                                    <div class="mb-3">
+                                                        <button class="btn btn-primary btn-sm" type="submit" style="font-family: Raleway, sans-serif;">Save Settings</button>
+                                                        <button type="button" class="btn btn-danger btn-sm ms-2" style="font-family: Raleway, sans-serif;" data-bs-toggle="modal" data-bs-target="#deleteProfileModal">
+                                                            Delete Profile
+                                                        </button>
+                                                    </div>
                                                 </form>
+
+                                                <!-- Delete Profile Modal -->
+                                                <div class="modal fade" id="deleteProfileModal" tabindex="-1" aria-labelledby="deleteProfileModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header" style="background-color: var(--bs-secondary);">
+                                                                <h5 class="modal-title" id="deleteProfileModalLabel" style="font-family: 'Abril Fatface', serif; color: rgb(136, 80, 48);">Confirm Delete Profile</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body" style="font-family: Montserrat, sans-serif;">
+                                                                <p>Are you sure you want to delete your profile? This action cannot be undone.</p>
+                                                                <form id="deleteProfileForm" action="<%= request.getContextPath() %>/deleteprofile" method="post">
+                                                                    <div class="mb-3">
+                                                                        <label for="confirmPassword" class="form-label"><strong>Enter your password to confirm</strong></label>
+                                                                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal" style="font-family: Raleway, sans-serif;">Cancel</button>
+                                                                <button type="submit" form="deleteProfileForm" class="btn btn-danger btn-sm" style="font-family: Raleway, sans-serif;">Delete Profile</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -175,20 +232,16 @@
                                                 </thead>
 
                                                 <% for (Order order : orders) {
-                                                    LinkedList<CustomCakeOrder> customOrder = new LinkedList<>();
-                                                    if (order.getUserId() == Integer.parseInt(userId)) {
-                                                        if(order instanceof CustomCakeOrder){
-                                                            orders = Queue<Order> OrderQueue.getCustomQueue();
-                                                        }%>
+                                                    if (order.getUserId() == Integer.parseInt(userId)) { %>
 
-<%--                                                <% Item item = catalog.findItemById(order.getItemId());--%>
+                                                <% Item item = catalog.findItemById(order.getItemId());
 
-<%--                                                %>--%>
+                                                %>
                                                 <tbody>
                                                 <tr>
                                                     <td style="font-family: Montserrat, sans-serif;"><%=order.getOrderId()%></td>
                                                     <td style="font-family: Montserrat, sans-serif;"><%=order.getItemId()%></td>
-                                                    <td style="font-family: Montserrat, sans-serif;"><%= order.getItemId() %></td>
+                                                    <td style="font-family: Montserrat, sans-serif;"><%= item.getName() %></td>
                                                     <td style="font-family: Montserrat, sans-serif;"><%=order.getQuantity()%></td>
                                                     <td style="font-family: Montserrat, sans-serif;"><%=order.getTotal()%></td>
                                                     <td style="font-family: Montserrat, sans-serif;"><%=order.getDeliveryDate()%></td>
@@ -224,4 +277,5 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
+</html>
 </html>

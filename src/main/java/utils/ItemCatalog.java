@@ -15,7 +15,7 @@ public class ItemCatalog {
 
     public ItemCatalog() {
         items = new ArrayList<>();
-        filePath = "E:/Data/TestItemCatalog.txt";
+        filePath = "E:\\MyWork\\SLIIT\\OneDrive - Sri Lanka Institute of Information Technology\\Y1S2\\OOP\\Project\\CakeOrderManagementSystem\\data\\ItemCatalog.txt";
     }
 
     public ItemCatalog(String filePath) {

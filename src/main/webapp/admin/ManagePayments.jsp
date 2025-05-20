@@ -1,12 +1,12 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="java.util.LinkedList" %>
 <%@ page import="entities.Payment" %>
-<%@ page import="utils.paymentHandle" %>
+<%@ page import="utils.PaymentHandle" %>
 
 <%
-    paymentHandle.loadFromFile();
-    paymentHandle.sortOrderByPaymentDate();
-    LinkedList<Payment> payments = paymentHandle.getPayments();
+    PaymentHandle.loadFromFile();
+    PaymentHandle.sortOrderByPaymentDate();
+    LinkedList<Payment> payments = PaymentHandle.getPayments();
 %>
 
 <!DOCTYPE html>
@@ -199,11 +199,6 @@
             </a>
         </li>
         <li class="sidebar-nav-item">
-            <a href="<%=request.getContextPath()%>/admin/ManageUsers.jsp" class="sidebar-nav-link">
-                <i class="fas fa-users"></i> Users
-            </a>
-        </li>
-        <li class="sidebar-nav-item">
             <a href="<%=request.getContextPath()%>/admin/ManagePayments.jsp" class="sidebar-nav-link active" >
                 <i class="fas fa-credit-card"></i> Payments
             </a>
@@ -263,9 +258,15 @@
                         %>
                         <tr>
                             <td><%= payment.getPaymentId() %></td>
-                            <td><%= payment.getOrderId() %></td>
-                            <td>Rs<%= payment.getPaymentAmount() %></td>
+                            <td><%= payment.getOrder().getOrderId() %></td>
+                            <td>Rs. <%= payment.getPaymentAmount() %></td>
+
+                            <% if (payment.getPaymentMethod().equals("null")) { %>
+                            <td>N/A</td>
+                            <% } else { %>
                             <td><%= payment.getPaymentMethod() %></td>
+                            <% } %>
+
                             <td><%= payment.getPaymentDate() %></td>
                             <td>
                                 <% if ("PAID".equals(payment.getPaymentStatus())) { %>
@@ -313,7 +314,7 @@
                 <p>Are you sure you want to refund this payment?</p>
                 <div class="card bg-light mb-3">
                     <div class="card-body">
-                        <p class="mb-1"><strong>Order ID:</strong> <%= payment.getOrderId() %></p>
+                        <p class="mb-1"><strong>Order ID:</strong> <%= payment.getOrder().getOrderId() %></p>
                         <p class="mb-1"><strong>Amount:</strong> Rs<%= payment.getPaymentAmount() %></p>
                         <p class="mb-1"><strong>Method:</strong> <%= payment.getPaymentMethod() %></p>
                         <p class="mb-0"><strong>Date:</strong> <%= payment.getPaymentDate() %></p>

@@ -1,92 +1,71 @@
 package entities;
 
 import java.io.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
 import java.time.format.*;
-
 import utils.ItemCatalog;
 
-public class Order {
+public abstract class Order {
     protected String orderId;
-    protected int userId;
-    protected String itemId;
-    protected int quantity;
+    protected User user;
     protected String status;
-    protected double total;
-    protected String orderDate;
-    protected String deliveryDate;
+    protected Payment payment;
+    protected LocalDate orderDate;
+    protected LocalDate deliveryDate;
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    public Order(int userId, String itemId, int quantity, double total, String deliveryDate) {
+    public Order(User user, Payment payment, LocalDate deliveryDate) {
         orderId = null;
-        this.userId = userId;
-        this.itemId = itemId;
+        this.user = user;
         this.status = "pending";
-        this.quantity = quantity;
-        this.total = total;
-        this.orderDate = LocalDateTime.now().format(formatter);
+        this.payment = payment;
+        this.orderDate = LocalDate.now();
         this.deliveryDate = deliveryDate;
     }
 
     // constructor for make object from string
-    public Order(String orderId, int userId, String itemId, int quantity, String status, double total, String orderDate, String deliveryDate) {
+    public Order(String orderId, User user, String status, Payment payment, LocalDate orderDate, LocalDate deliveryDate) {
         this.orderId = orderId;
-        this.userId = userId;
-        this.itemId = itemId;
+        this.user = user;
         this.status = status;
-        this.quantity = quantity;
-        this.total = total;
+        this.payment = payment;
         this.orderDate = orderDate;
         this.deliveryDate = deliveryDate;
     }
-// Constructor for customCakeOrder
-    public Order(String orderId, int userId) {
-        this.orderId = orderId;
-        this.userId = userId;
 
+    public User getUser() {
+        return user;
     }
 
-    public int getUserId() {
-        return userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
-
-    public String getDeliveryDate() {
+    public LocalDate getDeliveryDate() {
         return deliveryDate;
     }
 
-    public void setDeliveryDate(String deliveryDate) {
+    public void setDeliveryDate(LocalDate deliveryDate) {
         this.deliveryDate = deliveryDate;
     }
 
-    public String getOrderDate() {
+    public LocalDate getOrderDate() {
         return orderDate;
     }
 
-    public void setOrderDate(String orderDate) {
+    public void setOrderDate(LocalDate orderDate) {
         this.orderDate = orderDate;
     }
 
-    public double getTotal() {
-        return total;
+    public Payment getPayment() {
+        return payment;
     }
 
-    public void setTotal(double total) {
-        this.total = total;
+    public void setTotal(Payment payment) {
+        this.payment = payment;
     }
 
     public String getStatus() {
@@ -97,14 +76,6 @@ public class Order {
         this.status = status;
     }
 
-    public String getItemId() {
-        return itemId;
-    }
-
-    public void setItemId(String itemId) {
-        this.itemId = itemId;
-    }
-
     public String getOrderId() {
         return orderId;
     }
@@ -113,29 +84,12 @@ public class Order {
         this.orderId = orderId;
     }
 
+    public void setPayment(Payment payment) {
+        this.payment = payment;
+    }
+
     @Override
-    public String toString() {
-        return "normalOrder" + "|" + orderId + "|" + userId + "|" + itemId + "|" + status + "|" + quantity + "|" + total + "|" + orderDate + "|" + deliveryDate;
-    }
-
-    // Convert a string to an Order object
-    public static Order fromString(String str) throws IOException {
-        String[] parts = str.split("\\|");
-        if (parts.length < 9) {
-            throw new IllegalArgumentException("Invalid order string format");
-        }
-
-        String orderId = parts[1];
-        int userId = Integer.parseInt(parts[2]);
-        String itemId = parts[3];
-        String status = parts[4];
-        int quantity = Integer.parseInt(parts[5]);
-        double total = Double.parseDouble(parts[6]);
-        String orderDate = parts[7];
-        String deliveryDate = parts[8];
-
-        return new Order(orderId, userId, itemId, quantity, status, total, orderDate, deliveryDate);
-    }
+    public abstract String toString();
 
 }
 

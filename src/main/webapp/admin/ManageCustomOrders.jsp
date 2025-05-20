@@ -8,8 +8,11 @@
 <%@ page import="java.time.format.DateTimeFormatter" %>
 <%@ page import="entities.CustomCakeOrder" %>
 <%@ page import="utils.OrderQueue" %>
+<%@ page import="utils.PaymentHandle" %>
 
 <%
+    PaymentHandle.loadFromFile();
+
     Queue<CustomCakeOrder> orders = null;
     Queue<CustomCakeOrder> orders_pending = new LinkedList<>();
     Queue<CustomCakeOrder> orders_to_process = new LinkedList<>();
@@ -18,38 +21,29 @@
 
     try {
         OrderQueue.loadFromFile();
-        OrderQueue.sortOrderByDate();
-        orders = OrderQueue.getCustomQueue();
+
+        orders = OrderQueue.getCustomOrdersByDeliveryDate();
     } catch (Exception e) {
         System.err.println("Error loading orders: " + e.getMessage());
-        orders = new LinkedList<>(); // Empty queue as fallback
+        orders = new LinkedList<>();
     }
 
     try {
-        while (!orders.isEmpty()) {
-            CustomCakeOrder order = orders.poll();
-            if (order.getStatus().equals("pending")) {
-                orders_pending.add(order);
-            } else if (order.getStatus().equals("to-process")) {
-                orders_to_process.add(order);
-            } else if (order.getStatus().equals("baking")) {
-                orders_baking.add(order);
-            } else if (order.getStatus().equals("finished")) {
-                orders_finished.add(order);
+        for (CustomCakeOrder order : orders) {
+            switch (order.getStatus()) {
+                case "pending" -> orders_pending.add(order);
+                case "to-process" -> orders_to_process.add(order);
+                case "baking" -> orders_baking.add(order);
+                case "finished" -> orders_finished.add(order);
             }
         }
     } catch (Exception e) {
         System.err.println("Error sorting orders: " + e.getMessage());
     }
-
-    for (Order cco : orders) {
-        System.out.println(cco.getStatus());
-    }
-
 %>
 
 <!DOCTYPE html>
-<html data-bs-theme="light" lang="en">
+<html lang="en">
 
 <head>
     <meta charset="utf-8">
@@ -123,11 +117,6 @@
         .sidebar-nav-link i {
             margin-right: 0.75rem;
             font-size: 1.1rem;
-        }
-
-        .sidebar-nav-link .bi-chevron-down {
-            margin-left: auto;
-            transition: transform 0.3s;
         }
 
         /* Main content area */
@@ -302,7 +291,7 @@
             </a>
         </li>
         <li class="sidebar-nav-item">
-            <a href="<%=request.getContextPath()%>/admin/ManageCustomOrders.jsp" class="sidebar-nav-link active" >
+            <a href="<%=request.getContextPath()%>/admin/ManageCustomOrders.jsp" class="sidebar-nav-link active">
                 <i class="fas fa-star"></i> Custom Orders
             </a>
         </li>
@@ -312,12 +301,7 @@
             </a>
         </li>
         <li class="sidebar-nav-item">
-            <a href="<%=request.getContextPath()%>/admin/ManageUsers.jsp" class="sidebar-nav-link">
-                <i class="fas fa-users"></i> Users
-            </a>
-        </li>
-        <li class="sidebar-nav-item">
-            <a href="<%=request.getContextPath()%>/admin/ManagePayments.jsp" class="sidebar-nav-link" >
+            <a href="<%=request.getContextPath()%>/admin/ManagePayments.jsp" class="sidebar-nav-link">
                 <i class="fas fa-credit-card"></i> Payments
             </a>
         </li>
@@ -336,7 +320,6 @@
             <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
                 <i class="fas fa-bars"></i>
             </button>
-
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <div class="d-flex justify-content-between w-100 align-items-center">
                     <span class="d-none d-sm-inline">Welcome, Admin</span>
@@ -352,7 +335,6 @@
 
     <!-- Content -->
     <div class="container-fluid">
-
         <!-- Order Status Cards -->
         <div class="row mb-4">
             <div class="col-md-3">
@@ -421,7 +403,7 @@
         </div>
 
         <!-- Order Sections -->
-        <div class="order-section active" id="pending-section">
+        <div class="order-section active" id="pending">
             <div class="card dashboard-card">
                 <div class="card-header bg-white">
                     <h5 class="mb-0">Pending Payment Orders</h5>
@@ -433,9 +415,7 @@
                             <tr>
                                 <th>Order ID</th>
                                 <th>User ID</th>
-                                <th>Item ID</th>
                                 <th>Status</th>
-                                <th>Quantity</th>
                                 <th>Total</th>
                                 <th>Order Date</th>
                                 <th>Delivery Date</th>
@@ -443,14 +423,12 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <% for (Order order : orders_pending) { %>
+                            <% for (CustomCakeOrder order : orders_pending) { %>
                             <tr>
                                 <td><%=order.getOrderId()%></td>
-                                <td><%=order.getUserId()%></td>
-                                <td><%=order.getItemId()%></td>
+                                <td><%=order.getUser().getID()%></td>
                                 <td><span class="badge badge-pending"><%=order.getStatus()%></span></td>
-                                <td><%=order.getQuantity()%></td>
-                                <td>Rs. <%=order.getTotal()%></td>
+                                <td>Rs. <%=order.getPayment().getPaymentAmount()%></td>
                                 <td><%=order.getOrderDate()%></td>
                                 <td><%=order.getDeliveryDate()%></td>
                                 <td>
@@ -481,22 +459,13 @@
             </div>
         </div>
 
-        <div class="order-section" id="to-process-section">
+        <div class="order-section" id="to-process">
             <div class="card dashboard-card">
                 <div class="card-header bg-white">
                     <h5 class="mb-0">Orders To Process</h5>
                 </div>
                 <div class="card-body">
-                    <% if (!orders_to_process.isEmpty()) { %>
-                    <div class="mb-3">
-                        <form action="<%=request.getContextPath()%>/OrderServlet" method="post">
-                            <input type="hidden" name="action" value="to-process">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-forward me-2"></i>Process Next Order (Move to Baking)
-                            </button>
-                        </form>
-                    </div>
-                    <% } %>
+
 
                     <div class="table-responsive">
                         <table class="table table-hover">
@@ -505,27 +474,35 @@
                                 <th>#</th>
                                 <th>Order ID</th>
                                 <th>User ID</th>
-                                <th>Item ID</th>
-                                <th>Quantity</th>
+                                <th>Status</th>
                                 <th>Total</th>
                                 <th>Order Date</th>
                                 <th>Delivery Date</th>
+                                <% if (!orders_to_process.isEmpty()) { %>
+                                <th>Actions</th>
+                                <% } %>
                             </tr>
                             </thead>
                             <tbody>
                             <%
-                                int position = 1;
-                                for (Order order : orders_to_process) {
+                                int position = 0;
+                                for (CustomCakeOrder order : orders_to_process) {
                             %>
                             <tr>
-                                <td><%=position++%></td>
+                                <td><%= ++position %></td>
                                 <td><%=order.getOrderId()%></td>
-                                <td><%=order.getUserId()%></td>
-                                <td><%=order.getItemId()%></td>
-                                <td><%=order.getQuantity()%></td>
-                                <td>Rs. <%=order.getTotal()%></td>
+                                <td><%=order.getUser().getID()%></td>
+                                <td><span class="badge badge-to-process"><%=order.getStatus()%></span></td>
+                                <td>Rs. <%=order.getPayment().getPaymentAmount()%></td>
                                 <td><%=order.getOrderDate()%></td>
                                 <td><%=order.getDeliveryDate()%></td>
+                                <% if (position == 1) { %>
+                                <td>
+                                    <a href="<%=request.getContextPath()%>/CustomOrder?action=to-process&orderId=<%=order.getOrderId()%>">
+                                        <button type="button" class="btn btn-outline-primary btn-sm">Move To Baking</button>
+                                    </a>
+                                </td>
+                                <% } %>
                             </tr>
                             <% } %>
                             </tbody>
@@ -535,22 +512,12 @@
             </div>
         </div>
 
-        <div class="order-section" id="baking-section">
+        <div class="order-section" id="baking">
             <div class="card dashboard-card">
                 <div class="card-header bg-white">
                     <h5 class="mb-0">Baking Orders</h5>
                 </div>
                 <div class="card-body">
-                    <% if (!orders_baking.isEmpty()) { %>
-                    <div class="mb-3">
-                        <form action="<%=request.getContextPath()%>/OrderServlet" method="post">
-                            <input type="hidden" name="action" value="baking">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-check me-2"></i>Process Next Order (Mark as Completed)
-                            </button>
-                        </form>
-                    </div>
-                    <% } %>
 
                     <div class="table-responsive">
                         <table class="table table-hover">
@@ -559,29 +526,35 @@
                                 <th>#</th>
                                 <th>Order ID</th>
                                 <th>User ID</th>
-                                <th>Item ID</th>
                                 <th>Status</th>
-                                <th>Quantity</th>
                                 <th>Total</th>
                                 <th>Order Date</th>
                                 <th>Delivery Date</th>
+                                <% if (!orders_baking.isEmpty()) { %>
+                                <th>Actions</th>
+                                <% } %>
                             </tr>
                             </thead>
                             <tbody>
                             <%
-                                position = 1;
-                                for (Order order : orders_baking) {
+                                position = 0;
+                                for (CustomCakeOrder order : orders_baking) {
                             %>
                             <tr>
-                                <td><%= position++ %></td>
+                                <td><%= ++position %></td>
                                 <td><%=order.getOrderId()%></td>
-                                <td><%=order.getUserId()%></td>
-                                <td><%=order.getItemId()%></td>
+                                <td><%=order.getUser().getID()%></td>
                                 <td><span class="badge badge-baking"><%=order.getStatus()%></span></td>
-                                <td><%=order.getQuantity()%></td>
-                                <td>Rs. <%=order.getTotal()%></td>
+                                <td>Rs. <%=order.getPayment().getPaymentAmount()%></td>
                                 <td><%=order.getOrderDate()%></td>
                                 <td><%=order.getDeliveryDate()%></td>
+                                <% if (position == 1) { %>
+                                <td>
+                                    <a href="<%=request.getContextPath()%>/CustomOrder?action=to-process&orderId=<%=order.getOrderId()%>">
+                                        <button type="button" class="btn btn-outline-primary btn-sm">Finish</button>
+                                    </a>
+                                </td>
+                                <% } %>
                             </tr>
                             <% } %>
                             </tbody>
@@ -591,7 +564,7 @@
             </div>
         </div>
 
-        <div class="order-section" id="finished-section">
+        <div class="order-section" id="finished">
             <div class="card dashboard-card">
                 <div class="card-header bg-white">
                     <h5 class="mb-0">Finished Orders</h5>
@@ -601,29 +574,25 @@
                         <table class="table table-hover">
                             <thead>
                             <tr>
+                                <th>#</th>
                                 <th>Order ID</th>
                                 <th>User ID</th>
-                                <th>Item ID</th>
                                 <th>Status</th>
-                                <th>Quantity</th>
                                 <th>Total</th>
                                 <th>Order Date</th>
                                 <th>Delivery Date</th>
-                                <th>Completed On</th>
                             </tr>
                             </thead>
                             <tbody>
-                            <% for (Order order : orders_finished) { %>
+                            <% for (CustomCakeOrder order : orders_finished) { %>
                             <tr>
+                                <td><%= position++ %></td>
                                 <td><%=order.getOrderId()%></td>
-                                <td><%=order.getUserId()%></td>
-                                <td><%=order.getItemId()%></td>
+                                <td><%=order.getUser().getID()%></td>
                                 <td><span class="badge badge-finished"><%=order.getStatus()%></span></td>
-                                <td><%=order.getQuantity()%></td>
-                                <td>Rs. <%=order.getTotal()%></td>
+                                <td>Rs. <%=order.getPayment().getPaymentAmount()%></td>
                                 <td><%=order.getOrderDate()%></td>
                                 <td><%=order.getDeliveryDate()%></td>
-                                <td><!-- Placeholder for completed date --></td>
                             </tr>
                             <% } %>
                             </tbody>
@@ -647,18 +616,6 @@
                         <form action="<%=request.getContextPath()%>/OrderServlet" method="post">
                             <input type="hidden" name="action" value="update">
                             <input type="hidden" name="orderId" value="<%=order.getOrderId()%>">
-
-                            <div class="mb-3">
-                                <label for="itemId<%=order.getOrderId()%>" class="form-label">Item ID</label>
-                                <input type="text" class="form-control" id="itemId<%=order.getOrderId()%>"
-                                       name="itemId" value="<%=order.getItemId()%>" readonly>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="quantity<%=order.getOrderId()%>" class="form-label">Quantity</label>
-                                <input type="number" class="form-control" id="quantity<%=order.getOrderId()%>"
-                                       name="quantity" min="1" value="<%=order.getQuantity()%>" required>
-                            </div>
 
                             <div class="mb-3">
                                 <label for="deliveryDate<%=order.getOrderId()%>" class="form-label">Delivery Date</label>
@@ -692,8 +649,8 @@
                         <p>Are you sure you want to cancel this order?</p>
                         <div class="card bg-light mb-3">
                             <div class="card-body">
-                                <p class="mb-1"><strong>Item:</strong> <%=order.getItemId()%></p>
-                                <p class="mb-1"><strong>Quantity:</strong> <%=order.getQuantity()%></p>
+                                <p class="mb-1"><strong>Custom Order:</strong> <%=order.getOrderId()%></p>
+                                <p class="mb-1"><strong>Payment Amount:</strong> <%=order.getPayment().getPaymentAmount()%></p>
                                 <p class="mb-0"><strong>Delivery Date:</strong> <%=order.getDeliveryDate()%></p>
                             </div>
                         </div>
@@ -710,44 +667,37 @@
                 </div>
             </div>
         </div>
-    </div>
-</div>
 
-<!-- View Order Modal -->
-<div class="modal fade" id="<%=order.getOrderId()%>_view" tabindex="-1" aria-labelledby="viewOrderModalLabel<%=order.getOrderId()%>" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title" id="viewOrderModalLabel<%=order.getOrderId()%>">Order #<%=order.getOrderId()%></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>Custom Cake Order Information</p>
-                <div class="card bg-light mb-3">
-                    <div class="card-body">
-                        <p class="mb-1"><strong>Occasion:</strong> <%=order.getOccasion()%></p>
-                        <p class="mb-1"><strong>Cake Flavor:</strong> <%=order.getCakeFlavour()%></p>
-                        <p class="mb-0"><strong>Filling:</strong> <%=order.getFilling()%></p>
-                        <p class="mb-1"><strong>Cake Size:</strong> <%=order.getCakeSize()%></p>
-                        <p class="mb-1"><strong>Cake Shape:</strong> <%=order.getCakeShape()%></p>
-                        <p class="mb-0"><strong>Special Instructions:</strong> <%=order.getInstructions()%></p>
+        <!-- View Order Modal -->
+        <div class="modal fade" id="<%=order.getOrderId()%>_view" tabindex="-1" aria-labelledby="viewOrderModalLabel<%=order.getOrderId()%>" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="viewOrderModalLabel<%=order.getOrderId()%>">Order #<%=order.getOrderId()%></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Custom Cake Order Information</p>
+                        <div class="card bg-light mb-3">
+                            <div class="card-body">
+                                <p class="mb-1"><strong>Occasion:</strong> <%=order.getOccasion()%></p>
+                                <p class="mb-1"><strong>Cake Flavor:</strong> <%=order.getCakeFlavour()%></p>
+                                <p class="mb-0"><strong>Filling:</strong> <%=order.getFilling()%></p>
+                                <p class="mb-1"><strong>Cake Size:</strong> <%=order.getCakeSize()%></p>
+                                <p class="mb-1"><strong>Cake Shape:</strong> <%=order.getCakeShape()%></p>
+                                <p class="mb-0"><strong>Special Instructions:</strong> <%=order.getInstructions()%></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">OK</button>
                     </div>
                 </div>
-
-                <form action="<%=request.getContextPath()%>/OrderServlet" method="post" id="cancelForm<%=order.getOrderId()%>">
-                    <input type="hidden" name="action" value="cancel">
-                    <input type="hidden" name="orderId" value="<%=order.getOrderId()%>">
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">OK</button>
             </div>
         </div>
+        <% } %>
     </div>
 </div>
-    <% } %>
-</body>
-</html>
 
 <script src="<%= request.getContextPath() %>/assets/bootstrap/js/bootstrap.min.js"></script>
 <script>
@@ -770,13 +720,15 @@
         });
 
         // Show selected section
-        document.getElementById(`${sectionId}-section`).classList.add('active');
+        document.getElementById(sectionId).classList.add('active');
 
         // Update active status card
         document.querySelectorAll('.status-card').forEach(card => {
             card.classList.remove('active');
         });
 
-        document.querySelector(`.status-card.${sectionId}`).classList.add('active');
+        document.querySelector('.status-card.' + sectionId).classList.add('active');
     }
 </script>
+</body>
+</html>

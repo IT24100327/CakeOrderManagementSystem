@@ -3,7 +3,7 @@
 <html data-bs-theme="light" lang="en">
 
 <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8">.
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>Admin Dashboard - Heavenly Bakery</title>
     <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/bootstrap/css/bootstrap.min.css">
@@ -26,7 +26,6 @@
             overflow-x: hidden;
         }
 
-        /* Header styles */
         .dashboard-header {
             text-align: center;
             margin-bottom: 2rem;
@@ -46,14 +45,12 @@
             font-weight: 300;
         }
 
-        /* Main content area */
         .main-content {
             padding: 20px;
             min-height: 100vh;
             transition: all 0.3s;
         }
 
-        /* Navbar styles */
         .top-navbar {
             background: white;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -63,7 +60,6 @@
             z-index: 999;
         }
 
-        /* Dashboard cards */
         .dashboard-card {
             border: none;
             border-radius: 10px;
@@ -97,17 +93,11 @@
             font-size: 0.9rem;
         }
 
-
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--bs-primary);
-            border-radius: 4px;
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .dashboard-card {
+                margin-bottom: 15px;
+            }
         }
     </style>
 </head>
@@ -155,7 +145,7 @@
             <p class="dashboard-subtitle">Manage your bakery operations with ease</p>
         </div>
 
-        <!-- Navigation Cards -->
+        <!-- First Row - 3 Cards -->
         <div class="row">
             <div class="col-md-4">
                 <a href="<%= request.getContextPath() %>/admin/ManageOrders.jsp" class="dashboard-card card">
@@ -192,19 +182,9 @@
             </div>
         </div>
 
+        <!-- Second Row - 2 Cards (centered) -->
         <div class="row mt-4">
-            <div class="col-md-4">
-                <a href="<%= request.getContextPath() %>/admin/ManageUsers.jsp" class="dashboard-card card">
-                    <div class="card-body text-center">
-                        <div class="card-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <h5 class="card-title">Users</h5>
-                        <p class="card-text">Manage customer and staff accounts</p>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <a href="<%= request.getContextPath() %>/admin/ManagePayments.jsp" class="dashboard-card card">
                     <div class="card-body text-center">
                         <div class="card-icon">
@@ -215,7 +195,7 @@
                     </div>
                 </a>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <a href="<%= request.getContextPath() %>/admin/ManageReviews.jsp" class="dashboard-card card">
                     <div class="card-body text-center">
                         <div class="card-icon">

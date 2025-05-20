@@ -15,7 +15,7 @@ public class processItemServlet extends HttpServlet {
 
     public void init() {
         try {
-            catalog.loadFromFile();
+            ItemCatalog.loadFromFile();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -34,13 +34,13 @@ public class processItemServlet extends HttpServlet {
 
             // itemId is null because catalog.addItem method will assign one
             Item newItem = new Item(name, price, null, category, description);
-            catalog.addItem(newItem);
+            ItemCatalog.addItem(newItem);
 
             response.sendRedirect(request.getContextPath() + "/admin/ManageItems.jsp");
 
         } else if ("remove".equals(action)) {
             String itemId = request.getParameter("itemId");
-            catalog.removeItem(itemId);
+            ItemCatalog.removeItem(itemId);
 
             response.sendRedirect(request.getContextPath() + "/admin/ManageItems.jsp");
 
@@ -49,7 +49,7 @@ public class processItemServlet extends HttpServlet {
         } else if ("update".equals(action)) {
 
             String itemId = request.getParameter("itemId");
-            catalog.removeItem(itemId);
+            ItemCatalog.removeItem(itemId);
 
             String name = request.getParameter("name");
             double price = Double.parseDouble(request.getParameter("price"));
@@ -57,7 +57,7 @@ public class processItemServlet extends HttpServlet {
             String description = request.getParameter("description");
 
             Item newItem = new Item(name, price, itemId, category,description);
-            catalog.addItem(newItem);
+            ItemCatalog.addItem(newItem);
 
             response.sendRedirect(request.getContextPath() + "/admin/ManageItems.jsp");
 

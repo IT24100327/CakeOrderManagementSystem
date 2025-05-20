@@ -5,9 +5,8 @@
 <%@ page import="utils.ItemCatalog" %>
 
 <%
-    ItemCatalog catalog = new ItemCatalog();
-    catalog.loadFromFile();
-    List<Item> items = catalog.getAllItems();
+    ItemCatalog.loadFromFile();
+    List<Item> items = ItemCatalog.getAllItems();
 %>
 
 <!DOCTYPE html>
@@ -201,11 +200,6 @@
         <li class="sidebar-nav-item">
             <a href="<%=request.getContextPath()%>/admin/ManageItems.jsp" class="sidebar-nav-link active">
                 <i class="fas fa-bread-slice"></i> Items
-            </a>
-        </li>
-        <li class="sidebar-nav-item">
-            <a href="<%=request.getContextPath()%>/admin/ManageUsers.jsp" class="sidebar-nav-link">
-                <i class="fas fa-users"></i> Users
             </a>
         </li>
         <li class="sidebar-nav-item">

@@ -190,11 +190,6 @@
             </a>
         </li>
         <li class="sidebar-nav-item">
-            <a href="<%=request.getContextPath()%>/admin/ManageUsers.jsp" class="sidebar-nav-link">
-                <i class="fas fa-users"></i> Users
-            </a>
-        </li>
-        <li class="sidebar-nav-item">
             <a href="<%=request.getContextPath()%>/admin/ManagePayments.jsp" class="sidebar-nav-link" >
                 <i class="fas fa-credit-card"></i> Payments
             </a>

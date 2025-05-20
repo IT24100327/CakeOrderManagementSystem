@@ -1,12 +1,12 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="java.util.LinkedList" %>
 <%@ page import="entities.Payment" %>
-<%@ page import="utils.paymentHandle" %>
+<%@ page import="utils.PaymentHandle" %>
 
 <%
-    paymentHandle.loadFromFile();
-    paymentHandle.sortOrderByPaymentDate();
-    LinkedList<Payment> payments = paymentHandle.getPayments();
+    PaymentHandle.loadFromFile();
+    PaymentHandle.sortOrderByPaymentDate();
+    LinkedList<Payment> payments = PaymentHandle.getPayments();
 %>
 
 <!DOCTYPE html>
@@ -196,11 +196,6 @@
         <li class="sidebar-nav-item">
             <a href="<%=request.getContextPath()%>/admin/ManageItems.jsp" class="sidebar-nav-link">
                 <i class="fas fa-bread-slice"></i> Items
-            </a>
-        </li>
-        <li class="sidebar-nav-item">
-            <a href="<%=request.getContextPath()%>/admin/ManageUsers.jsp" class="sidebar-nav-link">
-                <i class="fas fa-users"></i> Users
             </a>
         </li>
         <li class="sidebar-nav-item">

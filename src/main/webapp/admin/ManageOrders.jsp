@@ -6,48 +6,51 @@
 <%@ page import="java.util.LinkedList" %>
 <%@ page import="java.time.LocalDate" %>
 <%@ page import="java.time.format.DateTimeFormatter" %>
+<%@ page import="entities.ItemOrder" %>
+<%@ page import="utils.ItemCatalog" %>
+<%@ page import="entities.User" %>
+<%@ page import="java.util.HashMap" %>
+<%@ page import="java.util.Map" %>
 
 <%
-    Queue<Order> orders = null;
-    Queue<Order> orders_pending = new LinkedList<>();
-    Queue<Order> orders_to_process = new LinkedList<>();
-    Queue<Order> orders_baking = new LinkedList<>();
-    Queue<Order> orders_finished = new LinkedList<>();
+    // Check if user is logged in
+    User user = (User) session.getAttribute("USER");
+    if (user == null) {
+        response.sendRedirect(request.getContextPath() + "/login.jsp");
+        return;
+    }
+
+    // Initialize order queue and counts
+    Queue<ItemOrder> orders = null;
+    Map<String, Integer> statusCounts = new HashMap<>();
+    statusCounts.put("pending", 0);
+    statusCounts.put("confirmed", 0);
+    statusCounts.put("in-progress", 0);
+    statusCounts.put("finished", 0);
 
     try {
         OrderQueue.loadFromFile();
-        OrderQueue.sortOrderByDeliveryDate();
-        orders = OrderQueue.getNormalOrderQueue();
-    } catch (Exception e) {
-        System.err.println("Error loading orders: " + e.getMessage());
-        orders = new LinkedList<>(); // Empty queue as fallback
-    }
+        ItemCatalog.loadFromFile();
+        orders = OrderQueue.getItemOrdersByDeliveryDate();
 
-    try {
-        while (!orders.isEmpty()) {
-            Order order = orders.poll();
-            if (order.getStatus().equals("pending")) {
-                orders_pending.add(order);
-            } else if (order.getStatus().equals("to-process")) {
-                orders_to_process.add(order);
-            } else if (order.getStatus().equals("baking")) {
-                orders_baking.add(order);
-            } else if (order.getStatus().equals("finished")) {
-                orders_finished.add(order);
-            }
+        // Count orders by status
+        for (ItemOrder order : orders) {
+            String status = order.getStatus().toLowerCase();
+            statusCounts.put(status, statusCounts.getOrDefault(status, 0) + 1);
         }
     } catch (Exception e) {
-        System.err.println("Error sorting orders: " + e.getMessage());
+        System.err.println("Error loading orders: " + e.getMessage());
+        orders = new LinkedList<>();
+        request.setAttribute("error", "Failed to load orders. Please try again later.");
     }
 %>
 
 <!DOCTYPE html>
 <html data-bs-theme="light" lang="en">
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Dashboard - Heavenly Bakery</title>
+    <title>Orders - Heavenly Bakery</title>
     <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/Abril%20Fatface.css">
@@ -59,6 +62,7 @@
             --bs-secondary: #ffe2bb;
             --bs-light: #f8f9fa;
             --bs-dark: #212529;
+            --bs-orange: #fd7e14;
             --sidebar-width: 280px;
         }
 
@@ -79,6 +83,7 @@
             color: white;
             z-index: 1000;
             box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
         }
 
         .sidebar-brand {
@@ -118,11 +123,6 @@
             font-size: 1.1rem;
         }
 
-        .sidebar-nav-link .bi-chevron-down {
-            margin-left: auto;
-            transition: transform 0.3s;
-        }
-
         /* Main content area */
         .main-content {
             margin-left: var(--sidebar-width);
@@ -146,13 +146,7 @@
             border: none;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
             margin-bottom: 20px;
-        }
-
-        .dashboard-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
 
         /* Table styles */
@@ -183,24 +177,17 @@
         /* Status card styles */
         .status-card {
             border-left: 4px solid;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-
-        .status-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
 
         .status-card.pending {
             border-left-color: #ffc107;
         }
 
-        .status-card.to-process {
-            border-left-color: #fd7e14;
+        .status-card.confirmed {
+            border-left-color: var(--bs-orange);
         }
 
-        .status-card.baking {
+        .status-card.in-progress {
             border-left-color: #0dcaf0;
         }
 
@@ -208,27 +195,9 @@
             border-left-color: #198754;
         }
 
-        .status-card.active {
-            background-color: rgba(136, 80, 48, 0.05);
-        }
-
         .status-count {
             font-size: 1.5rem;
             font-weight: bold;
-        }
-
-        .order-section {
-            display: none;
-        }
-
-        .order-section.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         /* Badge styles */
@@ -237,12 +206,12 @@
             color: #856404;
         }
 
-        .badge-to-process {
+        .badge-confirmed {
             background-color: #ffe5d0;
-            color: #fd7e14;
+            color: var(--bs-orange);
         }
 
-        .badge-baking {
+        .badge-in-progress {
             background-color: #d1f7ff;
             color: #0c5460;
         }
@@ -250,6 +219,14 @@
         .badge-finished {
             background-color: #d4edda;
             color: #155724;
+        }
+
+        .bg-orange {
+            background-color: var(--bs-orange);
+        }
+
+        .text-orange {
+            color: var(--bs-orange);
         }
 
         /* Responsive adjustments */
@@ -262,6 +239,9 @@
             }
             .main-content, .top-navbar {
                 margin-left: 0;
+            }
+            .table-responsive {
+                font-size: 0.9rem;
             }
         }
 
@@ -278,7 +258,6 @@
         }
     </style>
 </head>
-
 <body>
 <!-- Sidebar -->
 <div class="sidebar">
@@ -295,7 +274,7 @@
             </a>
         </li>
         <li class="sidebar-nav-item">
-            <a href="<%=request.getContextPath()%>/admin/ManageCustomOrders.jsp" class="sidebar-nav-link" >
+            <a href="<%=request.getContextPath()%>/admin/ManageCustomOrders.jsp" class="sidebar-nav-link">
                 <i class="fas fa-star"></i> Custom Orders
             </a>
         </li>
@@ -305,12 +284,7 @@
             </a>
         </li>
         <li class="sidebar-nav-item">
-            <a href="<%=request.getContextPath()%>/admin/ManageUsers.jsp" class="sidebar-nav-link">
-                <i class="fas fa-users"></i> Users
-            </a>
-        </li>
-        <li class="sidebar-nav-item">
-            <a href="<%=request.getContextPath()%>/admin/ManagePayments.jsp" class="sidebar-nav-link" >
+            <a href="<%=request.getContextPath()%>/admin/ManagePayments.jsp" class="sidebar-nav-link">
                 <i class="fas fa-credit-card"></i> Payments
             </a>
         </li>
@@ -321,6 +295,7 @@
         </li>
     </ul>
 </div>
+
 <!-- Main Content -->
 <div class="main-content">
     <!-- Top Navbar -->
@@ -329,10 +304,9 @@
             <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
                 <i class="fas fa-bars"></i>
             </button>
-
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <div class="d-flex justify-content-between w-100 align-items-center">
-                    <span class="d-none d-sm-inline">Welcome, Admin</span>
+                    <span class="d-none d-sm-inline">Welcome, <%=user.getfName() + " " + user.getlName()%></span>
                     <div>
                         <a href="<%= request.getContextPath() %>/logout" class="btn btn-outline-danger">
                             <i class="fas fa-sign-out-alt me-1"></i> Logout
@@ -345,16 +319,22 @@
 
     <!-- Content -->
     <div class="container-fluid">
+        <% if (request.getAttribute("error") != null) { %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <%= request.getAttribute("error") %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <% } %>
 
         <!-- Order Status Cards -->
         <div class="row mb-4">
             <div class="col-md-3">
-                <div class="card status-card pending active" onclick="showSection('pending')">
+                <div class="card status-card pending">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <h6 class="text-muted mb-2">Pending Payment</h6>
-                                <h3 class="status-count mb-0"><%= orders_pending.size() %></h3>
+                                <h3 class="status-count mb-0"><%= statusCounts.get("pending") %></h3>
                             </div>
                             <div class="bg-warning bg-opacity-10 p-3 rounded">
                                 <i class="fas fa-clock text-warning"></i>
@@ -363,14 +343,13 @@
                     </div>
                 </div>
             </div>
-
             <div class="col-md-3">
-                <div class="card status-card to-process" onclick="showSection('to-process')">
+                <div class="card status-card confirmed">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <h6 class="text-muted mb-2">To Process</h6>
-                                <h3 class="status-count mb-0"><%= orders_to_process.size() %></h3>
+                                <h6 class="text-muted mb-2">Confirmed</h6>
+                                <h3 class="status-count mb-0"><%= statusCounts.get("confirmed") %></h3>
                             </div>
                             <div class="bg-orange bg-opacity-10 p-3 rounded">
                                 <i class="fas fa-list-check text-orange"></i>
@@ -379,14 +358,13 @@
                     </div>
                 </div>
             </div>
-
             <div class="col-md-3">
-                <div class="card status-card baking" onclick="showSection('baking')">
+                <div class="card status-card in-progress">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <h6 class="text-muted mb-2">Baking</h6>
-                                <h3 class="status-count mb-0"><%= orders_baking.size() %></h3>
+                                <h6 class="text-muted mb-2">In Progress</h6>
+                                <h3 class="status-count mb-0"><%= statusCounts.get("in-progress") %></h3>
                             </div>
                             <div class="bg-info bg-opacity-10 p-3 rounded">
                                 <i class="fas fa-fire text-info"></i>
@@ -395,14 +373,13 @@
                     </div>
                 </div>
             </div>
-
             <div class="col-md-3">
-                <div class="card status-card finished" onclick="showSection('finished')">
+                <div class="card status-card finished">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <h6 class="text-muted mb-2">Finished</h6>
-                                <h3 class="status-count mb-0"><%= orders_finished.size() %></h3>
+                                <h3 class="status-count mb-0"><%= statusCounts.get("finished") %></h3>
                             </div>
                             <div class="bg-success bg-opacity-10 p-3 rounded">
                                 <i class="fas fa-check-circle text-success"></i>
@@ -413,249 +390,143 @@
             </div>
         </div>
 
-        <!-- Order Sections -->
-        <div class="order-section active" id="pending-section">
-            <div class="card dashboard-card">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0">Pending Payment Orders</h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                            <tr>
-                                <th>Order ID</th>
-                                <th>User ID</th>
-                                <th>Item ID</th>
-                                <th>Status</th>
-                                <th>Quantity</th>
-                                <th>Total</th>
-                                <th>Order Date</th>
-                                <th>Delivery Date</th>
-                                <th>Actions</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <% for (Order order : orders_pending) { %>
-                            <tr>
-                                <td><%=order.getOrderId()%></td>
-                                <td><%=order.getUserId()%></td>
-                                <td><%=order.getItemId()%></td>
-                                <td><span class="badge badge-pending"><%=order.getStatus()%></span></td>
-                                <td><%=order.getQuantity()%></td>
-                                <td>Rs. <%=order.getTotal()%></td>
-                                <td><%=order.getOrderDate()%></td>
-                                <td><%=order.getDeliveryDate()%></td>
-                                <td>
-                                    <div class="btn-group" role="group">
-                                        <button type="button" class="btn btn-outline-primary btn-sm"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#<%=order.getOrderId()%>_update">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-outline-danger btn-sm"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#<%=order.getOrderId()%>_cancel">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
+        <!-- Order Tables -->
+        <%
+            String[] statuses = {"pending", "confirmed", "in-progress", "finished"};
+            String[] sectionTitles = {"Pending Payment Orders", "Confirmed Orders", "In Progress Orders", "Finished Orders"};
+            String[] badgeClasses = {"badge-pending", "badge-confirmed", "badge-in-progress", "badge-finished"};
+
+            for (int i = 0; i < statuses.length; i++) {
+                String status = statuses[i];
+                String sectionTitle = sectionTitles[i];
+                String badgeClass = badgeClasses[i];
+        %>
+        <div class="card dashboard-card mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><%= sectionTitle %></h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Order ID</th>
+                            <th>User ID</th>
+                            <th>Item ID</th>
+                            <th>Status</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                            <th>Order Date</th>
+                            <th>Delivery Date</th>
+                            <% if (status != "finished") { %>
+                            <th>Actions</th>
                             <% } %>
-                            </tbody>
-                        </table>
-                    </div>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <%
+                            int position = 1;
+                            boolean hasOrders = false;
+                            for (ItemOrder order : orders) {
+                                if (order.getStatus().toLowerCase().equals(status)) {
+                                    hasOrders = true;
+                                    String itemId = order.getItem() != null ? order.getItem().getItemId() : "N/A";
+                                    int userId = order.getUser() != null ? order.getUser().getID() : -99;
+                                    String paymentAmount = order.getPayment() != null ? String.format("%.2f", order.getPayment().getPaymentAmount()) : "0.00";
+                                    String displayStatus = status.equals("finished") ? "Completed" : order.getStatus();
+                        %>
+                        <tr>
+                            <td><%= position %></td>
+                            <td><%= order.getOrderId() %></td>
+                            <td><%= userId %></td>
+                            <td><%= itemId %></td>
+                            <td><span class="badge <%= badgeClass %>"><%= displayStatus %></span></td>
+                            <td><%= order.getQuantity() %></td>
+                            <td>Rs. <%= paymentAmount %></td>
+                            <td><%= order.getOrderDate() %></td>
+                            <td><%= order.getDeliveryDate() %></td>
+                            <td>
+                                <% if (status.equals("pending")) { %>
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-outline-primary btn-sm"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#<%= order.getOrderId() %>_update">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger btn-sm"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#<%= order.getOrderId() %>_cancel">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <% } else if (status.equals("confirmed") && position == 1) { %>
+                                <a href="<%=request.getContextPath()%>/ItemOrderServlet?action=process&orderId=<%=order.getOrderId()%>">
+                                    <button type="button" class="btn btn-outline-primary btn-sm">
+                                        Process
+                                    </button>
+                                </a>
+                                <% } else if (status.equals("in-progress") && position == 1) { %>
+                                <a href="<%=request.getContextPath()%>/ItemOrderServlet?action=finish&orderId=<%=order.getOrderId()%>">
+                                    <button type="button" class="btn btn-outline-primary btn-sm">
+                                        Finish
+                                    </button>
+                                </a>
+                                <% } %>
+                            </td>
+                        </tr>
+                        <%
+                                    position++;
+                                }
+                            }
+                            if (!hasOrders) { %>
+                        <tr><td colspan="10" class="text-center">No <%= status %> orders found.</td></tr>
+                        <% } %>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
 
-        <div class="order-section" id="to-process-section">
-            <div class="card dashboard-card">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0">Orders To Process</h5>
-                </div>
-                <div class="card-body">
-                    <% if (!orders_to_process.isEmpty()) { %>
-                    <div class="mb-3">
-                        <form action="<%=request.getContextPath()%>/OrderServlet" method="post">
-                            <input type="hidden" name="action" value="to-process">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-forward me-2"></i>Process Next Order (Move to Baking)
-                            </button>
-                        </form>
-                    </div>
-                    <% } %>
-
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Order ID</th>
-                                <th>User ID</th>
-                                <th>Item ID</th>
-                                <th>Quantity</th>
-                                <th>Total</th>
-                                <th>Order Date</th>
-                                <th>Delivery Date</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <%
-                                int position = 1;
-                                for (Order order : orders_to_process) {
-                            %>
-                            <tr>
-                                <td><%=position++%></td>
-                                <td><%=order.getOrderId()%></td>
-                                <td><%=order.getUserId()%></td>
-                                <td><%=order.getItemId()%></td>
-                                <td><%=order.getQuantity()%></td>
-                                <td>Rs. <%=order.getTotal()%></td>
-                                <td><%=order.getOrderDate()%></td>
-                                <td><%=order.getDeliveryDate()%></td>
-                            </tr>
-                            <% } %>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="order-section" id="baking-section">
-            <div class="card dashboard-card">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0">Baking Orders</h5>
-                </div>
-                <div class="card-body">
-                    <% if (!orders_baking.isEmpty()) { %>
-                    <div class="mb-3">
-                        <form action="<%=request.getContextPath()%>/OrderServlet" method="post">
-                            <input type="hidden" name="action" value="baking">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-check me-2"></i>Process Next Order (Mark as Completed)
-                            </button>
-                        </form>
-                    </div>
-                    <% } %>
-
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Order ID</th>
-                                <th>User ID</th>
-                                <th>Item ID</th>
-                                <th>Status</th>
-                                <th>Quantity</th>
-                                <th>Total</th>
-                                <th>Order Date</th>
-                                <th>Delivery Date</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <%
-                                position = 1;
-                                for (Order order : orders_baking) {
-                            %>
-                            <tr>
-                                <td><%= position++ %></td>
-                                <td><%=order.getOrderId()%></td>
-                                <td><%=order.getUserId()%></td>
-                                <td><%=order.getItemId()%></td>
-                                <td><span class="badge badge-baking"><%=order.getStatus()%></span></td>
-                                <td><%=order.getQuantity()%></td>
-                                <td>Rs. <%=order.getTotal()%></td>
-                                <td><%=order.getOrderDate()%></td>
-                                <td><%=order.getDeliveryDate()%></td>
-                            </tr>
-                            <% } %>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="order-section" id="finished-section">
-            <div class="card dashboard-card">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0">Finished Orders</h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                            <tr>
-                                <th>Order ID</th>
-                                <th>User ID</th>
-                                <th>Item ID</th>
-                                <th>Status</th>
-                                <th>Quantity</th>
-                                <th>Total</th>
-                                <th>Order Date</th>
-                                <th>Delivery Date</th>
-                                <th>Completed On</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <% for (Order order : orders_finished) { %>
-                            <tr>
-                                <td><%=order.getOrderId()%></td>
-                                <td><%=order.getUserId()%></td>
-                                <td><%=order.getItemId()%></td>
-                                <td><span class="badge badge-finished"><%=order.getStatus()%></span></td>
-                                <td><%=order.getQuantity()%></td>
-                                <td>Rs. <%=order.getTotal()%></td>
-                                <td><%=order.getOrderDate()%></td>
-                                <td><%=order.getDeliveryDate()%></td>
-                                <td><!-- Placeholder for completed date --></td>
-                            </tr>
-                            <% } %>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <% } %>
 
         <!-- Modals for pending orders -->
-        <% for (Order order : orders_pending) { %>
+        <% for (ItemOrder order : orders) {
+            if (order.getStatus().toLowerCase().equals("pending")) {
+        %>
         <!-- Update Modal -->
-        <div class="modal fade" id="<%=order.getOrderId()%>_update" tabindex="-1" aria-labelledby="editOrderModalLabel<%=order.getOrderId()%>" aria-hidden="true">
+        <div class="modal fade" id="<%= order.getOrderId() %>_update" tabindex="-1" aria-labelledby="editOrderModalLabel<%= order.getOrderId() %>" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="editOrderModalLabel<%=order.getOrderId()%>">Edit Order #<%=order.getOrderId()%></h5>
+                        <h5 class="modal-title" id="editOrderModalLabel<%= order.getOrderId() %>">Edit Order #<%= order.getOrderId() %></h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form action="<%=request.getContextPath()%>/OrderServlet" method="post">
+                        <form action="<%= request.getContextPath() %>/ItemOrderServlet" method="post">
                             <input type="hidden" name="action" value="update">
-                            <input type="hidden" name="orderId" value="<%=order.getOrderId()%>">
+                            <input type="hidden" name="orderId" value="<%= order.getOrderId() %>">
 
                             <div class="mb-3">
-                                <label for="itemId<%=order.getOrderId()%>" class="form-label">Item ID</label>
-                                <input type="text" class="form-control" id="itemId<%=order.getOrderId()%>"
-                                       name="itemId" value="<%=order.getItemId()%>" readonly>
+                                <label for="itemId<%= order.getOrderId() %>" class="form-label">Item ID</label>
+                                <input type="text" class="form-control" id="itemId<%= order.getOrderId() %>"
+                                       name="itemId" value="<%= order.getItem() != null ? order.getItem().getItemId() : "" %>" readonly>
                             </div>
 
                             <div class="mb-3">
-                                <label for="quantity<%=order.getOrderId()%>" class="form-label">Quantity</label>
-                                <input type="number" class="form-control" id="quantity<%=order.getOrderId()%>"
-                                       name="quantity" min="1" value="<%=order.getQuantity()%>" required>
+                                <label for="quantity<%= order.getOrderId() %>" class="form-label">Quantity</label>
+                                <input type="number" class="form-control" id="quantity<%= order.getOrderId() %>"
+                                       name="quantity" min="1" value="<%= order.getQuantity() %>" required>
                             </div>
 
                             <div class="mb-3">
-                                <label for="deliveryDate<%=order.getOrderId()%>" class="form-label">Delivery Date</label>
+                                <label for="deliveryDate<%= order.getOrderId() %>" class="form-label">Delivery Date</label>
                                 <%
                                     LocalDate tomorrow = LocalDate.now().plusDays(1);
                                     String tomorrowStr = tomorrow.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
                                 %>
-                                <input type="date" class="form-control" id="deliveryDate<%=order.getOrderId()%>"
-                                       name="deliveryDate" min="<%=tomorrowStr%>" value="<%=order.getDeliveryDate()%>" required>
+                                <input type="date" class="form-control" id="deliveryDate<%= order.getOrderId() %>"
+                                       name="deliveryDate" min="<%= tomorrowStr %>" value="<%= order.getDeliveryDate() %>" required>
                             </div>
 
                             <div class="modal-footer">
@@ -669,41 +540,47 @@
         </div>
 
         <!-- Cancel Order Modal -->
-        <div class="modal fade" id="<%=order.getOrderId()%>_cancel" tabindex="-1" aria-labelledby="cancelOrderModalLabel<%=order.getOrderId()%>" aria-hidden="true">
+        <div class="modal fade" id="<%= order.getOrderId() %>_cancel" tabindex="-1" aria-labelledby="cancelOrderModalLabel<%= order.getOrderId() %>" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header bg-danger text-white">
-                        <h5 class="modal-title" id="cancelOrderModalLabel<%=order.getOrderId()%>">Cancel Order #<%=order.getOrderId()%></h5>
+                        <h5 class="modal-title" id="cancelOrderModalLabel<%= order.getOrderId() %>">Cancel Order #<%= order.getOrderId() %></h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <p>Are you sure you want to cancel this order?</p>
                         <div class="card bg-light mb-3">
                             <div class="card-body">
-                                <p class="mb-1"><strong>Item:</strong> <%=order.getItemId()%></p>
-                                <p class="mb-1"><strong>Quantity:</strong> <%=order.getQuantity()%></p>
-                                <p class="mb-0"><strong>Delivery Date:</strong> <%=order.getDeliveryDate()%></p>
+                                <p class="mb-1"><strong>Item:</strong> <%= order.getItem() != null ? order.getItem().getItemId() : "N/A" %></p>
+                                <p class="mb-1"><strong>Quantity:</strong> <%= order.getQuantity() %></p>
+                                <p class="mb-0"><strong>Delivery Date:</strong> <%= order.getDeliveryDate() %></p>
                             </div>
                         </div>
 
-                        <form action="<%=request.getContextPath()%>/OrderServlet" method="post" id="cancelForm<%=order.getOrderId()%>">
+                        <form action="<%= request.getContextPath() %>/ItemOrderServlet" method="post" id="cancelForm<%= order.getOrderId() %>">
                             <input type="hidden" name="action" value="cancel">
-                            <input type="hidden" name="orderId" value="<%=order.getOrderId()%>">
+                            <input type="hidden" name="orderId" value="<%= order.getOrderId() %>">
+                            <input type="hidden" name="_csrf" value="<%= session.getAttribute("csrfToken") %>">
                         </form>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">No, Keep Order</button>
-                        <button type="submit" form="cancelForm<%=order.getOrderId()%>" class="btn btn-danger">Yes, Cancel Order</button>
+                        <button type="submit" form="cancelForm<%= order.getOrderId() %>" class="btn btn-danger">Yes, Cancel Order</button>
                     </div>
                 </div>
             </div>
         </div>
-        <% } %>
+        <% } } %>
     </div>
 </div>
 
 <script src="<%= request.getContextPath() %>/assets/bootstrap/js/bootstrap.min.js"></script>
 <script>
+    // Toggle sidebar on mobile
+    document.querySelector('.navbar-toggler').addEventListener('click', function() {
+        document.querySelector('.sidebar').classList.toggle('active');
+    });
+
     // Close sidebar when clicking outside on mobile
     document.addEventListener('click', function(event) {
         const sidebar = document.querySelector('.sidebar');
@@ -714,22 +591,6 @@
             sidebar.classList.remove('active');
         }
     });
-
-    // Show order section based on status card click
-    function showSection(sectionId) {
-        // Hide all sections
-        document.querySelectorAll('.order-section').forEach(section => {
-            section.classList.remove('active');
-        });
-
-        // Show selected section
-        document.getElementById(`${sectionId}-section`).classList.add('active');
-
-        // Update active status card
-        document.querySelectorAll('.status-card').forEach(card => {
-            card.classList.remove('active');
-        });
-
-        document.querySelector(`.status-card.${sectionId}`).classList.add('active');
-    }
 </script>
+</body>
+</html>

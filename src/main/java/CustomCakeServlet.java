@@ -13,18 +13,12 @@ import utils.OrderQueue;
 
 
 import java.io.IOException;
+import java.time.LocalDate;
 
-@WebServlet("/customcake")
+@WebServlet("/CustomOrder")
 public class CustomCakeServlet extends HttpServlet {
 
     CredsFileHandle ch = new CredsFileHandle();
-
-
-    private double basePrice;
-    private double priceWithFlavour;
-    private double total;
-
-
 
     public void init(){
        try{
@@ -34,15 +28,9 @@ public class CustomCakeServlet extends HttpServlet {
             e.printStackTrace();
         }
     }
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        RequestDispatcher dispatcher = request.getRequestDispatcher("customCake.jsp");
-        dispatcher.forward(request, response);
-    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
 
         String occasion = request.getParameter("occasion");
         String flavour = request.getParameter("flavor");
@@ -50,27 +38,30 @@ public class CustomCakeServlet extends HttpServlet {
         String status = request.getParameter("status");
         String shape = request.getParameter("shape");
         String size = request.getParameter("size");
-        String deliveryDate = request.getParameter("deliveryDate");
+        LocalDate deliveryDate = LocalDate.parse(request.getParameter("deliveryDate"));
         String instructions = request.getParameter("instructions");
-        HttpSession session = request.getSession();
-        String email = (String) session.getAttribute("email");
 
-        User user = ch.getUserByEmail(email);
-        String id = String.valueOf(user.getID());
-        System.out.println("User Id :" + id);
+        User user = (User) request.getSession().getAttribute("USER");
 
-
-
-        CustomCakeOrder cco = new CustomCakeOrder(id,1, "pending",0, deliveryDate, occasion, flavour, filling, size, shape,instructions);
-        cco.total();
+        CustomCakeOrder cco = new CustomCakeOrder(user,null, deliveryDate, occasion, flavour, filling, size, shape,instructions);
         OrderQueue.add(cco);
+        System.out.println("Order added");
+
+        request.setAttribute("cco", cco);
 
         RequestDispatcher dispatcher = request.getRequestDispatcher("Custom_payment_details.jsp");
         dispatcher.forward(request, response);
 
+    }
 
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String action = request.getParameter("action");
+        String orderId = request.getParameter("orderId");
 
-
+        if (action.equals("to-process")) {
+            OrderQueue.processOrder(OrderQueue.findOrderById(orderId));
+            response.sendRedirect(request.getContextPath() + "/admin/ManageCustomOrders.jsp");
+        }
 
     }
 }

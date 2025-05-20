@@ -1,18 +1,28 @@
 package utils;
 
 import entities.CustomCakeOrder;
+import entities.ItemOrder;
 import entities.Order;
+import entities.Payment;
 
 import java.io.*;
+import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.Queue;
 
 
 public class OrderQueue {
-    private static Queue<Order> orderQueue = new LinkedList<>();
-    private static Queue<Order> normalQueue = new LinkedList<>(); // Initialize here
-    private static String FILE_PATH = "E:/Data/OrderQueue.txt"; // Relative path
+    private static final Queue<Order> orderQueue = new LinkedList<>();
+    private static final String FILE_PATH = "E:/Data/OrderQueue.txt"; // Relative path
     private static int lastOrderId = 0;
+
+    static {
+        try {
+            loadFromFile();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public OrderQueue() {
     }
@@ -30,27 +40,6 @@ public class OrderQueue {
         return String.format("ORD%04d", lastOrderId);
     }
 
-    public static String[] getCustomOrderDetailsById() throws FileNotFoundException {
-        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                    CustomCakeOrder order =  CustomCakeOrder.fromStringToObject(line);
-                    String idNumStr = order.getOrderId().replace("ORD", "");
-                    int idNum = Integer.parseInt(idNumStr);
-                    if(idNum == lastOrderId){
-                        String[] parts = line.split("\\|");
-                        return parts;
-                    }
-            }
-        } catch (IOException e) {
-            System.err.println("Not Creat Custom Order Details Array " + e.getMessage());
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-
     public static void add(Order order) throws IOException {
         if (order == null) {
             throw new IllegalArgumentException("Order cannot be null");
@@ -64,15 +53,9 @@ public class OrderQueue {
         System.out.println("Added a order");
     }
 
-
     public static Queue<Order> getOrderQueue() {
         return new LinkedList<>(orderQueue);
     }
-
-    public static Queue<Order> getNormalOrderQueue(){
-        return new LinkedList<>(normalQueue);
-    }
-
 
     public static Queue<CustomCakeOrder> getCustomQueue() {
         LinkedList<CustomCakeOrder> cco = new LinkedList<>();
@@ -85,14 +68,20 @@ public class OrderQueue {
         return cco;
     }
 
-    //public static Queue<CustomCakeOrder> getCustomQueue() {
-        //return new LinkedList<>(customQueue);
-    //}
+    public static Queue<ItemOrder> getItemQueue() {
+        LinkedList<ItemOrder> cco = new LinkedList<>();
+        for (Order order: orderQueue) {
+            if (order instanceof ItemOrder) {
+                ItemOrder customOrder = (ItemOrder) order;
+                cco.add(customOrder);
+            }
+        }
+        return cco;
+    }
 
     public static void loadFromFile() throws IOException {
         File file = new File(FILE_PATH);
 
-        // Create file if doesn't exist
         if (!file.exists()) {
             file.createNewFile();
             return;
@@ -100,18 +89,18 @@ public class OrderQueue {
 
         orderQueue.clear();
 
-
-
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split("\\|");
-                if (parts[0].equals("normalOrder")) {
-                    Order order = Order.fromString(line);
-                    String idNumStr = order.getOrderId().replace("ORD", "");
-                    int idNum = Integer.parseInt(idNumStr);
-                    lastOrderId = Math.max(lastOrderId, idNum);
-                    orderQueue.add(order);
+                if (parts[0].equals("ItemOrder")) {
+                    ItemOrder order = ItemOrder.fromString(line);
+                    if (order != null) {
+                        String idNumStr = order.getOrderId().replace("ORD", "");
+                        int idNum = Integer.parseInt(idNumStr);
+                        lastOrderId = Math.max(lastOrderId, idNum);
+                        orderQueue.add(order);
+                    }
                 }
 
                 else if (parts[0].equals("customOrder")) {
@@ -122,15 +111,12 @@ public class OrderQueue {
                     orderQueue.add(order);
                 }
 
-                        // Update lastOrderId
-                       // String idNumStr = order.getOrderId().replace("ORD", "");
-                        //int idNum = Integer.parseInt(idNumStr);
-                        //lastOrderId = Math.max(lastOrderId, idNum);
             }
-            System.out.println("File loaded");
+
+            System.out.println("OrderQueue loaded From File!");
+
         }
     }
-
 
     // Find an item by its ID
     public static Order findOrderById(String orderId) {
@@ -142,28 +128,53 @@ public class OrderQueue {
         return null;
     }
 
-    public static void sortOrderByDeliveryDate() {
-        for(Order order : orderQueue){
-            if(!order.getItemId().equals("CUSTOMCAKE")){
-                normalQueue.add(order);
+    public static ItemOrder findItemOrderById(String itemOrderId) {
+        for (Order order : orderQueue) {
+            if (order.getOrderId().equals(itemOrderId)) {
+                return (ItemOrder) order;
             }
         }
-        BubbleSorter.bubbleSortByDeliveryDate(normalQueue);
+        return null;
     }
 
-    // Sorting part for Custom Cake
-    public static void sortOrderByDate() {
-        BubbleSorter.bubbleSortByDeliveryDate(orderQueue);
+    public static CustomCakeOrder findCustomOrderById(String customOrderId) {
+        for (Order order : orderQueue) {
+            if (order.getOrderId().equals(customOrderId)) {
+                return (CustomCakeOrder) order;
+            }
+        }
+        return null;
     }
 
+    public static Queue<CustomCakeOrder> getCustomOrdersByDeliveryDate() {
+        Queue<CustomCakeOrder> cco = new LinkedList<>();
+        for(Order order : orderQueue){
+            if (order instanceof CustomCakeOrder) {
+                CustomCakeOrder customOrder = (CustomCakeOrder) order;
+                cco.add(customOrder);
+            }
+        }
+        BubbleSorter.bubbleSortCustomOrdersByDate(cco);
+        return cco;
+    }
 
+    public static Queue<ItemOrder> getItemOrdersByDeliveryDate() {
+        Queue<ItemOrder> itemOrderQ = new LinkedList<>();
+        for(Order order : orderQueue){
+            if (order instanceof ItemOrder) {
+                ItemOrder itemOrder = (ItemOrder) order;
+                itemOrderQ.add(itemOrder);
+            }
+        }
+        BubbleSorter.bubbleSortByDeliveryDate(itemOrderQ);
+        return itemOrderQ;
+    }
 
-    public static void updateItem(String orderId, int quantity, String deliveryDate, double newItemPrice) {
-        Order order = findOrderById(orderId);
+    public static void updateItemOrder(String orderId, int quantity, LocalDate deliveryDate) {
+        ItemOrder order = findItemOrderById(orderId);
         if (order != null) {
             order.setQuantity(quantity);
             order.setDeliveryDate(deliveryDate);
-            order.setTotal(newItemPrice);
         }
 
         saveToFile();
@@ -178,6 +189,22 @@ public class OrderQueue {
             orderToProcess.setStatus("finished");
         }
 
+        saveToFile();
+    }
+
+    public static void setOrderStatus(String orderId, String status) {
+        Order order = findOrderById(orderId);
+        if (order != null) {
+            order.setStatus(status);
+        }
+        saveToFile();
+    }
+
+    public static void setOrderPayment(String orderId, Payment payment) {
+        Order order = findOrderById(orderId);
+        if (order != null) {
+            order.setPayment(payment);
+        }
         saveToFile();
     }
 
@@ -199,6 +226,4 @@ public class OrderQueue {
             e.printStackTrace();
         }
     }
-
-
 }

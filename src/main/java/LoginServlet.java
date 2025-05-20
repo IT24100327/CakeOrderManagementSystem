@@ -49,6 +49,7 @@ public class LoginServlet extends HttpServlet {
                     request.getSession().setAttribute("lname", user.getlName());
                     request.getSession().setAttribute("email", user.getEmail());
                     request.getSession().setAttribute("ROLE", user.getROLE());
+                    request.getSession().setAttribute("USER", user);
                     response.sendRedirect(request.getContextPath() + "/");
                 } else {
                     System.out.println("Incorrect password for user: " + email);

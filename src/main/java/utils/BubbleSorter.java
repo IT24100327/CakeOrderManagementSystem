@@ -1,6 +1,7 @@
 package utils;
 
 import entities.CustomCakeOrder;
+import entities.ItemOrder;
 import entities.Order;
 import entities.Payment;
 //import entities.Payment;
@@ -16,13 +17,13 @@ public class BubbleSorter {
     private static final DateTimeFormatter DATE_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    public static void bubbleSortByDeliveryDate(Queue<Order> orders) {
+    public static void bubbleSortByDeliveryDate(Queue<ItemOrder> orders) {
         if (orders == null || orders.size() <= 1) {
             return;
         }
 
         // Convert queue to array for easier sorting
-        Order[] orderArray =  orders.toArray(new Order[0]);
+        ItemOrder[] orderArray =  orders.toArray(new ItemOrder[0]);
 
         int n = orderArray.length;
         boolean swapped;
@@ -30,9 +31,10 @@ public class BubbleSorter {
         for (int i = 0; i < n - 1; i++) {
             swapped = false;
             for (int j = 0; j < n - i - 1; j++) {
+
                 // Parse the string dates to LocalDate for proper comparison
-                LocalDate date1 = LocalDate.parse(orderArray[j].getDeliveryDate(), DATE_FORMATTER);
-                LocalDate date2 = LocalDate.parse(orderArray[j + 1].getDeliveryDate(), DATE_FORMATTER);
+                LocalDate date1 = orderArray[j].getDeliveryDate();
+                LocalDate date2 = orderArray[j + 1].getDeliveryDate();
 
                 /*
                    -----compareTo Method----------
@@ -43,7 +45,7 @@ public class BubbleSorter {
 
                 if (date1.compareTo(date2) > 0) {
                     // Swap if they're in the wrong order
-                    Order temp = orderArray[j];
+                    ItemOrder temp = orderArray[j];
                     orderArray[j] = orderArray[j + 1];
                     orderArray[j + 1] = temp;
                     swapped = true;
@@ -59,18 +61,18 @@ public class BubbleSorter {
         // Clear the original queue and add the sorted elements back
         orders.clear();
 
-        for (Order order : orderArray) {
+        for (ItemOrder order : orderArray) {
             orders.add(order);
         }
     }
 
-    public static void bubbleSortByDate(Queue<Order> orders) {
+    public static void bubbleSortCustomOrdersByDate(Queue<CustomCakeOrder> orders) {
         if (orders == null || orders.size() <= 1) {
             return;
         }
 
         // Convert queue to array for easier sorting
-        CustomCakeOrder[] orderArr = (CustomCakeOrder[]) orders.toArray(new Order[0]);
+        CustomCakeOrder[] orderArr = orders.toArray(new CustomCakeOrder[0]);
 
         int n = orderArr.length;
         boolean swapped;
@@ -79,8 +81,8 @@ public class BubbleSorter {
             swapped = false;
             for (int j = 0; j < n - i - 1; j++) {
                 // Parse the string dates to LocalDate for proper comparison
-                LocalDate date1 = LocalDate.parse(orderArr[j].getDeliveryDate(), DATE_FORMATTER);
-                LocalDate date2 = LocalDate.parse(orderArr[j + 1].getDeliveryDate(), DATE_FORMATTER);
+                LocalDate date1 = orderArr[j].getDeliveryDate();
+                LocalDate date2 = orderArr[j + 1].getDeliveryDate();
 
                 /*
                    -----compareTo Method----------

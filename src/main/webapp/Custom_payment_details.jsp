@@ -1,29 +1,21 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="entities.Item" %>
 <%@ page import="utils.OrderQueue" %>
+<%@ page import="entities.User" %>
+<%@ page import="entities.CustomCakeOrder" %>
 
 
 <%
     // Initialize with default values
-    int userId = 0;
-    String itemId = null;
+    User user = (User) session.getAttribute("USER");
 
-    int quantity = 1;
-    Item selectedItem = null;
-    String error = null;
-
-    String [] customOrderDetails = OrderQueue.getCustomOrderDetailsById();
-
-    assert customOrderDetails != null;
-
-    String orderId = customOrderDetails[1];
-    String total = customOrderDetails[5];
-    String occasion = customOrderDetails[7];
-    String flavor = customOrderDetails[8];
-    String fillings = customOrderDetails[9];
-    String size = customOrderDetails[10];
-    String shape = customOrderDetails[11];
-
+    CustomCakeOrder cco =null;
+    if (request.getAttribute("cco") != null) {
+        cco = (CustomCakeOrder) request.getAttribute("cco");
+        System.out.println("new order found");
+    } else {
+        cco = (CustomCakeOrder) OrderQueue.findOrderById(request.getParameter("orderId"));
+    }
 
 %>
 
@@ -66,21 +58,11 @@
                     <h3 class="text-center mb-0">Order Details</h3>
                 </div>
                 <div class="card-body">
-<%--                    <% if (selectedItem != null) { %>--%>
-                    <!-- Order Summary -->
                     <div class="order-summary mb-4">
-                        <h5 class="mb-3">Your Order [<%= orderId %>]</h5>
-                        <div class="d-flex justify-content-between mb-2">
-                            <span><strong>Item:</strong></span>
-                            <span>Custom Cake</span>
-                        </div>
+                        <h5 class="mb-3">Your Order [<%= cco.getOrderId() %>]</h5>
                         <div class="d-flex justify-content-between mb-2">
                             <span><strong>Price:</strong></span>
-                            <span>Rs. <%= total %></span>
-                        </div>
-                        <div class="d-flex justify-content-between mb-2">
-                            <span><strong>Quantity:</strong></span>
-                            <span>x<%=quantity%></span>
+                            <span>Rs. <%= cco.total() %></span>
                         </div>
                         <hr>
                         <div class="d-flex justify-content-between mb-2">
@@ -88,28 +70,28 @@
                         </div>
                         <div class="d-flex justify-content-between mb-2">
                             <span><strong>Occasion:</strong></span>
-                            <span><%=occasion%></span>
+                            <span><%= cco.getOccasion() %></span>
                         </div>
                         <div class="d-flex justify-content-between mb-2">
                             <span><strong>Flavor:</strong></span>
-                            <span><%=flavor%></span>
+                            <span><%= cco.getCakeFlavour() %></span>
                         </div>
                         <div class="d-flex justify-content-between mb-2">
                             <span><strong>Fillings:</strong></span>
-                            <span><%=fillings%></span>
+                            <span><%= cco.getFilling() %></span>
                         </div>
                         <div class="d-flex justify-content-between mb-2">
                             <span><strong>Cake Size:</strong></span>
-                            <span><%=size%></span>
+                            <span><%= cco.getCakeSize() %></span>
                         </div>
                         <div class="d-flex justify-content-between mb-2">
                             <span><strong>Cake Shape:</strong></span>
-                            <span><%=shape%></span>
+                            <span><%= cco.getCakeShape() %></span>
                         </div>
                         <hr>
                         <div class="d-flex justify-content-between fw-bold">
                             <span>Total:</span>
-                            <span>Rs. <%=total%></span>
+                            <span>Rs. <%= cco.total() %></span>
                         </div>
                     </div>
 
@@ -118,8 +100,7 @@
                         <div>
 
                             <input type="hidden" name="action" value="pay">
-                            <input type="hidden" name="orderId" value="<%= orderId %>">
-                            <input type="hidden" name="paymentAmount" value="<%= total %>">
+                            <input type="hidden" name="orderId" value="<%= cco.getOrderId() %>">
 
                             <h6>Payment Method</h6>
                             <div class="form-check">
@@ -140,15 +121,13 @@
                     <div style="margin-top: 20px;">
                         <form action="PaymentServlet" method="post" style="">
                             <input type="hidden" name="action" value="cancel">
+                            <input type="hidden" name="orderId" value="<%=cco.getOrderId()%>">
+
                             <button type="submit" class="btn btn-outline-danger btn-lg">
                                 Cancel
                             </button>
                         </form>
                     </div>
-
-<%--                    <% } else { %>--%>
-<%--                    <div class="alert alert-danger">Item not found. Please try again.</div>--%>
-<%--                    <% } %>--%>
                 </div>
             </div>
         </div>

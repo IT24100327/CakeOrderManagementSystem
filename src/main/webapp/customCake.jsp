@@ -54,9 +54,8 @@
                         </h1>
                     </div>
                 </div>
-                
-                <!-- JSP NOTE: This form will be converted to JSP form with action attribute -->
-                <form method="post" action="/customcake">
+
+                <form method="post" action="<%=request.getContextPath()%>/CustomOrder">
                     <div class="row mb-5">
                         <div class="col">
                             <div class="row">
@@ -99,8 +98,8 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
-                                    <label class="form-label" style="font-family: Montserrat, sans-serif;font-weight: bold;color: var(--bs-primary);font-size: 20px;">Cake Shape:</label>
-                                    <select class="form-select mb-3" name="shape">
+                                    <label class="form-label" for="shape" style="font-family: Montserrat, sans-serif;font-weight: bold;color: var(--bs-primary);font-size: 20px;">Cake Shape:</label>
+                                    <select class="form-select mb-3" name="shape" id="shape">
                                         <option value="Round" selected>Round</option>
                                         <option value="Square">Square</option>
                                         <option value="Heart">Heart</option>
@@ -115,13 +114,11 @@
                                         name="deliveryDate"/>
                                 </div>
                                 <div class="col-md-6">
-                                    <!-- JSP NOTE: Can add additional fields here if needed -->
+
                                 </div>
                             </div>
-                            <label class="form-label" style="font-family: Montserrat, sans-serif;font-weight: bold;color: var(--bs-primary);font-size: 20px;">Special Instructions:</label>
-                            <textarea class="border-primary focus-ring focus-ring-primary form-control mb-3" rows="3" name="instructions"></textarea>
-                            
-                            <!-- JSP NOTE: Button type will be changed to submit for form processing -->
+                            <label for="instructions" class="form-label" style="font-family: Montserrat, sans-serif;font-weight: bold;color: var(--bs-primary);font-size: 20px;">Special Instructions:</label>
+                            <textarea class="border-primary focus-ring focus-ring-primary form-control mb-3" rows="3" id="instructions" name="instructions"></textarea>
                             <div class="text-center">
                                 <button class="btn btn-primary" type="submit">Place Order</button>
                             </div>

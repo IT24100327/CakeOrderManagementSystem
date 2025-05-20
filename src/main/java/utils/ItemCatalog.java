@@ -9,18 +9,16 @@ import java.util.List;
 import static entities.Item.fromString;
 
 public class ItemCatalog {
-    private static List<Item> items;
-    private static String filePath;
+    private static List<Item> items = new ArrayList<>();
+    private static String filePath = "E:/Data/ItemCatalog.txt";
     private static int lastItemId = 0;
 
-    public ItemCatalog() {
-        items = new ArrayList<>();
-        filePath = "E:\\MyWork\\SLIIT\\OneDrive - Sri Lanka Institute of Information Technology\\Y1S2\\OOP\\Project\\CakeOrderManagementSystem\\data\\ItemCatalog.txt";
-    }
-
-    public ItemCatalog(String filePath) {
-        items = new ArrayList<>();
-        ItemCatalog.filePath = filePath;
+    static {
+        try {
+            loadFromFile();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static String generateItemId() {
@@ -29,7 +27,7 @@ public class ItemCatalog {
     }
 
     // Add a new item to the catalog
-    public void addItem(Item item) throws IOException {
+    public static void addItem(Item item) throws IOException {
         if (item.getItemId() == null || item.getItemId().isEmpty()) {
             item.setItemId(generateItemId());
         }
@@ -38,12 +36,12 @@ public class ItemCatalog {
     }
 
     // Remove an item from the catalog by item ID
-    public void removeItem(String itemId) {
+    public static void removeItem(String itemId) {
         items.removeIf(item -> item.getItemId().equals(itemId));
         updateFile();
     }
 
-    public void updateItem(String itemId, String newItemName, double newItemPrice) {
+    public static void updateItem(String itemId, String newItemName, double newItemPrice) {
         Item item = findItemById(itemId);
         item.setName(newItemName);
         item.setPrice(newItemPrice);
@@ -62,7 +60,7 @@ public class ItemCatalog {
     }
 
     // Find an item by its ID
-    public Item findItemById(String itemId) {
+    public static Item findItemById(String itemId) {
         for (Item item : items) {
             if (item.getItemId().equals(itemId)) {
                 return item;
@@ -73,13 +71,15 @@ public class ItemCatalog {
 
 
 
-    public void loadFromFile() throws IOException {
+    public static void loadFromFile() throws IOException {
         File file = new File(filePath);
         if (!file.exists()) {
             System.out.println("File does not exist. Creating a new file.");
             file.createNewFile();
             return;
         }
+
+        items.clear();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
@@ -97,7 +97,7 @@ public class ItemCatalog {
     }
 
     // Get a list of all items in the catalog
-    public List<Item> getAllItems() {
+    public static List<Item> getAllItems() {
         return new ArrayList<>(items);
     }
 

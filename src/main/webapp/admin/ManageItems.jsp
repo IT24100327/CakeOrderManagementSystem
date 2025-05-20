@@ -143,6 +143,12 @@
             border-color: #6a3d24;
         }
 
+        /* Modal styles */
+        .modal-header {
+            background-color: var(--bs-primary);
+            color: white;
+        }
+
         /* Responsive adjustments */
         @media (max-width: 992px) {
             .sidebar {
@@ -241,9 +247,9 @@
     <div class="container-fluid">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h4>Item Management</h4>
-            <a href="<%= request.getContextPath() %>/admin/AddItems.jsp" class="btn btn-primary">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addItemModal">
                 <i class="fas fa-plus me-2"></i>Add New Item
-            </a>
+            </button>
         </div>
 
         <div class="card dashboard-card">
@@ -272,16 +278,15 @@
                             <td>Rs. <%= item.getPrice() %></td>
                             <td>
                                 <div class="btn-group" role="group">
-                                    <form action="<%= request.getContextPath() %>/admin/UpdateItems.jsp" method="POST" class="me-2">
-                                        <input type="hidden" name="itemId" value="<%= item.getItemId() %>">
-                                        <input type="hidden" name="name" value="<%= item.getName() %>">
-                                        <input type="hidden" name="description" value="<%= item.getDescription() %>">
-                                        <input type="hidden" name="category" value="<%= item.getCategory() %>">
-                                        <input type="hidden" name="price" value="<%= item.getPrice() %>">
-                                        <button type="submit" class="btn btn-outline-primary btn-sm">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                    </form>
+                                    <button type="button" class="btn btn-outline-primary btn-sm me-2"
+                                            data-bs-toggle="modal" data-bs-target="#editItemModal"
+                                            data-item-id="<%= item.getItemId() %>"
+                                            data-item-name="<%= item.getName() %>"
+                                            data-item-description="<%= item.getDescription() %>"
+                                            data-item-category="<%= item.getCategory() %>"
+                                            data-item-price="<%= item.getPrice() %>">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
                                     <form action="<%= request.getContextPath() %>/processItem" method="POST">
                                         <input type="hidden" name="action" value="remove">
                                         <input type="hidden" name="itemId" value="<%= item.getItemId() %>">
@@ -301,11 +306,134 @@
     </div>
 </div>
 
+<!-- Add Item Modal -->
+<div class="modal fade" id="addItemModal" tabindex="-1" aria-labelledby="addItemModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addItemModalLabel"><i class="fas fa-plus-circle me-2"></i>Add New Item</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="<%= request.getContextPath() %>/processItem" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="action" value="place">
+
+                    <div class="mb-3">
+                        <label for="addName" class="form-label">Item Name</label>
+                        <input type="text" class="form-control" id="addName" name="name" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="addDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="addDescription" name="description" rows="3"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="addCategory" class="form-label">Category</label>
+                        <select class="form-select" id="addCategory" name="category">
+                            <option value="cakes" selected>Cakes</option>
+                            <option value="pastries">Pastries</option>
+                            <option value="cookies">Cookies</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="addPrice" class="form-label">Price</label>
+                        <div class="input-group">
+                            <span class="input-group-text">Rs. </span>
+                            <input type="number" class="form-control" id="addPrice" name="price" step="0.01" min="0" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Save Item
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Item Modal -->
+<div class="modal fade" id="editItemModal" tabindex="-1" aria-labelledby="editItemModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editItemModalLabel"><i class="fas fa-edit me-2"></i>Edit Item</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="<%= request.getContextPath() %>/processItem" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="action" value="update">
+                    <input type="hidden" id="editItemId" name="itemId">
+
+                    <div class="mb-3">
+                        <label for="editName" class="form-label">Item Name</label>
+                        <input type="text" class="form-control" id="editName" name="name" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="editDescription" name="description" rows="3"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editCategory" class="form-label">Category</label>
+                        <select class="form-select" id="editCategory" name="category">
+                            <option value="cakes">Cakes</option>
+                            <option value="pastries">Pastries</option>
+                            <option value="cookies">Cookies</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editPrice" class="form-label">Price</label>
+                        <div class="input-group">
+                            <span class="input-group-text">Rs. </span>
+                            <input type="number" class="form-control" id="editPrice" name="price" step="0.01" min="0" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Update Item
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script src="<%= request.getContextPath() %>/assets/bootstrap/js/bootstrap.min.js"></script>
 <script>
     // Toggle sidebar on mobile
     document.querySelector('.navbar-toggler').addEventListener('click', function() {
         document.querySelector('.sidebar').classList.toggle('active');
+    });
+
+    // Handle edit modal data
+    document.getElementById('editItemModal').addEventListener('show.bs.modal', function(event) {
+        var button = event.relatedTarget;
+        var itemId = button.getAttribute('data-item-id');
+        var itemName = button.getAttribute('data-item-name');
+        var itemDescription = button.getAttribute('data-item-description');
+        var itemCategory = button.getAttribute('data-item-category');
+        var itemPrice = button.getAttribute('data-item-price');
+
+        var modal = this;
+        modal.querySelector('#editItemId').value = itemId;
+        modal.querySelector('#editName').value = itemName;
+        modal.querySelector('#editDescription').value = itemDescription;
+        modal.querySelector('#editCategory').value = itemCategory;
+        modal.querySelector('#editPrice').value = itemPrice;
+    });
+
+    // Clear add modal when closed
+    document.getElementById('addItemModal').addEventListener('hidden.bs.modal', function() {
+        this.querySelector('form').reset();
     });
 </script>
 </body>

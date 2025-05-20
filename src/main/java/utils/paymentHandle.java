@@ -1,5 +1,7 @@
 package utils;
 
+import entities.CardPayment;
+import entities.CashPayment;
 import entities.Payment;
 
 import java.io.*;
@@ -9,14 +11,6 @@ public class PaymentHandle {
     private static final LinkedList<Payment> payments = new LinkedList<>();
     private static final String FILE_PATH = "E:/Data/payments.txt";
     private static int lastPaymentId = 0;
-
-    static {
-        try {
-            loadFromFile();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     private static String generatePaymentId() {
         lastPaymentId++;
@@ -120,13 +114,24 @@ public class PaymentHandle {
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                Payment payment = Payment.fromString(line);
-                payments.add(payment);
+                String[] parts = line.split("\\|");
+                if (parts[0].equals("CardPayment")) {
+                    CardPayment cardPayment = CardPayment.fromString(line);
+                    payments.add(cardPayment);
 
-                // Update lastPaymentId
-                String idNumStr = payment.getPaymentId().replace("PAY", "");
-                int idNum = Integer.parseInt(idNumStr);
-                lastPaymentId = Math.max(lastPaymentId, idNum);
+                    String idNumStr = cardPayment.getPaymentId().replace("PAY", "");
+                    int idNum = Integer.parseInt(idNumStr);
+                    lastPaymentId = Math.max(lastPaymentId, idNum);
+                }
+
+                if (parts[0].equals("CashPayment")) {
+                    CashPayment cashPayment = CashPayment.fromString(line);
+                    payments.add(cashPayment);
+
+                    String idNumStr = cashPayment.getPaymentId().replace("PAY", "");
+                    int idNum = Integer.parseInt(idNumStr);
+                    lastPaymentId = Math.max(lastPaymentId, idNum);
+                }
             }
         }
     }

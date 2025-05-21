@@ -134,7 +134,7 @@ public class PaymentServlet extends HttpServlet {
             Payment payment = PaymentHandle.findPaymentById(request.getParameter("paymentId"));
             PaymentHandle.setPaymentStatus(payment.getPaymentId(), "REFUNDED");
 
-            response.sendRedirect("admin/");
+            response.sendRedirect("admin/ManagePayments.jsp");
 
         }
 

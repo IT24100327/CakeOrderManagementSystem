@@ -130,7 +130,6 @@
                         <form action="PaymentServlet" method="post" style="">
                             <input type="hidden" name="action" value="cancel">
                             <input type="hidden" name="orderId" value="<%=cco.getOrderId()%>">
-
                             <button type="submit" class="btn btn-outline-danger btn-lg">
                                 Cancel
                             </button>

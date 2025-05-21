@@ -1,8 +1,10 @@
 package entities;
 
-import org.w3c.dom.ls.LSOutput;
+import utils.CredsFileHandle;
+import utils.PaymentHandle;
 
 import java.io.*;
+import java.time.LocalDate;
 
 
 public class CustomCakeOrder extends Order {
@@ -12,16 +14,10 @@ public class CustomCakeOrder extends Order {
     private String cakeSize;
     private String cakeShape;
     private String instructions;
-    private double basePrice;
-    private double priceWithFlavour;
-    private double totalPrice;
 
-
-    public CustomCakeOrder(String userId,
-                           int quantity,
-                           String status,
-                           double total,
-                           String deliveryDate,
+    public CustomCakeOrder(User user,
+                           Payment payment,
+                           LocalDate deliveryDate,
                            String occasion,
                            String cakeFlavour,
                            String filling,
@@ -30,7 +26,7 @@ public class CustomCakeOrder extends Order {
                            String instructions
     ) throws IOException {
 
-        super(Integer.parseInt(userId),"CUSTOMCAKE", quantity, total, deliveryDate);
+        super(user, payment, deliveryDate);
         this.occasion = occasion;
         this.cakeFlavour = cakeFlavour;
         this.filling = filling;
@@ -38,17 +34,15 @@ public class CustomCakeOrder extends Order {
         this.cakeShape = cakeShape;
         this.deliveryDate = deliveryDate;
         this.instructions = instructions;
-        this.status = status;
 
     }
 
     public CustomCakeOrder(String orderId,
-                           int userId,
-                           int quantity,
+                           User user,
                            String status,
-                           double total,
-                           String orderDate,
-                           String deliveryDate,
+                           Payment payment,
+                           LocalDate orderDate,
+                           LocalDate deliveryDate,
                            String occasion,
                            String cakeFlavour,
                            String filling,
@@ -57,7 +51,7 @@ public class CustomCakeOrder extends Order {
                            String instructions
     ) throws IOException {
 
-        super(orderId, userId, "CUSTOMCAKE", quantity, status, total, orderDate, deliveryDate);
+        super(orderId, user, status, payment, orderDate, deliveryDate);
         this.occasion = occasion;
         this.cakeFlavour = cakeFlavour;
         this.filling = filling;
@@ -116,32 +110,13 @@ public class CustomCakeOrder extends Order {
         this.cakeShape = cakeShape;
     }
 
-    public double getBasePrice() {
-        return basePrice;
-    }
-
-    public void setBasePrice(double basePrice) {
-        this.basePrice = basePrice;
-    }
-
-    public void setPriceWithFlavour(double priceWithFlavour) {
-        this.priceWithFlavour = priceWithFlavour;
-    }
-
-    public double getTotalPrice() {
-        return totalPrice;
-    }
-
-    public void setTotalPrice(double totalPrice) {
-        this.totalPrice = totalPrice;
-    }
-
     public double getPriceWithFlavour() {
+        double priceWithFlavour = 0;
+        double basePrice = 12000;
 
         switch (getOccasion()) {
 
             case "Birthday":
-                basePrice = 12000;
                 switch (getCakeFlavour()) {
                     case "Chocolate":
                         priceWithFlavour = basePrice + 300;
@@ -190,8 +165,9 @@ public class CustomCakeOrder extends Order {
         return priceWithFlavour;
 
     }
-    public  double total(){
 
+    public double total() {
+        double total = 0;
         switch (getCakeSize()){
             case "Small":
                 total = getPriceWithFlavour() + 1000;
@@ -207,47 +183,46 @@ public class CustomCakeOrder extends Order {
                 break;
             default:
                 System.out.println("Error");
-                return-1;
+                return -1;
 
         }
         System.out.println("Total : " + total);
+
         return total;
     }
-
-
-
 
     // Converting object in to readable object
     @Override
     public String toString(){
-        return "customOrder" + "|" + orderId + "|" + userId + "|" + quantity + "|" + status + "|" + total + "|" + orderDate + "|" + occasion + "|" + cakeFlavour + "|" + filling + "|" + cakeSize + "|" + cakeShape + "|" + deliveryDate + "|" + instructions;
-    }
+        String paymentId = (payment == null) ? null : payment.getPaymentId();
+        String userId = String.valueOf((user == null)? null : user.getID());
 
+        return "customOrder" + "|" + orderId + "|" + userId + "|" + status + "|" + paymentId + "|" + orderDate + "|" + occasion + "|" + cakeFlavour + "|" + filling + "|" + cakeSize + "|" + cakeShape + "|" + deliveryDate + "|" + instructions;
+    }
 
     public static CustomCakeOrder fromStringToObject(String order) throws IOException {
         String[] customOrder = order.split("\\|");
-        if(customOrder.length < 14){
-            throw new IllegalArgumentException("Invalid order string format");
+
+        if (customOrder.length != 13) {
+            throw new IOException("Invalid order string format: expected 13 fields, got " + customOrder.length);
         }
-        int userId = Integer.parseInt(customOrder[2]);
+
         String orderId = customOrder[1];
-        int quantity = Integer.parseInt(customOrder[3]);
-        String occasion = customOrder[7];
-        String status = customOrder[4];
-        double total = Double.parseDouble(customOrder[5]);
-        String orderDate = customOrder[6];
-        String cakeFlavour = customOrder[8];
-        String filling = customOrder[9];
-        String cakeSize = customOrder[10];
-        String cakeShape = customOrder[11];
-        String deliveryDate = customOrder[12];
-        String instructions = customOrder[13];
+        User user = CredsFileHandle.getUserByID(Integer.parseInt(customOrder[2]));
+        String status = customOrder[3];
+        Payment payment = PaymentHandle.findPaymentById(customOrder[4]);
+        LocalDate orderDate = LocalDate.parse(customOrder[5]);
+        String occasion = customOrder[6];
+        String cakeFlavour = customOrder[7];
+        String filling = customOrder[8];
+        String cakeSize = customOrder[9];
+        String cakeShape = customOrder[10];
+        LocalDate deliveryDate = LocalDate.parse(customOrder[11]);
+        String instructions = customOrder[12];
 
-
-
-
-        return  new CustomCakeOrder(orderId,userId,1,status,total,orderDate,deliveryDate,occasion,cakeFlavour,filling,cakeSize,cakeShape,instructions);
+        return new CustomCakeOrder(orderId, user, status, payment, orderDate, deliveryDate, occasion, cakeFlavour, filling, cakeSize, cakeShape, instructions);
     }
+
 }
 
 

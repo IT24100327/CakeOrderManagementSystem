@@ -20,7 +20,7 @@ public class processItemServlet extends HttpServlet {
             throw new RuntimeException(e);
         }
 
-    } // Load orders on startup
+    }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -32,7 +32,7 @@ public class processItemServlet extends HttpServlet {
             double price = Double.parseDouble(request.getParameter("price"));
             String description = request.getParameter("description");
 
-            // itemId is null because catalog.addItem method will assign one
+
             Item newItem = new Item(name, price, null, category, description);
             ItemCatalog.addItem(newItem);
 
@@ -43,8 +43,6 @@ public class processItemServlet extends HttpServlet {
             ItemCatalog.removeItem(itemId);
 
             response.sendRedirect(request.getContextPath() + "/admin/ManageItems.jsp");
-
-
 
         } else if ("update".equals(action)) {
 

@@ -184,7 +184,7 @@
 </head>
 
 <body>
-<!-- Sidebar -->
+
 <div class="sidebar">
     <div class="sidebar-brand">Heavenly Bakery</div>
     <ul class="sidebar-nav">
@@ -221,9 +221,9 @@
     </ul>
 </div>
 
-<!-- Main Content -->
+
 <div class="main-content">
-    <!-- Top Navbar -->
+    
     <nav class="top-navbar navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
         <div class="container-fluid">
             <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">

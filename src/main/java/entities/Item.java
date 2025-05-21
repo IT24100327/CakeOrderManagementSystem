@@ -4,7 +4,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class Item {
+public class Item implements Savable{
     private String name;
     private double price;
     private String itemId;
@@ -80,6 +80,7 @@ public class Item {
         return new Item(name, price, itemId, category, description);
     }
 
+    @Override
     public void saveToFile(String filename) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename, true))) {
             writer.write(this.toString());

@@ -8,7 +8,7 @@ import java.util.List;
 
 public class CredsFileHandle {
 
-    private static final String filePath = "E:\\MyWork\\SLIIT\\OneDrive - Sri Lanka Institute of Information Technology\\Y1S2\\OOP\\Project\\CakeOrderManagementSystem\\data\\users.txt";
+    private static final String filePath = "E:/Data/users.txt";
 
     PasswordUtils passwordUtils = new PasswordUtils();
 

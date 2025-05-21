@@ -45,18 +45,20 @@ public class PaymentServlet extends HttpServlet {
                 if (paymentMethod.equals("cash")) {
                     newPayment = new CashPayment(order, paymentAmount, paymentMethod);
                     PaymentHandle.addPayment(newPayment);
+                    PaymentHandle.pay(newPayment.getPaymentId());
+                    OrderQueue.setOrderPayment(newPayment.getOrder().getOrderId(), newPayment);
+                    OrderQueue.setOrderStatus(itemOrder.getOrderId(), "confirmed");
                 }
 
                 if (paymentMethod.equals("card")) {
                     newPayment = new CardPayment(order, paymentAmount, paymentMethod);
                     PaymentHandle.addPayment(newPayment);
-                }
-
-                if (newPayment != null) {
                     PaymentHandle.pay(newPayment.getPaymentId());
                     OrderQueue.setOrderPayment(newPayment.getOrder().getOrderId(), newPayment);
-                    OrderQueue.setOrderStatus(order.getOrderId(), "confirmed");
-                } else {
+                    OrderQueue.setOrderStatus(itemOrder.getOrderId(), "confirmed");
+                }
+
+                if (newPayment == null) {
                     System.out.println("Payment not Created");
                 }
 
@@ -71,17 +73,23 @@ public class PaymentServlet extends HttpServlet {
                 if (paymentMethod.equals("cash")) {
                     newPayment = new CashPayment(order, payAmount, paymentMethod);
                     PaymentHandle.addPayment(newPayment);
+
+                    PaymentHandle.pay(newPayment.getPaymentId());
+                    OrderQueue.setOrderPayment(newPayment.getOrder().getOrderId(), newPayment);
+                    OrderQueue.setOrderStatus(customCakeOrder.getOrderId(), "to-process");
                 }
 
                 if (paymentMethod.equals("card")) {
                     newPayment = new CardPayment(order, payAmount, paymentMethod);
                     PaymentHandle.addPayment(newPayment);
-                }
 
-                if (newPayment != null) {
                     PaymentHandle.pay(newPayment.getPaymentId());
                     OrderQueue.setOrderPayment(newPayment.getOrder().getOrderId(), newPayment);
-                    OrderQueue.setOrderStatus(order.getOrderId(), "to-process");
+                    OrderQueue.setOrderStatus(customCakeOrder.getOrderId(), "to-process");
+                }
+
+                if (newPayment == null) {
+                    System.out.println("Payment not Created");
                 }
 
             }

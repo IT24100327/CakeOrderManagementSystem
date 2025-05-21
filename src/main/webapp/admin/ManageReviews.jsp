@@ -1,3 +1,10 @@
+<%@ page import="utils.ReviewFileHandler" %>
+<%@ page import="java.util.List" %>
+<%@ page import="entities.Review" %>
+<%
+    ReviewFileHandler reviewHandler = new ReviewFileHandler();
+    List<Review> reviews = reviewHandler.getAllReviews();
+%>
 <!DOCTYPE html>
 <html data-bs-theme="light" lang="en">
 
@@ -190,6 +197,11 @@
             </a>
         </li>
         <li class="sidebar-nav-item">
+            <a href="<%=request.getContextPath()%>/admin/ManageUsers.jsp" class="sidebar-nav-link">
+                <i class="fas fa-users"></i> Users
+            </a>
+        </li>
+        <li class="sidebar-nav-item">
             <a href="<%=request.getContextPath()%>/admin/ManagePayments.jsp" class="sidebar-nav-link" >
                 <i class="fas fa-credit-card"></i> Payments
             </a>
@@ -235,41 +247,45 @@
                         <thead>
                         <tr>
                             <th>Review ID</th>
-                            <th>Item ID</th>
-                            <th>User ID</th>
-                            <th>Rating</th>
-                            <th>Date</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Message</th>
                             <th>Actions</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <!-- Placeholder for review rows -->
+                        <% 
+                        if(reviews != null && !reviews.isEmpty()) {
+                            for(Review review : reviews) {
+                        %>
                         <tr>
-                            <td>{REVIEW_ID}</td>
-                            <td>{ITEM_ID}</td>
-                            <td>{USER_ID}</td>
-                            <td>
-                                <i class="fas fa-star rating-stars"></i>
-                                <i class="fas fa-star rating-stars"></i>
-                                <i class="fas fa-star rating-stars"></i>
-                                <i class="fas fa-star rating-stars"></i>
-                                <i class="fas fa-star rating-stars"></i>
-                            </td>
-                            <td>{REVIEW_DATE}</td>
+                            <td><%= review.getId() %></td>
+                            <td><%= review.getName() %></td>
+                            <td><%= review.getEmail() %></td>
+                            <td><%= review.getMessage().length() > 50 ? review.getMessage().substring(0, 47) + "..." : review.getMessage() %></td>
                             <td>
                                 <button class="btn btn-outline-primary btn-sm me-2" type="button"
                                         data-bs-toggle="modal"
-                                        data-bs-target="#viewModal{REVIEW_ID}">
+                                        data-bs-target="#viewModal<%= review.getId() %>">
                                     <i class="fas fa-eye"></i> View
                                 </button>
                                 <button class="btn btn-outline-danger btn-sm" type="button"
                                         data-bs-toggle="modal"
-                                        data-bs-target="#deleteModal{REVIEW_ID}">
+                                        data-bs-target="#deleteModal<%= review.getId() %>">
                                     <i class="fas fa-trash"></i> Delete
                                 </button>
                             </td>
                         </tr>
-                        <!-- End placeholder -->
+                        <%
+                            }
+                        } else {
+                        %>
+                        <tr>
+                            <td colspan="6" class="text-center">No reviews found</td>
+                        </tr>
+                        <%
+                        }
+                        %>
                         </tbody>
                     </table>
                 </div>
@@ -278,80 +294,76 @@
     </div>
 </div>
 
-<!-- View Review Modal -->
-<div class="modal fade" id="viewModal{REVIEW_ID}" tabindex="-1"
-     aria-labelledby="viewModalLabel{REVIEW_ID}" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="viewModalLabel{REVIEW_ID}">
-                    Review #{REVIEW_ID}
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="card bg-light mb-3">
-                    <div class="card-body">
-                        <p class="mb-1"><strong>Item ID:</strong> {ITEM_ID}</p>
-                        <p class="mb-1"><strong>User ID:</strong> {USER_ID}</p>
-                        <p class="mb-1"><strong>Rating:</strong>
-                            <i class="fas fa-star rating-stars"></i>
-                            <i class="fas fa-star rating-stars"></i>
-                            <i class="fas fa-star rating-stars"></i>
-                            <i class="fas fa-star rating-stars"></i>
-                            <i class="fas fa-star rating-stars"></i>
-                        </p>
-                        <p class="mb-1"><strong>Date:</strong> {REVIEW_DATE}</p>
-                        <p class="mb-0"><strong>Comment:</strong> {COMMENT}</p>
+<!-- Modals Container -->
+<div class="modals-container">
+    <% 
+    if(reviews != null && !reviews.isEmpty()) {
+        for(Review review : reviews) {
+    %>
+    <!-- View Review Modal -->
+    <div class="modal fade" id="viewModal<%= review.getId() %>" tabindex="-1"
+         aria-labelledby="viewModalLabel<%= review.getId() %>" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="viewModalLabel<%= review.getId() %>">
+                        Review <%= review.getId() %>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="card bg-light mb-3">
+                        <div class="card-body">
+                            <p class="mb-1"><strong>Name:</strong> <%= review.getName() %></p>
+                            <p class="mb-1"><strong>Email:</strong> <%= review.getEmail() %></p>
+                            <p class="mb-0"><strong>Message:</strong> <%= review.getMessage() %></p>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Delete Review Modal -->
-<div class="modal fade" id="deleteModal{REVIEW_ID}" tabindex="-1"
-     aria-labelledby="deleteModalLabel{REVIEW_ID}" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title" id="deleteModalLabel{REVIEW_ID}">
-                    Delete Review #{REVIEW_ID}
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>Are you sure you want to delete this review?</p>
-                <div class="card bg-light mb-3">
-                    <div class="card-body">
-                        <p class="mb-1"><strong>Item ID:</strong> {ITEM_ID}</p>
-                        <p class="mb-1"><strong>User ID:</strong> {USER_ID}</p>
-                        <p class="mb-1"><strong>Rating:</strong>
-                            <i class="fas fa-star rating-stars"></i>
-                            <i class="fas fa-star rating-stars"></i>
-                            <i class="fas fa-star rating-stars"></i>
-                            <i class="fas fa-star rating-stars"></i>
-                            <i class="fas fa-star rating-stars"></i>
-                        </p>
-                        <p class="mb-0"><strong>Comment:</strong> {COMMENT}</p>
-                    </div>
+    <!-- Delete Review Modal -->
+    <div class="modal fade" id="deleteModal<%= review.getId() %>" tabindex="-1"
+         aria-labelledby="deleteModalLabel<%= review.getId() %>" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deleteModalLabel<%= review.getId() %>">
+                        Delete Review <%= review.getId() %>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this review?</p>
+                    <div class="card bg-light mb-3">
+                        <div class="card-body">
+                            <p class="mb-1"><strong>Name:</strong> <%= review.getName() %></p>
+                            <p class="mb-1"><strong>Email:</strong> <%= review.getEmail() %></p>
+                            <p class="mb-0"><strong>Message:</strong> <%= review.getMessage() %></p>
+                        </div>
+                    </div>
 
-                <form action="/ReviewServlet" method="post" id="deleteForm{REVIEW_ID}">
-                    <input type="hidden" name="action" value="delete">
-                    <input type="hidden" name="reviewId" value="{REVIEW_ID}">
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" form="deleteForm{REVIEW_ID}" class="btn btn-danger">Confirm Delete</button>
+                    <form action="<%= request.getContextPath() %>/review" method="post" id="deleteForm<%= review.getId() %>">
+                        <input type="hidden" name="action" value="delete">
+                        <input type="hidden" name="reviewId" value="<%= review.getId() %>">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" form="deleteForm<%= review.getId() %>" class="btn btn-danger">Confirm Delete</button>
+                </div>
             </div>
         </div>
     </div>
+    <%
+        }
+    }
+    %>
 </div>
 
 <script src="<%= request.getContextPath() %>/assets/bootstrap/js/bootstrap.min.js"></script>

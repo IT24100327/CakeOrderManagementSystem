@@ -104,12 +104,20 @@
 
                             <h6>Payment Method</h6>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="paymentMethod" id="cod" value="COD" checked>
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="cod" value="card" checked>
                                 <label class="form-check-label" for="cod">
-                                    Cash on Delivery
+                                    Card Payment
                                 </label>
                             </div>
-                            <p class="small text-muted mt-1">Payment will be collected when your order is delivered</p>
+                            <p class="small text-muted mt-1">Pay for Order with Card</p>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="cod" value="cash" checked>
+                                <label class="form-check-label" for="cod">
+                                    Cash Payment
+                                </label>
+                            </div>
+                            <p class="small text-muted mt-1">Pay for Order with Cash</p>
                         </div>
 
                         <div class="d-grid">

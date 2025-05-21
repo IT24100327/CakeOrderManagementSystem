@@ -64,7 +64,7 @@ public class Item {
         return name + "|" + price + "|" + itemId + "|" + category +  "|" + description;
     }
 
-    // Convert a string to an Order object
+
     public static Item fromString(String str) {
         String[] parts = str.split("\\|");
         if (parts.length < 5) {
@@ -80,7 +80,6 @@ public class Item {
         return new Item(name, price, itemId, category, description);
     }
 
-    // Save order to file
     public void saveToFile(String filename) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename, true))) {
             writer.write(this.toString());

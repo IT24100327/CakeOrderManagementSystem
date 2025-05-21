@@ -300,7 +300,7 @@
                     <button class="btn btn-primary border rounded-0 w-100" type="button" data-bs-toggle="modal" data-bs-target="#pastry_<%= item.getItemId() %>">Order Now</button>
                     <% } %>
                 </div>
-                <!-- Modal -->
+                <!-- Modl -->
                 <div id="pastry_<%= item.getItemId() %>" class="modal fade" role="dialog" tabindex="-1">
                     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
                         <div class="modal-content">

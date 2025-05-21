@@ -1,7 +1,4 @@
-import entities.CustomCakeOrder;
-import entities.ItemOrder;
-import entities.Order;
-import entities.Payment;
+import entities.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -42,25 +39,51 @@ public class PaymentServlet extends HttpServlet {
             if (order instanceof ItemOrder) {
                 ItemOrder itemOrder = (ItemOrder) order;
                 Double paymentAmount = itemOrder.getItem().getPrice() * itemOrder.getQuantity();
-                Payment newPayment = new Payment(order.getOrderId(), paymentAmount, paymentMethod);
-                System.out.println("Created Payment Object");
-                PaymentHandle.addPayment(newPayment);
-                System.out.println("Payment Added");
-                PaymentHandle.pay(newPayment.getPaymentId());
 
-                OrderQueue.setOrderPayment(newPayment.getOrderId(), newPayment);
-                OrderQueue.setOrderStatus(order.getOrderId(), "confirmed");
+                Payment newPayment = null;
+
+                if (paymentMethod.equals("cash")) {
+                    newPayment = new CashPayment(order, paymentAmount, paymentMethod);
+                    PaymentHandle.addPayment(newPayment);
+                }
+
+                if (paymentMethod.equals("card")) {
+                    newPayment = new CardPayment(order, paymentAmount, paymentMethod);
+                    PaymentHandle.addPayment(newPayment);
+                }
+
+                if (newPayment != null) {
+                    PaymentHandle.pay(newPayment.getPaymentId());
+                    OrderQueue.setOrderPayment(newPayment.getOrder().getOrderId(), newPayment);
+                    OrderQueue.setOrderStatus(order.getOrderId(), "confirmed");
+                } else {
+                    System.out.println("Payment not Created");
+                }
+
             }
 
             if (order instanceof CustomCakeOrder) {
                 CustomCakeOrder customCakeOrder = (CustomCakeOrder) order;
                 Double payAmount = customCakeOrder.total();
-                Payment newPayment = new Payment(order.getOrderId(), payAmount, paymentMethod);
-                PaymentHandle.addPayment(newPayment);
-                PaymentHandle.pay(newPayment.getPaymentId());
 
-                OrderQueue.setOrderPayment(newPayment.getOrderId(), newPayment);
-                OrderQueue.setOrderStatus(order.getOrderId(), "to-process");
+                Payment newPayment = null;
+
+                if (paymentMethod.equals("cash")) {
+                    newPayment = new CashPayment(order, payAmount, paymentMethod);
+                    PaymentHandle.addPayment(newPayment);
+                }
+
+                if (paymentMethod.equals("card")) {
+                    newPayment = new CardPayment(order, payAmount, paymentMethod);
+                    PaymentHandle.addPayment(newPayment);
+                }
+
+                if (newPayment != null) {
+                    PaymentHandle.pay(newPayment.getPaymentId());
+                    OrderQueue.setOrderPayment(newPayment.getOrder().getOrderId(), newPayment);
+                    OrderQueue.setOrderStatus(order.getOrderId(), "to-process");
+                }
+
             }
 
             response.sendRedirect(request.getContextPath() + "/profile");
@@ -70,19 +93,23 @@ public class PaymentServlet extends HttpServlet {
 
             if (order instanceof ItemOrder) {
                 ItemOrder itemOrder = (ItemOrder) order;
+
                 Double paymentAmount = itemOrder.getItem().getPrice() * itemOrder.getQuantity();
-                Payment newPayment = new Payment(itemOrder.getOrderId(), paymentAmount, null);
+                Payment newPayment = new CashPayment(itemOrder, paymentAmount, null);
                 System.out.println("Created Payment Object");
+
                 PaymentHandle.addPayment(newPayment);
                 OrderQueue.setOrderPayment(itemOrder.getOrderId(), newPayment);
             }
 
             if (order instanceof CustomCakeOrder) {
                 CustomCakeOrder customCakeOrder = (CustomCakeOrder) order;
+
                 Double paymentAmount = customCakeOrder.total();
-                Payment newPayment = new Payment(customCakeOrder.getOrderId(), paymentAmount, null);
+                Payment newPayment = new CashPayment(customCakeOrder, paymentAmount, null);
                 System.out.println("Created Payment Object");
                 PaymentHandle.addPayment(newPayment);
+
                 OrderQueue.setOrderPayment(customCakeOrder.getOrderId(), newPayment);
                 System.out.println("Custom Cake Order Added");
             }
@@ -97,7 +124,7 @@ public class PaymentServlet extends HttpServlet {
             System.out.println("Redirecting...");
 
             Payment payment = PaymentHandle.findPaymentById(request.getParameter("paymentId"));
-            PaymentHandle.setPaymentStatus(payment.getPaymentId(), "refunded");
+            PaymentHandle.setPaymentStatus(payment.getPaymentId(), "REFUNDED");
 
             response.sendRedirect("admin/");
 

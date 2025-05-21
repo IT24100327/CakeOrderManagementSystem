@@ -1,32 +1,34 @@
 package entities;
 
+import utils.OrderQueue;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class Payment {
-    private String paymentId;
-    private String paymentStatus;
-    private String orderId;
-    private String paymentDate;
-    private Double paymentAmount;
-    private String paymentMethod;
+public abstract class Payment {
+    protected String paymentId;
+    protected String paymentStatus;
+    protected Order order;
+    protected String paymentDate;
+    protected Double paymentAmount;
+    protected String paymentMethod;
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    public Payment(String orderId, Double paymentAmount, String paymentMethod) {
+    public Payment(Order order, Double paymentAmount, String paymentMethod) {
         this.paymentId = null;
         this.paymentStatus = "PENDING";
-        this.orderId = orderId;
+        this.order = order;
         this.paymentDate = LocalDateTime.now().format(formatter);
         this.paymentAmount = paymentAmount;
         this.paymentMethod = paymentMethod;
     }
 
     // Constructor for fromString Method
-    public Payment(String paymentId, String paymentStatus, String orderId, String paymentDate, Double paymentAmount, String paymentMethod) {
+    public Payment(String paymentId, String paymentStatus, Order order, String paymentDate, Double paymentAmount, String paymentMethod) {
         this.paymentId = paymentId;
         this.paymentStatus = paymentStatus;
-        this.orderId = orderId;
+        this.order = order;
         this.paymentDate = paymentDate;
         this.paymentAmount = paymentAmount;
         this.paymentMethod = paymentMethod;
@@ -48,12 +50,12 @@ public class Payment {
         this.paymentStatus = paymentStatus;
     }
 
-    public String getOrderId() {
-        return orderId;
+    public Order getOrder() {
+        return order;
     }
 
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
+    public void setOrder(Order order) {
+        this.order = order;
     }
 
     public String getPaymentDate() {
@@ -80,25 +82,6 @@ public class Payment {
         this.paymentMethod = paymentMethod;
     }
 
-    public String toString() {
-        return paymentId + "|" + paymentStatus + "|" + orderId + "|" + paymentDate + "|" + paymentAmount + "|" + paymentMethod;
-    }
-
-    public static Payment fromString(String string) {
-        String[] parts = string.split("\\|");
-
-        if (parts.length < 6) {
-            throw new IllegalArgumentException("Invalid order string format");
-        }
-
-        String paymentId = parts[0];
-        String paymentStatus = parts[1];
-        String orderId = parts[2];
-        String paymentDate = parts[3];
-        Double paymentAmount = Double.parseDouble(parts[4]);
-        String paymentMethod = parts[5];
-
-        return new Payment(paymentId, paymentStatus, orderId, paymentDate, paymentAmount, paymentMethod);
-    }
+    public abstract String toString();
 
 }

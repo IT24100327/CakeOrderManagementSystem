@@ -176,28 +176,97 @@
 
         /* Status card styles */
         .status-card {
-            border-left: 4px solid;
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .status-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-card .card-body {
+            padding: 1.5rem;
+        }
+
+        .status-card .icon-container {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .status-card.pending {
-            border-left-color: #ffc107;
+            background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
         }
 
         .status-card.confirmed {
-            border-left-color: var(--bs-orange);
+            background: linear-gradient(135deg, #ffe0b2 0%, #ffcc80 100%);
         }
 
         .status-card.in-progress {
-            border-left-color: #0dcaf0;
+            background: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%);
         }
 
         .status-card.finished {
-            border-left-color: #198754;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+        }
+
+        .status-card .icon-container.pending {
+            background-color: rgba(255, 193, 7, 0.2);
+        }
+
+        .status-card .icon-container.confirmed {
+            background-color: rgba(253, 126, 20, 0.2);
+        }
+
+        .status-card .icon-container.in-progress {
+            background-color: rgba(13, 202, 240, 0.2);
+        }
+
+        .status-card .icon-container.finished {
+            background-color: rgba(25, 135, 84, 0.2);
+        }
+
+        .status-card i {
+            font-size: 1.5rem;
+        }
+
+        .status-card.pending i {
+            color: #ffc107;
+        }
+
+        .status-card.confirmed i {
+            color: var(--bs-orange);
+        }
+
+        .status-card.in-progress i {
+            color: #0dcaf0;
+        }
+
+        .status-card.finished i {
+            color: #198754;
         }
 
         .status-count {
-            font-size: 1.5rem;
-            font-weight: bold;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--bs-dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .status-title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #6c757d;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
         }
 
         /* Badge styles */
@@ -327,62 +396,62 @@
         <% } %>
 
         <!-- Order Status Cards -->
-        <div class="row mb-4">
+        <div class="row mb-4 g-4">
             <div class="col-md-3">
-                <div class="card status-card pending">
+                <div class="card status-card pending h-100">
                     <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-start">
                             <div>
-                                <h6 class="text-muted mb-2">Pending Payment</h6>
-                                <h3 class="status-count mb-0"><%= statusCounts.get("pending") %></h3>
+                                <p class="status-title">Pending Payment</p>
+                                <h3 class="status-count"><%= statusCounts.get("pending") %></h3>
                             </div>
-                            <div class="bg-warning bg-opacity-10 p-3 rounded">
-                                <i class="fas fa-clock text-warning"></i>
+                            <div class="icon-container pending">
+                                <i class="fas fa-clock"></i>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card status-card confirmed">
+                <div class="card status-card confirmed h-100">
                     <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-start">
                             <div>
-                                <h6 class="text-muted mb-2">Confirmed</h6>
-                                <h3 class="status-count mb-0"><%= statusCounts.get("confirmed") %></h3>
+                                <p class="status-title">Confirmed</p>
+                                <h3 class="status-count"><%= statusCounts.get("confirmed") %></h3>
                             </div>
-                            <div class="bg-orange bg-opacity-10 p-3 rounded">
-                                <i class="fas fa-list-check text-orange"></i>
+                            <div class="icon-container confirmed">
+                                <i class="fas fa-list-check"></i>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card status-card in-progress">
+                <div class="card status-card in-progress h-100">
                     <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-start">
                             <div>
-                                <h6 class="text-muted mb-2">In Progress</h6>
-                                <h3 class="status-count mb-0"><%= statusCounts.get("in-progress") %></h3>
+                                <p class="status-title">In Progress</p>
+                                <h3 class="status-count"><%= statusCounts.get("in-progress") %></h3>
                             </div>
-                            <div class="bg-info bg-opacity-10 p-3 rounded">
-                                <i class="fas fa-fire text-info"></i>
+                            <div class="icon-container in-progress">
+                                <i class="fas fa-fire"></i>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card status-card finished">
+                <div class="card status-card finished h-100">
                     <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-start">
                             <div>
-                                <h6 class="text-muted mb-2">Finished</h6>
-                                <h3 class="status-count mb-0"><%= statusCounts.get("finished") %></h3>
+                                <p class="status-title">Finished</p>
+                                <h3 class="status-count"><%= statusCounts.get("finished") %></h3>
                             </div>
-                            <div class="bg-success bg-opacity-10 p-3 rounded">
-                                <i class="fas fa-check-circle text-success"></i>
+                            <div class="icon-container finished">
+                                <i class="fas fa-check-circle"></i>
                             </div>
                         </div>
                     </div>

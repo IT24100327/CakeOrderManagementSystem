@@ -26,7 +26,7 @@ public class ItemCatalog {
         return String.format("ITM%04d", lastItemId);
     }
 
-    // Add a new item to the catalog
+
     public static void addItem(Item item) throws IOException {
         if (item.getItemId() == null || item.getItemId().isEmpty()) {
             item.setItemId(generateItemId());
@@ -35,7 +35,7 @@ public class ItemCatalog {
         item.saveToFile(filePath);
     }
 
-    // Remove an item from the catalog by item ID
+
     public static void removeItem(String itemId) {
         items.removeIf(item -> item.getItemId().equals(itemId));
         updateFile();
@@ -59,14 +59,13 @@ public class ItemCatalog {
         }
     }
 
-    // Find an item by its ID
     public static Item findItemById(String itemId) {
         for (Item item : items) {
             if (item.getItemId().equals(itemId)) {
                 return item;
             }
         }
-        return null; // Return null if the item is not found
+        return null;
     }
 
 
@@ -96,12 +95,12 @@ public class ItemCatalog {
         }
     }
 
-    // Get a list of all items in the catalog
+
     public static List<Item> getAllItems() {
         return new ArrayList<>(items);
     }
 
-    // Print all items in the catalog
+
     public void printCatalog() {
         for (Item item : items) {
             System.out.println(item);

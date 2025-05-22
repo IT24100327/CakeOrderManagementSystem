@@ -45,6 +45,14 @@
     <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/bs-theme-overrides.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/Banner-Heading-Image-images.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/Navbar-Centered-Links-icons.css">
+    <style>
+        .nav-link {
+            font-size: 14px !important;
+        }
+        .navbar {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+    </style>
 </head>
 
 <body class="text-secondary" style="background: var(--bs-secondary);">
@@ -292,7 +300,7 @@
                     <button class="btn btn-primary border rounded-0 w-100" type="button" data-bs-toggle="modal" data-bs-target="#pastry_<%= item.getItemId() %>">Order Now</button>
                     <% } %>
                 </div>
-                <!-- Modal -->
+                <!-- Modl -->
                 <div id="pastry_<%= item.getItemId() %>" class="modal fade" role="dialog" tabindex="-1">
                     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
                         <div class="modal-content">
@@ -451,10 +459,10 @@
                     </div>
                     <div class="col-md-6 col-lg-5 col-xl-4">
                         <div>
-                            <form class="p-3 p-xl-4" method="post">
-                                <div class="mb-3"><input id="name-1" class="form-control" type="text" name="name" placeholder="Janith Perera" readonly></div>
-                                <div class="mb-3"><input id="email-1" class="form-control" type="email" name="email" placeholder="janith@hotmail.com" readonly></div>
-                                <div class="mb-3"><textarea id="message-1" class="form-control" name="message" rows="6" placeholder="Message"></textarea></div>
+                            <form class="p-3 p-xl-4" method="post" action="<%=request.getContextPath()%>/review">
+                                <div class="mb-3"><input id="name-1" class="form-control" type="text" name="name" placeholder="Your Name" required></div>
+                                <div class="mb-3"><input id="email-1" class="form-control" type="email" name="email" placeholder="Your Email" required></div>
+                                <div class="mb-3"><textarea id="message-1" class="form-control" name="message" rows="6" placeholder="Your Thoughts..." required></textarea></div>
                                 <div><button class="btn btn-primary d-block w-100" type="submit" style="border-color: var(--bs-primary);background: var(--bs-secondary);color: var(--bs-primary);">Send </button></div>
                             </form>
                         </div>

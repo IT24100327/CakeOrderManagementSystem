@@ -62,7 +62,6 @@ public class CustomCakeServlet extends HttpServlet {
             OrderQueue.processOrder(OrderQueue.findOrderById(orderId));
             response.sendRedirect(request.getContextPath() + "/admin/ManageCustomOrders.jsp");
         }
-
     }
 }
 

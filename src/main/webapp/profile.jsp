@@ -41,6 +41,14 @@
     <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/bs-theme-overrides.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/Banner-Heading-Image-images.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/Navbar-Centered-Links-icons.css">
+    <style>
+        .nav-link {
+            font-size: 14px !important;
+        }
+        .navbar {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+    </style>
 </head>
 <body id="page-top" style="color: var(--bs-light);background: var(--bs-secondary);">
 <nav class="navbar navbar-expand-md bg-primary py-3 mb-3" style="background: var(--bs-secondary);color: var(--bs-primary);">
@@ -86,21 +94,115 @@
     <div id="wrapper">
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
-                <div class="container-fluid">
-                    <h1 class="text-dark mb-4" style="font-family: 'Abril Fatface', serif;color: var(--bs-primary);">
-                        <span style="color: rgb(136, 80, 48);">Welcome, <%= user.getfName()%>!</span>
-                    </h1>
+                    <div class="container-fluid">
+                        <h1 class="text-dark mb-4" style="font-family: 'Abril Fatface', serif;color: var(--bs-primary);">
+                            <span style="color: rgb(136, 80, 48);">Welcome, <%= user.getfName()%>!</span>
+                        </h1>
 
-                    <% if (request.getAttribute("errorMessage") != null) { %>
-                    <div class="alert alert-danger" role="alert">
-                        <%= request.getAttribute("errorMessage") %>
-                    </div>
-                    <% } %>
-                    <% if (request.getAttribute("successMessage") != null) { %>
-                    <div class="alert alert-success" role="alert">
-                        <%= request.getAttribute("successMessage") %>
-                    </div>
-                    <% } %>
+                        <% if (request.getAttribute("errorMessage") != null) { %>
+                        <div class="alert alert-danger" role="alert">
+                            <%= request.getAttribute("errorMessage") %>
+                        </div>
+                        <% } %>
+                        <% if (request.getAttribute("successMessage") != null) { %>
+                        <div class="alert alert-success" role="alert">
+                            <%= request.getAttribute("successMessage") %>
+                        </div>
+                        <% } %>
+
+                        <!-- Added User Settings Section -->
+                        <div class="row mb-3">
+                            <div class="col-lg-8 col-xxl-6">
+                                <div class="row">
+                                    <div class="col-xxl-12">
+                                        <div class="card shadow mb-3">
+                                            <div class="card-header py-3">
+                                                <p class="text-primary m-0 fw-bold" style="font-family: Montserrat, sans-serif;">User Settings</p>
+                                            </div>
+                                            <div class="card-body">
+                                                <%
+                                                    String errorMessage = (String) session.getAttribute("errorMessage");
+                                                    if (errorMessage != null) {
+                                                %>
+                                                <div class="alert alert-danger">
+                                                    <%= errorMessage %>
+                                                </div>
+                                                <%
+                                                        session.removeAttribute("errorMessage");
+                                                    }
+                                                %>
+                                                <%
+                                                    String successMessage = (String) session.getAttribute("successMessage");
+                                                    if (successMessage != null) {
+                                                %>
+                                                <div class="alert alert-success">
+                                                    <%= successMessage %>
+                                                </div>
+                                                <%
+                                                        session.removeAttribute("successMessage");
+                                                    }
+                                                %>
+                                                <form action="<%= request.getContextPath() %>/updateprofile" method="post">
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <div class="mb-3">
+                                                                <label class="form-label" for="first_name" style="font-family: Montserrat, sans-serif;"><strong>First Name</strong></label>
+                                                                <input class="form-control" type="text" id="first_name" name="firstName" value="<%= user.getfName() %>" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="mb-3">
+                                                                <label class="form-label" for="last_name" style="font-family: Montserrat, sans-serif;"><strong>Last Name</strong></label>
+                                                                <input class="form-control" type="text" id="last_name" name="lastName" value="<%= user.getlName() %>" required>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <div class="mb-3">
+                                                                <label class="form-label" for="email" style="font-family: Montserrat, sans-serif;"><strong>Email Address</strong></label>
+                                                                <input class="form-control" type="email" id="email" name="email" value="<%= user.getEmail() %>" required>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <button class="btn btn-primary btn-sm" type="submit" style="font-family: Raleway, sans-serif;">Save Settings</button>
+                                                        <button type="button" class="btn btn-danger btn-sm ms-2" style="font-family: Raleway, sans-serif;" data-bs-toggle="modal" data-bs-target="#deleteProfileModal">
+                                                            Delete Profile
+                                                        </button>
+                                                    </div>
+                                                </form>
+
+                                                <!-- Delete Profile Modal -->
+                                                <div class="modal fade" id="deleteProfileModal" tabindex="-1" aria-labelledby="deleteProfileModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header" style="background-color: var(--bs-secondary);">
+                                                                <h5 class="modal-title" id="deleteProfileModalLabel" style="font-family: 'Abril Fatface', serif; color: rgb(136, 80, 48);">Confirm Delete Profile</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body" style="font-family: Montserrat, sans-serif;">
+                                                                <p>Are you sure you want to delete your profile? This action cannot be undone.</p>
+                                                                <form id="deleteProfileForm" action="<%= request.getContextPath() %>/deleteprofile" method="post">
+                                                                    <div class="mb-3">
+                                                                        <label for="confirmPassword" class="form-label"><strong>Enter your password to confirm</strong></label>
+                                                                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal" style="font-family: Raleway, sans-serif;">Cancel</button>
+                                                                <button type="submit" form="deleteProfileForm" class="btn btn-danger btn-sm" style="font-family: Raleway, sans-serif;">Delete Profile</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                     <h3 class="text-dark mb-4" style="font-family: 'Abril Fatface', serif;">
                         <span style="color: rgb(136, 80, 48);">My Orders</span>

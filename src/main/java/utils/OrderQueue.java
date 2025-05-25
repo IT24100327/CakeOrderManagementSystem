@@ -46,20 +46,39 @@ public class OrderQueue {
             order.setOrderId(generateOrderId());
         }
         orderQueue.add(order);
+
+        sortQueueByDeliveryDate();
         saveToFile();
-        System.out.println("Added a order");
+        System.out.println("Added order and sorted by delivery date: " + order.getOrderId());
+    }
+
+    private static void sortQueueByDeliveryDate() {
+        CustomQueue<ItemOrder> itemOrders = getItemQueue();
+        CustomQueue<CustomCakeOrder> customOrders = getCustomQueue();
+
+        BubbleSorter.bubbleSortByDeliveryDate(itemOrders);
+        BubbleSorter.bubbleSortCustomOrdersByDate(customOrders);
+
+        orderQueue.clear();
+
+        while (!itemOrders.isEmpty()) {
+            orderQueue.add(itemOrders.pop());
+        }
+
+        while (!customOrders.isEmpty()) {
+            orderQueue.add(customOrders.pop());
+        }
     }
 
     public static CustomQueue<Order> getOrderQueue() {
-        return orderQueue.copy();
+        return orderQueue;
     }
 
     public static CustomQueue<CustomCakeOrder> getCustomQueue() {
         CustomQueue<CustomCakeOrder> cco = new CustomQueue<>();
-        for (Order order: orderQueue) {
+        for (Order order : orderQueue) {
             if (order instanceof CustomCakeOrder) {
-                CustomCakeOrder customOrder = (CustomCakeOrder) order;
-                cco.add(customOrder);
+                cco.add((CustomCakeOrder) order);
             }
         }
         return cco;
@@ -67,10 +86,9 @@ public class OrderQueue {
 
     public static CustomQueue<ItemOrder> getItemQueue() {
         CustomQueue<ItemOrder> cco = new CustomQueue<>();
-        for (Order order: orderQueue) {
+        for (Order order : orderQueue) {
             if (order instanceof ItemOrder) {
-                ItemOrder customOrder = (ItemOrder) order;
-                cco.add(customOrder);
+                cco.add((ItemOrder) order);
             }
         }
         return cco;
@@ -98,24 +116,20 @@ public class OrderQueue {
                         lastOrderId = Math.max(lastOrderId, idNum);
                         orderQueue.add(order);
                     }
-                }
-
-                else if (parts[0].equals("customOrder")) {
+                } else if (parts[0].equals("customOrder")) {
                     CustomCakeOrder order = CustomCakeOrder.fromStringToObject(line);
                     String idNumStr = order.getOrderId().replace("ORD", "");
                     int idNum = Integer.parseInt(idNumStr);
                     lastOrderId = Math.max(lastOrderId, idNum);
                     orderQueue.add(order);
                 }
-
             }
-
+            // Sort the queue after loading
+            sortQueueByDeliveryDate();
             System.out.println("OrderQueue loaded From File!");
-
         }
     }
 
-    // Find an item by its ID
     public static Order findOrderById(String orderId) {
         for (Order order : orderQueue) {
             if (order.getOrderId().equals(orderId)) {
@@ -142,17 +156,14 @@ public class OrderQueue {
         }
         return null;
     }
-
+    // Already sorted (by delivery date)
     public static CustomQueue<CustomCakeOrder> getCustomOrdersByDeliveryDate() {
-        CustomQueue<CustomCakeOrder> cco = getCustomQueue();
-        BubbleSorter.bubbleSortCustomOrdersByDate(cco);
-        return cco;
+        return getCustomQueue();
     }
 
+    // Already sorted (by delivery date)
     public static CustomQueue<ItemOrder> getItemOrdersByDeliveryDate() {
-        CustomQueue<ItemOrder> itemOrderQ = getItemQueue();
-        BubbleSorter.bubbleSortByDeliveryDate(itemOrderQ);
-        return itemOrderQ;
+        return getItemQueue();
     }
 
     public static void updateItemOrder(String orderId, int quantity, LocalDate deliveryDate) {
@@ -160,9 +171,10 @@ public class OrderQueue {
         if (order != null) {
             order.setQuantity(quantity);
             order.setDeliveryDate(deliveryDate);
-        }
 
-        saveToFile();
+            sortQueueByDeliveryDate();
+            saveToFile();
+        }
     }
 
     public static void processOrder(Order orderToProcess) throws IOException {
@@ -173,7 +185,6 @@ public class OrderQueue {
         } else if (orderToProcess != null && orderToProcess.getStatus().equals("baking")) {
             orderToProcess.setStatus("finished");
         }
-
         saveToFile();
     }
 
@@ -190,11 +201,6 @@ public class OrderQueue {
         if (order != null) {
             order.setPayment(payment);
         }
-        saveToFile();
-    }
-
-    public static void cancelOrder(String orderId) {
-        orderQueue.removeIf(order -> order != null && order.getOrderId().equals(orderId));
         saveToFile();
     }
 

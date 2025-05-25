@@ -23,19 +23,21 @@
     CustomQueue<ItemOrder> orders = null;
     Map<String, Integer> statusCounts = new HashMap<>();
     statusCounts.put("pending", 0);
-    statusCounts.put("confirmed", 0);
     statusCounts.put("in-progress", 0);
     statusCounts.put("finished", 0);
 
     try {
+        // Always reload data to ensure fresh state
         OrderQueue.loadFromFile();
         ItemCatalog.loadFromFile();
-        orders = OrderQueue.getItemOrdersByDeliveryDate();
+        orders = OrderQueue.getItemQueue(); // Get delivery date-sorted ItemOrders
 
         // Count orders by status
         for (ItemOrder order : orders) {
             String status = order.getStatus().toLowerCase();
-            statusCounts.put(status, statusCounts.getOrDefault(status, 0) + 1);
+            if (status.equals("pending") || status.equals("in-progress") || status.equals("finished")) {
+                statusCounts.put(status, statusCounts.getOrDefault(status, 0) + 1);
+            }
         }
     } catch (Exception e) {
         System.err.println("Error loading orders: " + e.getMessage());
@@ -61,7 +63,6 @@
             --bs-secondary: #ffe2bb;
             --bs-light: #f8f9fa;
             --bs-dark: #212529;
-            --bs-orange: #fd7e14;
             --sidebar-width: 280px;
         }
 
@@ -204,10 +205,6 @@
             background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
         }
 
-        .status-card.confirmed {
-            background: linear-gradient(135deg, #ffe0b2 0%, #ffcc80 100%);
-        }
-
         .status-card.in-progress {
             background: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%);
         }
@@ -218,10 +215,6 @@
 
         .status-card .icon-container.pending {
             background-color: rgba(255, 193, 7, 0.2);
-        }
-
-        .status-card .icon-container.confirmed {
-            background-color: rgba(253, 126, 20, 0.2);
         }
 
         .status-card .icon-container.in-progress {
@@ -238,10 +231,6 @@
 
         .status-card.pending i {
             color: #ffc107;
-        }
-
-        .status-card.confirmed i {
-            color: var(--bs-orange);
         }
 
         .status-card.in-progress i {
@@ -274,11 +263,6 @@
             color: #856404;
         }
 
-        .badge-confirmed {
-            background-color: #ffe5d0;
-            color: var(--bs-orange);
-        }
-
         .badge-in-progress {
             background-color: #d1f7ff;
             color: #0c5460;
@@ -289,12 +273,9 @@
             color: #155724;
         }
 
-        .bg-orange {
-            background-color: var(--bs-orange);
-        }
-
-        .text-orange {
-            color: var(--bs-orange);
+        .badge-next {
+            background-color: #007bff;
+            color: white;
         }
 
         /* Responsive adjustments */
@@ -394,9 +375,67 @@
         </div>
         <% } %>
 
+        <!-- Next Order to Process (Earliest Delivery Date) -->
+        <%
+            ItemOrder nextOrder = null;
+            for (ItemOrder order : orders) {
+                if (order.getStatus().equals("in-progress")) {
+                    nextOrder = order;
+                    break;
+                }
+            }
+            if (nextOrder != null) {
+        %>
+        <div class="card dashboard-card mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Next Order to Process (Earliest Delivery Date)</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Order ID</th>
+                            <th>User ID</th>
+                            <th>Item ID</th>
+                            <th>Status</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                            <th>Order Date</th>
+                            <th>Delivery Date</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td><%= nextOrder.getOrderId() %></td>
+                            <td><%= nextOrder.getUser() != null ? nextOrder.getUser().getID() : -99 %></td>
+                            <td><%= nextOrder.getItem() != null ? nextOrder.getItem().getItemId() : "N/A" %></td>
+                            <td><span class="badge badge-in-progress badge-next">Next: <%= nextOrder.getStatus() %></span></td>
+                            <td><%= nextOrder.getQuantity() %></td>
+                            <td>Rs. <%= nextOrder.getPayment() != null ? String.format("%.2f", nextOrder.getPayment().getPaymentAmount()) : "0.00" %></td>
+                            <td><%= nextOrder.getOrderDate() %></td>
+                            <td><%= nextOrder.getDeliveryDate() %></td>
+                            <td>
+                                <a href="<%=request.getContextPath()%>/ItemOrderServlet?action=finish&orderId=<%=nextOrder.getOrderId()%>">
+                                    <button type="button" class="btn btn-primary btn-sm">
+                                        Finish
+                                    </button>
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <% } %>
+
         <!-- Order Status Cards -->
         <div class="row mb-4 g-4">
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <div class="card status-card pending h-100">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start">
@@ -411,22 +450,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card status-card confirmed h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <p class="status-title">Confirmed</p>
-                                <h3 class="status-count"><%= statusCounts.get("confirmed") %></h3>
-                            </div>
-                            <div class="icon-container confirmed">
-                                <i class="fas fa-list-check"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <div class="card status-card in-progress h-100">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start">
@@ -441,7 +465,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <div class="card status-card finished h-100">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start">
@@ -460,9 +484,9 @@
 
         <!-- Order Tables -->
         <%
-            String[] statuses = {"pending", "confirmed", "in-progress", "finished"};
-            String[] sectionTitles = {"Pending Payment Orders", "Confirmed Orders", "In Progress Orders", "Finished Orders"};
-            String[] badgeClasses = {"badge-pending", "badge-confirmed", "badge-in-progress", "badge-finished"};
+            String[] statuses = {"pending", "in-progress", "finished"};
+            String[] sectionTitles = {"Pending Payment Orders", "In Progress Orders", "Finished Orders"};
+            String[] badgeClasses = {"badge-pending", "badge-in-progress", "badge-finished"};
 
             for (int i = 0; i < statuses.length; i++) {
                 String status = statuses[i];
@@ -487,7 +511,7 @@
                             <th>Total</th>
                             <th>Order Date</th>
                             <th>Delivery Date</th>
-                            <% if (status != "finished") { %>
+                            <% if (!status.equals("finished")) { %>
                             <th>Actions</th>
                             <% } %>
                         </tr>
@@ -514,6 +538,7 @@
                             <td>Rs. <%= paymentAmount %></td>
                             <td><%= order.getOrderDate() %></td>
                             <td><%= order.getDeliveryDate() %></td>
+                            <% if (!status.equals("finished")) { %>
                             <td>
                                 <% if (status.equals("pending")) { %>
                                 <div class="btn-group" role="group">
@@ -528,12 +553,6 @@
                                         <i class="fas fa-times"></i>
                                     </button>
                                 </div>
-                                <% } else if (status.equals("confirmed") && position == 1) { %>
-                                <a href="<%=request.getContextPath()%>/ItemOrderServlet?action=process&orderId=<%=order.getOrderId()%>">
-                                    <button type="button" class="btn btn-outline-primary btn-sm">
-                                        Process
-                                    </button>
-                                </a>
                                 <% } else if (status.equals("in-progress") && position == 1) { %>
                                 <a href="<%=request.getContextPath()%>/ItemOrderServlet?action=finish&orderId=<%=order.getOrderId()%>">
                                     <button type="button" class="btn btn-outline-primary btn-sm">
@@ -542,20 +561,20 @@
                                 </a>
                                 <% } %>
                             </td>
+                            <% } %>
                         </tr>
                         <%
                                     position++;
                                 }
                             }
                             if (!hasOrders) { %>
-                        <tr><td colspan="10" class="text-center">No <%= status %> orders found.</td></tr>
+                        <tr><td colspan="<%= status.equals("finished") ? 9 : 10 %>" class="text-center">No <%= status %> orders found.</td></tr>
                         <% } %>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
-
         <% } %>
 
         <!-- Modals for pending orders -->

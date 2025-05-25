@@ -47,7 +47,7 @@ public class PaymentServlet extends HttpServlet {
                     PaymentHandle.addPayment(newPayment);
                     PaymentHandle.pay(newPayment.getPaymentId());
                     OrderQueue.setOrderPayment(newPayment.getOrder().getOrderId(), newPayment);
-                    OrderQueue.setOrderStatus(itemOrder.getOrderId(), "confirmed");
+                    OrderQueue.setOrderStatus(itemOrder.getOrderId(), "in-progress");
                 }
 
                 if (paymentMethod.equals("card")) {
@@ -55,7 +55,7 @@ public class PaymentServlet extends HttpServlet {
                     PaymentHandle.addPayment(newPayment);
                     PaymentHandle.pay(newPayment.getPaymentId());
                     OrderQueue.setOrderPayment(newPayment.getOrder().getOrderId(), newPayment);
-                    OrderQueue.setOrderStatus(itemOrder.getOrderId(), "confirmed");
+                    OrderQueue.setOrderStatus(itemOrder.getOrderId(), "in-progress");
                 }
 
                 if (newPayment == null) {
@@ -76,7 +76,7 @@ public class PaymentServlet extends HttpServlet {
 
                     PaymentHandle.pay(newPayment.getPaymentId());
                     OrderQueue.setOrderPayment(newPayment.getOrder().getOrderId(), newPayment);
-                    OrderQueue.setOrderStatus(customCakeOrder.getOrderId(), "to-process");
+                    OrderQueue.setOrderStatus(customCakeOrder.getOrderId(), "in-progress");
                 }
 
                 if (paymentMethod.equals("card")) {
@@ -85,7 +85,7 @@ public class PaymentServlet extends HttpServlet {
 
                     PaymentHandle.pay(newPayment.getPaymentId());
                     OrderQueue.setOrderPayment(newPayment.getOrder().getOrderId(), newPayment);
-                    OrderQueue.setOrderStatus(customCakeOrder.getOrderId(), "to-process");
+                    OrderQueue.setOrderStatus(customCakeOrder.getOrderId(), "in-progress");
                 }
 
                 if (newPayment == null) {

@@ -2,12 +2,9 @@ package utils;
 
 import entities.CustomCakeOrder;
 import entities.ItemOrder;
-import entities.Order;
 import entities.Payment;
-//import entities.Payment;
 
 import java.util.LinkedList;
-import java.util.Queue;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -17,7 +14,7 @@ public class BubbleSorter {
     private static final DateTimeFormatter DATE_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    public static void bubbleSortByDeliveryDate(Queue<ItemOrder> orders) {
+    public static void bubbleSortByDeliveryDate(CustomQueue<ItemOrder> orders) {
         if (orders == null || orders.size() <= 1) {
             return;
         }
@@ -39,8 +36,8 @@ public class BubbleSorter {
                 /*
                    -----compareTo Method----------
                    It returns 0 if both the dates are equal.
-                   It returns positive value if “this date” is greater than the otherDate.
-                   It returns negative value if “this date” is less than the otherDate.
+                   It returns positive value if "this date" is greater than the otherDate.
+                   It returns negative value if "this date" is less than the otherDate.
                 */
 
                 if (date1.compareTo(date2) > 0) {
@@ -66,7 +63,7 @@ public class BubbleSorter {
         }
     }
 
-    public static void bubbleSortCustomOrdersByDate(Queue<CustomCakeOrder> orders) {
+    public static void bubbleSortCustomOrdersByDate(CustomQueue<CustomCakeOrder> orders) {
         if (orders == null || orders.size() <= 1) {
             return;
         }
@@ -87,8 +84,8 @@ public class BubbleSorter {
                 /*
                    -----compareTo Method----------
                    It returns 0 if both the dates are equal.
-                   It returns positive value if “this date” is greater than the otherDate.
-                   It returns negative value if “this date” is less than the otherDate.
+                   It returns positive value if "this date" is greater than the otherDate.
+                   It returns negative value if "this date" is less than the otherDate.
                 */
 
                 if (date1.compareTo(date2) > 0) {
@@ -135,8 +132,8 @@ public class BubbleSorter {
                 /*
                    -----compareTo Method----------
                    It returns 0 if both the dates are equal.
-                   It returns positive value if “this date” is greater than the otherDate.
-                   returns negative value if “this date” is less than the otherDate.
+                   It returns positive value if "this date" is greater than the otherDate.
+                   returns negative value if "this date" is less than the otherDate.
                 */
 
                 if (date1.compareTo(date2) > 0) {

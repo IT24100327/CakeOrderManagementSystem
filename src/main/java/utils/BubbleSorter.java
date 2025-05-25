@@ -19,46 +19,39 @@ public class BubbleSorter {
             return;
         }
 
-        // Convert queue to array for easier sorting
-        ItemOrder[] orderArray =  orders.toArray(new ItemOrder[0]);
+        // Transfer queue to LinkedList
+        LinkedList<ItemOrder> tempList = new LinkedList<>();
+        while (!orders.isEmpty()) {
+            tempList.add(orders.pop());
+        }
 
-        int n = orderArray.length;
+        // Perform bubble sort on LinkedList
+        int n = tempList.size();
         boolean swapped;
 
         for (int i = 0; i < n - 1; i++) {
             swapped = false;
             for (int j = 0; j < n - i - 1; j++) {
-
-                // Parse the string dates to LocalDate for proper comparison
-                LocalDate date1 = orderArray[j].getDeliveryDate();
-                LocalDate date2 = orderArray[j + 1].getDeliveryDate();
-
-                /*
-                   -----compareTo Method----------
-                   It returns 0 if both the dates are equal.
-                   It returns positive value if "this date" is greater than the otherDate.
-                   It returns negative value if "this date" is less than the otherDate.
-                */
+                LocalDate date1 = tempList.get(j).getDeliveryDate();
+                LocalDate date2 = tempList.get(j + 1).getDeliveryDate();
 
                 if (date1.compareTo(date2) > 0) {
-                    // Swap if they're in the wrong order
-                    ItemOrder temp = orderArray[j];
-                    orderArray[j] = orderArray[j + 1];
-                    orderArray[j + 1] = temp;
+                    // Swap elements
+                    ItemOrder temp = tempList.get(j);
+                    tempList.set(j, tempList.get(j + 1));
+                    tempList.set(j + 1, temp);
                     swapped = true;
                 }
             }
 
-            // If no swaps occurred in inner loop, the array is sorted
             if (!swapped) {
                 break;
             }
         }
 
-        // Clear the original queue and add the sorted elements back
+        // Rebuild the original queue
         orders.clear();
-
-        for (ItemOrder order : orderArray) {
+        for (ItemOrder order : tempList) {
             orders.add(order);
         }
     }
@@ -68,45 +61,39 @@ public class BubbleSorter {
             return;
         }
 
-        // Convert queue to array for easier sorting
-        CustomCakeOrder[] orderArr = orders.toArray(new CustomCakeOrder[0]);
+        // Transfer queue to LinkedList
+        LinkedList<CustomCakeOrder> tempList = new LinkedList<>();
+        while (!orders.isEmpty()) {
+            tempList.add(orders.pop());
+        }
 
-        int n = orderArr.length;
+        // Perform bubble sort on LinkedList
+        int n = tempList.size();
         boolean swapped;
 
         for (int i = 0; i < n - 1; i++) {
             swapped = false;
             for (int j = 0; j < n - i - 1; j++) {
-                // Parse the string dates to LocalDate for proper comparison
-                LocalDate date1 = orderArr[j].getDeliveryDate();
-                LocalDate date2 = orderArr[j + 1].getDeliveryDate();
-
-                /*
-                   -----compareTo Method----------
-                   It returns 0 if both the dates are equal.
-                   It returns positive value if "this date" is greater than the otherDate.
-                   It returns negative value if "this date" is less than the otherDate.
-                */
+                LocalDate date1 = tempList.get(j).getDeliveryDate();
+                LocalDate date2 = tempList.get(j + 1).getDeliveryDate();
 
                 if (date1.compareTo(date2) > 0) {
-                    // Swap if they're in the wrong order
-                    CustomCakeOrder temp = orderArr[j];
-                    orderArr[j] = orderArr[j + 1];
-                    orderArr[j + 1] = temp;
+                    // Swap elements
+                    CustomCakeOrder temp = tempList.get(j);
+                    tempList.set(j, tempList.get(j + 1));
+                    tempList.set(j + 1, temp);
                     swapped = true;
                 }
             }
 
-            // If no swaps occurred in inner loop, the array is sorted
             if (!swapped) {
                 break;
             }
         }
 
-        // Clear the original queue and add the sorted elements back
+        // Rebuild the original queue
         orders.clear();
-
-        for (CustomCakeOrder order : orderArr) {
+        for (CustomCakeOrder order : tempList) {
             orders.add(order);
         }
     }

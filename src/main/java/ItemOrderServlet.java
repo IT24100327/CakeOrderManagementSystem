@@ -16,7 +16,6 @@ import utils.PaymentHandle;
 public class ItemOrderServlet extends HttpServlet {
 
     public void init() {
-
         try {
             OrderQueue.loadFromFile();
             System.out.println("OrderQueue loaded");
@@ -35,7 +34,6 @@ public class ItemOrderServlet extends HttpServlet {
         if ("place".equals(action)) {
             Item item = ItemCatalog.findItemById(request.getParameter("itemId"));
             int quantity = Integer.parseInt(request.getParameter("quantity"));
-
             LocalDate deliveryDate = LocalDate.parse(request.getParameter("deliveryDate"));
 
             ItemOrder newOrder = new ItemOrder(item, user, quantity, null, deliveryDate);
@@ -51,6 +49,11 @@ public class ItemOrderServlet extends HttpServlet {
         } else if ("update".equals(action)) {
             String orderId = request.getParameter("orderId");
             ItemOrder order = OrderQueue.findItemOrderById(orderId);
+            if (order == null) {
+                request.setAttribute("error", "Order not found.");
+                response.sendRedirect(request.getContextPath() + "/admin/ManageOrders.jsp");
+                return;
+            }
 
             int newQuantity = Integer.parseInt(request.getParameter("quantity"));
             LocalDate newDeliveryDate = LocalDate.parse(request.getParameter("deliveryDate"));
@@ -64,8 +67,10 @@ public class ItemOrderServlet extends HttpServlet {
             System.out.println("New Total calculated: " + newPrice);
 
             Payment payment = order.getPayment();
-            payment.setPaymentAmount(newPrice);
-            OrderQueue.setOrderPayment(orderId, payment);
+            if (payment != null) {
+                payment.setPaymentAmount(newPrice);
+                OrderQueue.setOrderPayment(orderId, payment);
+            }
 
             OrderQueue.updateItemOrder(orderId, newQuantity, newDeliveryDate);
             System.out.println("Order Successfully Updated: " + orderId);
@@ -73,35 +78,36 @@ public class ItemOrderServlet extends HttpServlet {
 
             if (user.getROLE().equals("ADMIN")) {
                 response.sendRedirect(request.getContextPath() + "/admin/ManageOrders.jsp");
-                return;
             } else {
                 response.sendRedirect(request.getContextPath() + "/profile");
-                return;
             }
-
 
         } else if ("cancel".equals(action)) {
             String orderId = request.getParameter("orderId");
+            ItemOrder order = OrderQueue.findItemOrderById(orderId);
+            if (order == null) {
+                request.setAttribute("error", "Order not found.");
+                response.sendRedirect(request.getContextPath() + "/admin/ManageOrders.jsp");
+                return;
+            }
             OrderQueue.setOrderStatus(orderId, "cancelled");
-
             response.sendRedirect(request.getContextPath() + "/admin/ManageOrders.jsp");
         }
-
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
         String orderId = request.getParameter("orderId");
 
-        if (action.equals("process")) {
-            OrderQueue.setOrderStatus(orderId, "in-progress");
-            response.sendRedirect(request.getContextPath() + "/admin/ManageOrders.jsp");
-        }
-
-        if(action.equals("finish")) {
+        if ("finish".equals(action)) {
+            ItemOrder order = OrderQueue.findItemOrderById(orderId);
+            if (order == null || !order.getStatus().equals("in-progress")) {
+                request.setAttribute("error", "Invalid or already processed order.");
+                response.sendRedirect(request.getContextPath() + "/admin/ManageOrders.jsp");
+                return;
+            }
             OrderQueue.setOrderStatus(orderId, "finished");
             response.sendRedirect(request.getContextPath() + "/admin/ManageOrders.jsp");
         }
-
     }
 }

@@ -2,22 +2,20 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="entities.Order" %>
 <%@ page import="utils.OrderQueue" %>
-<%@ page import="java.util.Queue" %>
-<%@ page import="java.util.LinkedList" %>
 <%@ page import="java.time.LocalDate" %>
 <%@ page import="java.time.format.DateTimeFormatter" %>
 <%@ page import="entities.CustomCakeOrder" %>
-<%@ page import="utils.OrderQueue" %>
+<%@ page import="utils.CustomQueue" %>
 <%@ page import="utils.PaymentHandle" %>
 
 <%
     PaymentHandle.loadFromFile();
 
-    Queue<CustomCakeOrder> orders = null;
-    Queue<CustomCakeOrder> orders_pending = new LinkedList<>();
-    Queue<CustomCakeOrder> orders_to_process = new LinkedList<>();
-    Queue<CustomCakeOrder> orders_baking = new LinkedList<>();
-    Queue<CustomCakeOrder> orders_finished = new LinkedList<>();
+    CustomQueue<CustomCakeOrder> orders = null;
+    CustomQueue<CustomCakeOrder> orders_pending = new CustomQueue<>();
+    CustomQueue<CustomCakeOrder> orders_to_process = new CustomQueue<>();
+    CustomQueue<CustomCakeOrder> orders_baking = new CustomQueue<>();
+    CustomQueue<CustomCakeOrder> orders_finished = new CustomQueue<>();
 
     try {
         OrderQueue.loadFromFile();
@@ -25,7 +23,7 @@
         orders = OrderQueue.getCustomOrdersByDeliveryDate();
     } catch (Exception e) {
         System.err.println("Error loading orders: " + e.getMessage());
-        orders = new LinkedList<>();
+        orders = new CustomQueue<>();
     }
 
     try {

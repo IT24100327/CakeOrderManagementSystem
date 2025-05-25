@@ -7,12 +7,9 @@ import entities.Payment;
 
 import java.io.*;
 import java.time.LocalDate;
-import java.util.LinkedList;
-import java.util.Queue;
-
 
 public class OrderQueue {
-    private static final Queue<Order> orderQueue = new LinkedList<>();
+    private static final CustomQueue<Order> orderQueue = new CustomQueue<>();
     private static final String FILE_PATH = "E:/Data/OrderQueue.txt"; // Relative path
     private static int lastOrderId = 0;
 
@@ -53,12 +50,12 @@ public class OrderQueue {
         System.out.println("Added a order");
     }
 
-    public static Queue<Order> getOrderQueue() {
-        return new LinkedList<>(orderQueue);
+    public static CustomQueue<Order> getOrderQueue() {
+        return orderQueue.copy();
     }
 
-    public static Queue<CustomCakeOrder> getCustomQueue() {
-        LinkedList<CustomCakeOrder> cco = new LinkedList<>();
+    public static CustomQueue<CustomCakeOrder> getCustomQueue() {
+        CustomQueue<CustomCakeOrder> cco = new CustomQueue<>();
         for (Order order: orderQueue) {
             if (order instanceof CustomCakeOrder) {
                 CustomCakeOrder customOrder = (CustomCakeOrder) order;
@@ -68,8 +65,8 @@ public class OrderQueue {
         return cco;
     }
 
-    public static Queue<ItemOrder> getItemQueue() {
-        LinkedList<ItemOrder> cco = new LinkedList<>();
+    public static CustomQueue<ItemOrder> getItemQueue() {
+        CustomQueue<ItemOrder> cco = new CustomQueue<>();
         for (Order order: orderQueue) {
             if (order instanceof ItemOrder) {
                 ItemOrder customOrder = (ItemOrder) order;
@@ -146,26 +143,14 @@ public class OrderQueue {
         return null;
     }
 
-    public static Queue<CustomCakeOrder> getCustomOrdersByDeliveryDate() {
-        Queue<CustomCakeOrder> cco = new LinkedList<>();
-        for(Order order : orderQueue){
-            if (order instanceof CustomCakeOrder) {
-                CustomCakeOrder customOrder = (CustomCakeOrder) order;
-                cco.add(customOrder);
-            }
-        }
+    public static CustomQueue<CustomCakeOrder> getCustomOrdersByDeliveryDate() {
+        CustomQueue<CustomCakeOrder> cco = getCustomQueue();
         BubbleSorter.bubbleSortCustomOrdersByDate(cco);
         return cco;
     }
 
-    public static Queue<ItemOrder> getItemOrdersByDeliveryDate() {
-        Queue<ItemOrder> itemOrderQ = new LinkedList<>();
-        for(Order order : orderQueue){
-            if (order instanceof ItemOrder) {
-                ItemOrder itemOrder = (ItemOrder) order;
-                itemOrderQ.add(itemOrder);
-            }
-        }
+    public static CustomQueue<ItemOrder> getItemOrdersByDeliveryDate() {
+        CustomQueue<ItemOrder> itemOrderQ = getItemQueue();
         BubbleSorter.bubbleSortByDeliveryDate(itemOrderQ);
         return itemOrderQ;
     }

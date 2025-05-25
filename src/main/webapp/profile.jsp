@@ -1,5 +1,4 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="java.util.Queue" %>
 <%@ page import="entities.Order" %>
 <%@ page import="utils.OrderQueue" %>
 <%@ page import="entities.ItemOrder" %>
@@ -7,6 +6,7 @@
 <%@ page import="java.time.LocalDate" %>
 <%@ page import="java.time.format.DateTimeFormatter" %>
 <%@ page import="entities.CustomCakeOrder" %>
+<%@ page import="utils.CustomQueue" %>
 
 <%
     // Redirect to login if not authenticated
@@ -16,8 +16,8 @@
         return;
     }
 
-    Queue<ItemOrder> itemOrders = null;
-    Queue<CustomCakeOrder> customOrders = null;
+    CustomQueue<ItemOrder> itemOrders = null;
+    CustomQueue<CustomCakeOrder> customOrders = null;
     try {
         itemOrders = OrderQueue.getItemOrdersByDeliveryDate();
         customOrders = OrderQueue.getCustomQueue();

@@ -2,8 +2,6 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="entities.Order" %>
 <%@ page import="utils.OrderQueue" %>
-<%@ page import="java.util.Queue" %>
-<%@ page import="java.util.LinkedList" %>
 <%@ page import="java.time.LocalDate" %>
 <%@ page import="java.time.format.DateTimeFormatter" %>
 <%@ page import="entities.ItemOrder" %>
@@ -11,6 +9,7 @@
 <%@ page import="entities.User" %>
 <%@ page import="java.util.HashMap" %>
 <%@ page import="java.util.Map" %>
+<%@ page import="utils.CustomQueue" %>
 
 <%
     // Check if user is logged in
@@ -21,7 +20,7 @@
     }
 
     // Initialize order queue and counts
-    Queue<ItemOrder> orders = null;
+    CustomQueue<ItemOrder> orders = null;
     Map<String, Integer> statusCounts = new HashMap<>();
     statusCounts.put("pending", 0);
     statusCounts.put("confirmed", 0);
@@ -40,7 +39,7 @@
         }
     } catch (Exception e) {
         System.err.println("Error loading orders: " + e.getMessage());
-        orders = new LinkedList<>();
+        orders = new CustomQueue<>();
         request.setAttribute("error", "Failed to load orders. Please try again later.");
     }
 %>

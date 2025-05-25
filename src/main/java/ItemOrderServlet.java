@@ -7,7 +7,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Queue;
 
 import utils.ItemCatalog;
 import utils.OrderQueue;
@@ -27,12 +26,11 @@ public class ItemOrderServlet extends HttpServlet {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    } // Load orders on startup
+    }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User user = (User) request.getSession().getAttribute("USER");
         String action = request.getParameter("action");
-        Queue<Order> allOrders = OrderQueue.getOrderQueue();
 
         if ("place".equals(action)) {
             Item item = ItemCatalog.findItemById(request.getParameter("itemId"));
@@ -90,6 +88,7 @@ public class ItemOrderServlet extends HttpServlet {
         }
 
     }
+
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
         String orderId = request.getParameter("orderId");

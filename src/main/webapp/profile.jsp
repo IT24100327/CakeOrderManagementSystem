@@ -19,7 +19,7 @@
     CustomQueue<ItemOrder> itemOrders = null;
     CustomQueue<CustomCakeOrder> customOrders = null;
     try {
-        itemOrders = OrderQueue.getItemOrdersByDeliveryDate();
+        itemOrders = OrderQueue.getItemQueue();
         customOrders = OrderQueue.getCustomQueue();
     } catch (Exception e) {
         System.err.println("Error retrieving orders: " + e.getMessage());

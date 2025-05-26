@@ -20,7 +20,7 @@
     try {
         OrderQueue.loadFromFile();
 
-        orders = OrderQueue.getCustomOrdersByDeliveryDate();
+        orders = OrderQueue.getCustomQueue();
     } catch (Exception e) {
         System.err.println("Error loading orders: " + e.getMessage());
         orders = new CustomQueue<>();

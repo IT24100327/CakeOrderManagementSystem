@@ -1,27 +1,15 @@
 package utils;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public class CustomQueue<E> implements Iterable<E> {
-
-    private static class Node<E> {
-        E item;
-        Node<E> next;
-
-        Node(E item) {
-            this.item = item;
-            this.next = null;
-        }
-    }
-
-    private Node<E> head;
-    private Node<E> tail;
+    private ArrayList<E> queue;
     private int size;
 
     public CustomQueue() {
-        head = null;
-        tail = null;
+        queue = new ArrayList<>();
         size = 0;
     }
 
@@ -29,13 +17,7 @@ public class CustomQueue<E> implements Iterable<E> {
         if (item == null) {
             throw new IllegalArgumentException("Item cannot be null");
         }
-        Node<E> newNode = new Node<>(item);
-        if (isEmpty()) {
-            head = newNode;
-        } else {
-            tail.next = newNode;
-        }
-        tail = newNode;
+        queue.add(item);
         size++;
     }
 
@@ -43,12 +25,8 @@ public class CustomQueue<E> implements Iterable<E> {
         if (isEmpty()) {
             throw new NoSuchElementException("Queue is empty");
         }
-        E item = head.item;
-        head = head.next;
+        E item = queue.remove(0);
         size--;
-        if (isEmpty()) {
-            tail = null;
-        }
         return item;
     }
 
@@ -56,7 +34,7 @@ public class CustomQueue<E> implements Iterable<E> {
         if (isEmpty()) {
             throw new NoSuchElementException("Queue is empty");
         }
-        return head.item;
+        return queue.get(0);
     }
 
     public boolean isEmpty() {
@@ -68,43 +46,12 @@ public class CustomQueue<E> implements Iterable<E> {
     }
 
     public void clear() {
-        head = null;
-        tail = null;
+        queue.clear();
         size = 0;
     }
 
-
-
-    public CustomQueue<E> copy() {
-        CustomQueue<E> newQueue = new CustomQueue<>();
-        for (E item : this) {
-            newQueue.add(item);
-        }
-        return newQueue;
-    }
-
-
     @Override
     public Iterator<E> iterator() {
-        return new CustomQueueIterator();
+        return queue.iterator();
     }
-
-    private class CustomQueueIterator implements Iterator<E> {
-        private Node<E> current = head;
-
-        @Override
-        public boolean hasNext() {
-            return current != null;
-        }
-
-        @Override
-        public E next() {
-            if (!hasNext()) {
-                throw new NoSuchElementException();
-            }
-            E item = current.item;
-            current = current.next;
-            return item;
-        }
-    }
-} 
+}

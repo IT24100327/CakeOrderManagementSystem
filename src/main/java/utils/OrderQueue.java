@@ -10,7 +10,7 @@ import java.time.LocalDate;
 
 public class OrderQueue {
     private static final CustomQueue<Order> orderQueue = new CustomQueue<>();
-    private static final String FILE_PATH = "E:/Data/OrderQueue.txt"; // Relative path
+    private static final String FILE_PATH = "E:/Data/OrderQueue.txt";
     private static int lastOrderId = 0;
 
     static {
@@ -22,14 +22,6 @@ public class OrderQueue {
     }
 
     public OrderQueue() {
-    }
-
-    public static int getLastOrderId() {
-        return lastOrderId;
-    }
-
-    public static void setLastOrderId(int lastOrderId) {
-        OrderQueue.lastOrderId = lastOrderId;
     }
 
     public static String generateOrderId() {
@@ -94,40 +86,8 @@ public class OrderQueue {
         return cco;
     }
 
-    public static void loadFromFile() throws IOException {
-        File file = new File(FILE_PATH);
-
-        if (!file.exists()) {
-            file.createNewFile();
-            return;
-        }
-
-        orderQueue.clear();
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split("\\|");
-                if (parts[0].equals("ItemOrder")) {
-                    ItemOrder order = ItemOrder.fromString(line);
-                    if (order != null) {
-                        String idNumStr = order.getOrderId().replace("ORD", "");
-                        int idNum = Integer.parseInt(idNumStr);
-                        lastOrderId = Math.max(lastOrderId, idNum);
-                        orderQueue.add(order);
-                    }
-                } else if (parts[0].equals("customOrder")) {
-                    CustomCakeOrder order = CustomCakeOrder.fromStringToObject(line);
-                    String idNumStr = order.getOrderId().replace("ORD", "");
-                    int idNum = Integer.parseInt(idNumStr);
-                    lastOrderId = Math.max(lastOrderId, idNum);
-                    orderQueue.add(order);
-                }
-            }
-            // Sort the queue after loading
-            sortQueueByDeliveryDate();
-            System.out.println("OrderQueue loaded From File!");
-        }
+    public static int getLastOrderId() {
+        return lastOrderId;
     }
 
     public static Order findOrderById(String orderId) {
@@ -156,14 +116,9 @@ public class OrderQueue {
         }
         return null;
     }
-    // Already sorted (by delivery date)
-    public static CustomQueue<CustomCakeOrder> getCustomOrdersByDeliveryDate() {
-        return getCustomQueue();
-    }
 
-    // Already sorted (by delivery date)
-    public static CustomQueue<ItemOrder> getItemOrdersByDeliveryDate() {
-        return getItemQueue();
+    public static void setLastOrderId(int lastOrderId) {
+        OrderQueue.lastOrderId = lastOrderId;
     }
 
     public static void updateItemOrder(String orderId, int quantity, LocalDate deliveryDate) {
@@ -217,4 +172,41 @@ public class OrderQueue {
             e.printStackTrace();
         }
     }
+
+    public static void loadFromFile() throws IOException {
+        File file = new File(FILE_PATH);
+
+        if (!file.exists()) {
+            file.createNewFile();
+            return;
+        }
+
+        orderQueue.clear();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split("\\|");
+                if (parts[0].equals("ItemOrder")) {
+                    ItemOrder order = ItemOrder.fromString(line);
+                    if (order != null) {
+                        String idNumStr = order.getOrderId().replace("ORD", "");
+                        int idNum = Integer.parseInt(idNumStr);
+                        lastOrderId = Math.max(lastOrderId, idNum);
+                        orderQueue.add(order);
+                    }
+                } else if (parts[0].equals("customOrder")) {
+                    CustomCakeOrder order = CustomCakeOrder.fromStringToObject(line);
+                    String idNumStr = order.getOrderId().replace("ORD", "");
+                    int idNum = Integer.parseInt(idNumStr);
+                    lastOrderId = Math.max(lastOrderId, idNum);
+                    orderQueue.add(order);
+                }
+            }
+
+            sortQueueByDeliveryDate();
+            System.out.println("OrderQueue loaded From File!");
+        }
+    }
+
 }
